@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,7 +9,7 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- Babel para JSX -->
+    <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <!-- Tailwind CSS -->
@@ -55,15 +54,35 @@
         }
     </script>
     <style>
-        body { background-color: #0f172a; color: #f1f5f9; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-        .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 20px); }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
+        body { 
+            background-color: #0f172a; 
+            color: #f1f5f9; 
+            touch-action: manipulation; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] { 
+            -moz-appearance: textfield; 
+        }
+        .safe-bottom { 
+            padding-bottom: env(safe-area-inset-bottom, 20px); 
+        }
+        .glass { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(10px); 
+        }
         
-        /* Scrollbar oculta */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Hide scrollbars on mobile */
+        .no-scrollbar::-webkit-scrollbar { 
+            display: none; 
+        }
+        .no-scrollbar { 
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+        }
     </style>
 </head>
 <body>
@@ -72,7 +91,17 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
         
-        // --- Iconos ---
+        // Small helper for translation. 
+        // You pass the current language and both strings, and it returns the right one.
+        const getText = (lang, es, en) => lang === 'es' ? es : en;
+
+        // Month names for both languages
+        const monthNamesByLang = {
+            es: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+            en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        };
+
+        // --- Icons ---
         const IconCalendar = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
         const IconPlus = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
         const IconTrash = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>;
@@ -86,18 +115,30 @@
         const IconUpload = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>;
         const IconDownload = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>;
 
-        // --- Utilidades ---
-        const formatDateKey = (date) => date.toISOString().split('T')[0];
-        const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        // --- Utilities ---
 
-        // Extraer historial único de todos los entrenamientos
+        // Build a YYYY-MM-DD string in local time.
+        // It avoids timezone issues that you get with toISOString.
+        const formatDateKey = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        // Parse a YYYY-MM-DD key back into a local Date object.
+        const parseLocalDateFromKey = (key) => {
+            const [y, m, d] = key.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        };
+
+        // Extract unique exercise history for quick reuse in the search modal
         const getExerciseHistory = (workouts) => {
             const history = {};
-            // Ordenar fechas descendente para obtener siempre el último
+            // Sort dates descending so we keep the latest info for each exercise
             Object.keys(workouts).sort().reverse().forEach(date => {
                 workouts[date].forEach(ex => {
                     if (ex.name && !history[ex.name.toLowerCase()]) {
-                        // Clonar sets para evitar referencias accidentales
                         const lastSets = ex.sets.map(s => ({ kg: s.kg, reps: s.reps }));
                         history[ex.name.toLowerCase()] = {
                             name: ex.name,
@@ -110,12 +151,18 @@
             return Object.values(history);
         };
 
-        // --- Componente: Modal Genérico ---
+        // --- Generic modal component ---
         const Modal = ({ isOpen, onClose, title, children }) => {
             if (!isOpen) return null;
             return (
-                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-                    <div className="bg-gym-card w-full max-w-md rounded-t-2xl sm:rounded-2xl p-4 max-h-[90vh] flex flex-col animate-slide-up shadow-2xl border-t border-slate-700" onClick={e => e.stopPropagation()}>
+                <div 
+                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in" 
+                    onClick={onClose}
+                >
+                    <div 
+                        className="bg-gym-card w-full max-w-md rounded-t-2xl sm:rounded-2xl p-4 max-h-[90vh] flex flex-col animate-slide-up shadow-2xl border-t border-slate-700" 
+                        onClick={e => e.stopPropagation()}
+                    >
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-xl font-bold text-white">{title}</h3>
                             <button onClick={onClose} className="p-2 text-gym-muted hover:text-white">&times;</button>
@@ -128,11 +175,19 @@
             );
         };
         
-        // --- Componente: Configuración y Migración de Datos ---
-        const SettingsModal = ({ isOpen, onClose, workouts, templates, setWorkouts, setTemplates }) => {
+        // --- Settings and data migration modal ---
+        const SettingsModal = ({ 
+            isOpen, 
+            onClose, 
+            workouts, 
+            templates, 
+            setWorkouts, 
+            setTemplates,
+            language 
+        }) => {
             const fileInputRef = useRef(null);
             
-            // --- EXPORTACIÓN ---
+            // Export all data to a JSON file
             const handleExport = () => {
                 const data = {
                     metadata: { version: 'v2.2', exportDate: new Date().toISOString() },
@@ -151,23 +206,30 @@
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                alert("Datos exportados con éxito. Busca el archivo .json en tu carpeta de descargas.");
+                alert(getText(
+                    language,
+                    "Datos exportados con éxito. Busca el archivo .json en tu carpeta de descargas.",
+                    "Data exported successfully. Check your Downloads folder for the .json file."
+                ));
                 onClose();
             };
 
-            // --- IMPORTACIÓN ---
+            // Handle JSON import and local overwrite
             const handleFileChange = (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
 
-                if (!confirm("ADVERTENCIA: ¿Estás seguro de que quieres importar datos? Esto SOBRESCRIBIRÁ tu información actual.")) return;
+                if (!confirm(getText(
+                    language,
+                    "ADVERTENCIA: ¿Estás seguro de que quieres importar datos? Esto SOBRESCRIBIRÁ tu información actual.",
+                    "WARNING: Are you sure you want to import data? This will OVERWRITE your current information."
+                ))) return;
                 
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
                         const importedData = JSON.parse(e.target.result);
                         
-                        // Validación mínima (asegurar que tenga las claves)
                         if (importedData.workouts && importedData.templates) {
                             setWorkouts(importedData.workouts);
                             localStorage.setItem('gymTrackerData_v1', JSON.stringify(importedData.workouts));
@@ -175,13 +237,25 @@
                             setTemplates(importedData.templates);
                             localStorage.setItem('gymTrackerTemplates_v1', JSON.stringify(importedData.templates));
 
-                            alert("Datos importados y guardados con éxito en la nueva ubicación.");
+                            alert(getText(
+                                language,
+                                "Datos importados y guardados con éxito.",
+                                "Data imported and saved successfully."
+                            ));
                             onClose();
                         } else {
-                            alert("Error: El archivo JSON no tiene el formato correcto (faltan 'workouts' o 'templates').");
+                            alert(getText(
+                                language,
+                                "Error: El archivo JSON no tiene el formato correcto (faltan 'workouts' o 'templates').",
+                                "Error: JSON file does not have the correct format (missing 'workouts' or 'templates')."
+                            ));
                         }
                     } catch (error) {
-                        alert("Error al parsear el archivo JSON. Asegúrate de que es un archivo de copia de seguridad válido.");
+                        alert(getText(
+                            language,
+                            "Error al parsear el archivo JSON. Asegúrate de que es un archivo de copia de seguridad válido.",
+                            "Error parsing JSON file. Make sure it is a valid backup file."
+                        ));
                         console.error("Import error:", error);
                     }
                 };
@@ -193,16 +267,29 @@
             };
 
             return (
-                <Modal isOpen={isOpen} onClose={onClose} title="Configuración y Migración">
+                <Modal 
+                    isOpen={isOpen} 
+                    onClose={onClose} 
+                    title={getText(language, "Configuración y Migración", "Settings and Migration")}
+                >
                     <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gym-accent border-b border-slate-700 pb-2">Migración y Copia de Seguridad</h3>
-                        <p className="text-sm text-gym-muted">Usa estas opciones para mover tus datos entre dispositivos o hacer una copia de seguridad local.</p>
+                        <h3 className="text-lg font-semibold text-gym-accent border-b border-slate-700 pb-2">
+                            {getText(language, "Migración y Copia de Seguridad", "Migration and Backup")}
+                        </h3>
+                        <p className="text-sm text-gym-muted">
+                            {getText(
+                                language, 
+                                "Usa estas opciones para mover tus datos entre dispositivos o hacer una copia de seguridad local.", 
+                                "Use these options to move your data between devices or create a local backup."
+                            )}
+                        </p>
 
                         <button 
                             onClick={handleExport}
                             className="w-full py-3 bg-gym-success/20 text-gym-success rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gym-success/30 transition-colors"
                         >
-                            <IconDownload size={20}/> Exportar Datos (JSON)
+                            <IconDownload size={20}/> 
+                            {getText(language, "Exportar Datos (JSON)", "Export Data (JSON)")}
                         </button>
                         
                         <input 
@@ -216,14 +303,17 @@
                             onClick={triggerFileInput}
                             className="w-full py-3 bg-gym-danger/20 text-gym-danger rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gym-danger/30 transition-colors"
                         >
-                            <IconUpload size={20}/> Importar Datos (Sobrescribir)
+                            <IconUpload size={20}/> 
+                            {getText(language, "Importar Datos (Sobrescribir)", "Import Data (Overwrite)")}
                         </button>
 
-                        <h3 className="text-lg font-semibold text-gym-primary border-b border-slate-700 pb-2 pt-4">Información del Sistema</h3>
+                        <h3 className="text-lg font-semibold text-gym-primary border-b border-slate-700 pb-2 pt-4">
+                            {getText(language, "Información del Sistema", "System Information")}
+                        </h3>
                         <p className="text-sm text-gym-muted">
-                            Version: <span className="text-white">v2.2</span><br/>
-                            Datos de Entrenamiento: <span className="text-white">{Object.keys(workouts).length} días</span><br/>
-                            Rutinas Guardadas: <span className="text-white">{templates.length}</span>
+                            {getText(language, "Versión", "Version")}: <span className="text-white">v2.2</span><br/>
+                            {getText(language, "Días de Entrenamiento", "Training Days")}: <span className="text-white">{Object.keys(workouts).length}</span><br/>
+                            {getText(language, "Rutinas Guardadas", "Saved Routines")}: <span className="text-white">{templates.length}</span>
                         </p>
                     </div>
                 </Modal>
@@ -231,8 +321,8 @@
         };
 
 
-        // --- Componente: Tarjeta de Ejercicio ---
-        const ExerciseCard = ({ exercise, onUpdate, onDelete }) => {
+        // --- Single exercise card for the day view ---
+        const ExerciseCard = ({ exercise, onUpdate, onDelete, language }) => {
             const addSet = () => {
                 const lastSet = exercise.sets[exercise.sets.length - 1] || { kg: '', reps: '' };
                 const newSets = [...exercise.sets, { kg: lastSet.kg, reps: '' }];
@@ -257,7 +347,7 @@
                             type="text"
                             value={exercise.name}
                             onChange={(e) => onUpdate({ ...exercise, name: e.target.value })}
-                            placeholder="Nombre del Ejercicio"
+                            placeholder={getText(language, "Nombre del ejercicio", "Exercise name")}
                             className="bg-transparent text-lg font-bold text-gym-primary placeholder-slate-600 w-full focus:outline-none focus:border-b focus:border-gym-primary"
                         />
                         <button onClick={onDelete} className="text-gym-muted p-1 hover:text-red-400">
@@ -268,8 +358,8 @@
                     <div className="space-y-2">
                         <div className="grid grid-cols-10 gap-2 text-[10px] text-gym-muted font-bold tracking-widest text-center uppercase">
                             <div className="col-span-1">#</div>
-                            <div className="col-span-4">KG</div>
-                            <div className="col-span-4">Reps</div>
+                            <div className="col-span-4">{getText(language, "KG", "KG")}</div>
+                            <div className="col-span-4">{getText(language, "Reps", "Reps")}</div>
                             <div className="col-span-1"></div>
                         </div>
                         
@@ -307,34 +397,38 @@
                         onClick={addSet}
                         className="mt-3 w-full py-2 bg-slate-800/50 hover:bg-slate-700 text-gym-primary text-xs font-bold rounded dashed border border-slate-700 hover:border-gym-primary flex items-center justify-center gap-2 transition-all"
                     >
-                        <IconPlus size={14} /> AÑADIR SERIE
+                        <IconPlus size={14} /> {getText(language, "AÑADIR SERIE", "ADD SET")}
                     </button>
                 </div>
             );
         };
 
-        // --- Gestor de Agregar (Modal de búsqueda y rutinas) ---
-        const AddManager = ({ isOpen, onClose, history, templates, onAddExercise, onAddTemplate }) => {
+        // --- Add manager modal for quickly adding exercises or templates ---
+        const AddManager = ({ isOpen, onClose, history, templates, onAddExercise, onAddTemplate, language }) => {
             const [search, setSearch] = useState('');
             const [tab, setTab] = useState('history'); 
 
             const filteredHistory = history.filter(h => h.name.toLowerCase().includes(search.toLowerCase()));
 
             return (
-                <Modal isOpen={isOpen} onClose={onClose} title="Añadir a la sesión">
-                    {/* Tabs */}
+                <Modal 
+                    isOpen={isOpen} 
+                    onClose={onClose} 
+                    title={getText(language, "Añadir a la sesión", "Add to session")}
+                >
+                    {/* Tabs for exercises vs routines */}
                     <div className="flex p-1 bg-slate-800 rounded-lg mb-4">
                         <button 
                             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${tab === 'history' ? 'bg-gym-card text-white shadow' : 'text-gym-muted'}`}
                             onClick={() => setTab('history')}
                         >
-                            Ejercicios
+                            {getText(language, "Ejercicios", "Exercises")}
                         </button>
                         <button 
                             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${tab === 'templates' ? 'bg-gym-card text-white shadow' : 'text-gym-muted'}`}
                             onClick={() => setTab('templates')}
                         >
-                            Rutinas
+                            {getText(language, "Rutinas", "Routines")}
                         </button>
                     </div>
 
@@ -345,7 +439,7 @@
                                 <input 
                                     autoFocus
                                     type="text" 
-                                    placeholder="Buscar ejercicio..." 
+                                    placeholder={getText(language, "Buscar ejercicio...", "Search exercise...")} 
                                     className="w-full bg-slate-800 rounded-lg py-2 pl-10 pr-4 text-white focus:ring-2 focus:ring-gym-primary outline-none"
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
@@ -353,24 +447,43 @@
                             </div>
 
                             <button 
-                                onClick={() => { onAddExercise({ id: Date.now(), name: search, sets: [{kg:'', reps:''}] }); onClose(); }}
+                                onClick={() => { 
+                                    onAddExercise({ id: Date.now(), name: search, sets: [{kg:'', reps:''}] }); 
+                                    onClose(); 
+                                }}
                                 className="w-full py-3 mb-2 bg-gym-primary/10 text-gym-primary rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-gym-primary/20"
                             >
-                                <IconPlus size={18} /> Crear "{search || 'Nuevo'}"
+                                <IconPlus size={18} /> 
+                                {getText(
+                                    language, 
+                                    `Crear "${search || 'Nuevo'}"`,
+                                    `Create "${search || 'New'}"`
+                                )}
                             </button>
 
                             <div className="space-y-2">
-                                <h4 className="text-xs font-bold text-gym-muted uppercase mt-4 mb-2">Recientes / Historial</h4>
-                                {filteredHistory.length === 0 && <p className="text-center text-slate-600 py-4">No se encontraron ejercicios</p>}
+                                <h4 className="text-xs font-bold text-gym-muted uppercase mt-4 mb-2">
+                                    {getText(language, "Recientes / Historial", "Recent / History")}
+                                </h4>
+                                {filteredHistory.length === 0 && (
+                                    <p className="text-center text-slate-600 py-4">
+                                        {getText(language, "No se encontraron ejercicios", "No exercises found")}
+                                    </p>
+                                )}
                                 {filteredHistory.map((item, idx) => (
                                     <button 
                                         key={idx}
-                                        onClick={() => { onAddExercise({ id: Date.now(), name: item.name, sets: item.lastSets }); onClose(); }}
+                                        onClick={() => { 
+                                            onAddExercise({ id: Date.now(), name: item.name, sets: item.lastSets }); 
+                                            onClose(); 
+                                        }}
                                         className="w-full bg-slate-800/50 p-3 rounded-lg flex justify-between items-center hover:bg-slate-700 text-left group"
                                     >
                                         <div>
                                             <div className="font-semibold text-slate-200">{item.name}</div>
-                                            <div className="text-xs text-gym-muted">Último: {item.lastSets.length} series el {item.lastDate}</div>
+                                            <div className="text-xs text-gym-muted">
+                                                {getText(language, "Último", "Last")}: {item.lastSets.length} {getText(language, "series", "sets")} {getText(language, "el", "on")} {item.lastDate}
+                                            </div>
                                         </div>
                                         <div className="text-gym-primary opacity-0 group-hover:opacity-100 transition-opacity">
                                             <IconCopy size={16} />
@@ -383,8 +496,8 @@
                         <div className="space-y-2">
                              {templates.length === 0 ? (
                                 <div className="text-center py-8 text-gym-muted">
-                                    <p>No tienes rutinas guardadas.</p>
-                                    <p className="text-sm mt-2">Crea una para reutilizarla.</p>
+                                    <p>{getText(language, "No tienes rutinas guardadas.", "You have no saved routines.")}</p>
+                                    <p className="text-sm mt-2">{getText(language, "Crea una para reutilizarla.", "Create one so you can reuse it.")}</p>
                                 </div>
                              ) : (
                                  templates.map(t => (
@@ -394,7 +507,9 @@
                                         className="w-full bg-slate-800 p-4 rounded-lg flex justify-between items-center hover:bg-slate-700 text-left border border-slate-700 hover:border-gym-primary"
                                     >
                                         <div className="font-bold text-white">{t.name}</div>
-                                        <div className="text-xs bg-slate-900 px-2 py-1 rounded text-gym-muted">{t.exercises.length} ejercicios</div>
+                                        <div className="text-xs bg-slate-900 px-2 py-1 rounded text-gym-muted">
+                                            {t.exercises.length} {getText(language, "ejercicios", "exercises")}
+                                        </div>
                                     </button>
                                  ))
                              )}
@@ -404,25 +519,26 @@
             );
         };
 
-        // --- Componente: Fila de Ejercicio en Plantilla (Extraído para evitar re-render) ---
-        const TemplateExerciseRow = ({ ex, idx, onChange, onRemove }) => (
+        // --- Single exercise row inside a template editor ---
+        const TemplateExerciseRow = ({ ex, idx, onChange, onRemove, language }) => (
             <div className="bg-slate-800 p-3 rounded mb-2 flex gap-2 items-center">
                 <span className="text-gym-muted font-mono">{idx+1}</span>
                 <input 
                     className="flex-1 bg-transparent border-b border-slate-600 focus:border-gym-primary outline-none"
                     value={ex.name}
-                    placeholder="Nombre Ejercicio"
+                    placeholder={getText(language, "Nombre Ejercicio", "Exercise Name")}
                     onChange={e => onChange({...ex, name: e.target.value})}
                 />
-                <div className="text-xs text-gym-muted">{ex.sets.length} series</div>
+                <div className="text-xs text-gym-muted">
+                    {ex.sets.length} {getText(language, "series", "sets")}
+                </div>
                 <button onClick={onRemove} className="text-red-400">&times;</button>
             </div>
         );
 
-        // --- Vista de Gestión de Rutinas ---
-        const TemplatesView = ({ templates, onSaveTemplates, onBack }) => {
+        // --- Template management view ---
+        const TemplatesView = ({ templates, onSaveTemplates, onBack, language }) => {
             const [editingId, setEditingId] = useState(null);
-            
             const [tempName, setTempName] = useState('');
             const [tempExercises, setTempExercises] = useState([]);
 
@@ -435,7 +551,7 @@
             const startEdit = (template) => {
                 setEditingId(template.id);
                 setTempName(template.name);
-                // Asegurar que la copia sea profunda para evitar mutar el estado de templates antes de guardar
+                // Make a deep copy so edits do not mutate original until save
                 setTempExercises(template.exercises.map(ex => ({ 
                     ...ex, 
                     sets: ex.sets.map(s => ({ ...s })) 
@@ -443,17 +559,29 @@
             };
 
             const saveCurrent = () => {
-                if (!tempName.trim()) return alert("Ponle nombre a la rutina");
+                if (!tempName.trim()) {
+                    alert(getText(language, "Ponle nombre a la rutina", "Give the routine a name"));
+                    return;
+                }
                 
-                // Limpiar sets del template antes de guardar
-                const cleanedExercises = tempExercises.map(ex => ({
-                    id: ex.id,
-                    name: ex.name,
-                    // Dejar solo un set vacío de placeholder si no hay sets definidos
-                    sets: ex.sets.length > 0 ? ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || ''})) : [{kg:'', reps:''}]
-                })).filter(ex => ex.name.trim() !== ''); // Eliminar ejercicios sin nombre
-                
-                if(cleanedExercises.length === 0) return alert("La rutina debe tener al menos un ejercicio con nombre.");
+                const cleanedExercises = tempExercises
+                    .map(ex => ({
+                        id: ex.id,
+                        name: ex.name,
+                        sets: ex.sets.length > 0 
+                            ? ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || ''})) 
+                            : [{kg:'', reps:''}]
+                    }))
+                    .filter(ex => ex.name.trim() !== '');
+
+                if (cleanedExercises.length === 0) {
+                    alert(getText(
+                        language, 
+                        "La rutina debe tener al menos un ejercicio con nombre.", 
+                        "The routine must have at least one exercise with a name."
+                    ));
+                    return;
+                }
 
                 const newTemplate = {
                     id: editingId === 'new' ? Date.now() : editingId,
@@ -472,7 +600,7 @@
             };
 
             const deleteTemplate = (id) => {
-                if(confirm("¿Borrar esta rutina?")) {
+                if (confirm(getText(language, "¿Borrar esta rutina?", "Delete this routine?"))) {
                     onSaveTemplates(templates.filter(t => t.id !== id));
                 }
             };
@@ -481,20 +609,32 @@
                 return (
                     <div className="h-full flex flex-col bg-gym-bg animate-slide-up">
                         <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900 sticky top-0 z-20">
-                            <button onClick={() => setEditingId(null)} className="text-slate-400">Cancelar</button>
-                            <h2 className="font-bold">{editingId === 'new' ? 'Nueva Rutina' : 'Editar Rutina'}</h2>
-                            <button onClick={saveCurrent} className="text-gym-primary font-bold">Guardar</button>
+                            <button onClick={() => setEditingId(null)} className="text-slate-400">
+                                {getText(language, "Cancelar", "Cancel")}
+                            </button>
+                            <h2 className="font-bold">
+                                {editingId === 'new' 
+                                    ? getText(language, "Nueva Rutina", "New Routine") 
+                                    : getText(language, "Editar Rutina", "Edit Routine")}
+                            </h2>
+                            <button onClick={saveCurrent} className="text-gym-primary font-bold">
+                                {getText(language, "Guardar", "Save")}
+                            </button>
                         </div>
                         <div className="p-4 flex-1 overflow-y-auto no-scrollbar">
-                            <label className="block text-xs text-gym-muted mb-1">Nombre de la Rutina</label>
+                            <label className="block text-xs text-gym-muted mb-1">
+                                {getText(language, "Nombre de la Rutina", "Routine Name")}
+                            </label>
                             <input 
                                 className="w-full bg-slate-800 p-3 rounded-lg text-lg font-bold mb-6 outline-none focus:ring-1 ring-gym-primary"
-                                placeholder="Ej. Empuje A (Pecho/Tríceps)"
+                                placeholder={getText(language, "Ej. Empuje A (Pecho/Tríceps)", "Ex. Push A (Chest/Triceps)")}
                                 value={tempName}
                                 onChange={e => setTempName(e.target.value)}
                             />
 
-                            <h3 className="text-sm font-bold text-gym-muted uppercase mb-2">Ejercicios Base</h3>
+                            <h3 className="text-sm font-bold text-gym-muted uppercase mb-2">
+                                {getText(language, "Ejercicios Base", "Base Exercises")}
+                            </h3>
                             {tempExercises.map((ex, idx) => (
                                 <TemplateExerciseRow 
                                     key={ex.id} 
@@ -502,17 +642,25 @@
                                     idx={idx} 
                                     onChange={(newEx) => setTempExercises(tempExercises.map(e => e.id === ex.id ? newEx : e))}
                                     onRemove={() => setTempExercises(tempExercises.filter(e => e.id !== ex.id))}
+                                    language={language}
                                 />
                             ))}
                             
                             <button 
-                                onClick={() => setTempExercises([...tempExercises, { id: Date.now(), name: '', sets: [{kg:'', reps:''}, {kg:'', reps:''}, {kg:'', reps:''}] }])}
+                                onClick={() => setTempExercises([
+                                    ...tempExercises, 
+                                    { id: Date.now(), name: '', sets: [{kg:'', reps:''}, {kg:'', reps:''}, {kg:'', reps:''}] }
+                                ])}
                                 className="w-full py-3 mt-2 border border-dashed border-slate-600 text-slate-400 rounded-lg text-sm hover:bg-slate-800 hover:text-white transition-colors"
                             >
-                                + Añadir Ejercicio
+                                + {getText(language, "Añadir Ejercicio", "Add Exercise")}
                             </button>
                             <p className="text-xs text-slate-500 mt-4 text-center">
-                                Nota: Al añadir la rutina a un día, se rellenará con 3 series vacías por defecto.
+                                {getText(
+                                    language,
+                                    "Nota: Al añadir la rutina a un día, se rellenará con 3 series vacías por defecto.",
+                                    "Note: When you add the routine to a day, it will be filled with 3 empty sets by default."
+                                )}
                             </p>
                         </div>
                     </div>
@@ -521,18 +669,20 @@
 
             return (
                 <div className="h-full flex flex-col animate-fade-in">
-                     <div className="p-4 border-b border-slate-800 flex items-center gap-4 bg-gym-bg sticky top-0 z-10">
+                    <div className="p-4 border-b border-slate-800 flex items-center gap-4 bg-gym-bg sticky top-0 z-10">
                         <button onClick={onBack} className="p-2 -ml-2 text-gym-muted hover:text-white">
                             <IconChevronLeft />
                         </button>
-                        <h2 className="text-xl font-bold">Mis Rutinas</h2>
+                        <h2 className="text-xl font-bold">
+                            {getText(language, "Mis Rutinas", "My Routines")}
+                        </h2>
                     </div>
                     <div className="p-4 flex-1 overflow-y-auto no-scrollbar">
                         <button 
                             onClick={startCreate}
                             className="w-full py-4 mb-6 bg-gradient-to-r from-gym-primary to-blue-600 rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-white active:scale-95 transition-transform"
                         >
-                            <IconPlus /> Crear Nueva Rutina
+                            <IconPlus /> {getText(language, "Crear Nueva Rutina", "Create New Routine")}
                         </button>
 
                         <div className="space-y-3">
@@ -540,42 +690,74 @@
                                 <div key={t.id} className="bg-gym-card p-4 rounded-xl border border-slate-800 flex justify-between items-center group">
                                     <div onClick={() => startEdit(t)} className="flex-1 cursor-pointer">
                                         <h3 className="font-bold text-lg text-slate-200">{t.name}</h3>
-                                        <p className="text-xs text-gym-muted mt-1">{t.exercises.length} Ejercicios</p>
+                                        <p className="text-xs text-gym-muted mt-1">
+                                            {t.exercises.length} {getText(language, "Ejercicios", "Exercises")}
+                                        </p>
                                     </div>
                                     <button onClick={() => deleteTemplate(t.id)} className="p-2 text-slate-600 hover:text-red-400">
                                         <IconTrash size={18} />
                                     </button>
                                 </div>
                             ))}
-                            {templates.length === 0 && <div className="text-center text-slate-600 mt-10">No hay rutinas creadas.</div>}
+                            {templates.length === 0 && (
+                                <div className="text-center text-slate-600 mt-10">
+                                    {getText(language, "No hay rutinas creadas.", "No routines created yet.")}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             );
         };
 
-        // --- Vista Calendario ---
-        const CalendarView = ({ onSelectDate, savedData, onGoToTemplates, onGoToSettings }) => {
+        // --- Calendar view ---
+        const CalendarView = ({ 
+            onSelectDate, 
+            savedData, 
+            onGoToTemplates, 
+            onGoToSettings,
+            language,
+            onToggleLanguage 
+        }) => {
             const [currentDate, setCurrentDate] = useState(new Date());
             const { daysInMonth, startDayOfWeek } = useMemo(() => {
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
-                return { daysInMonth: lastDay.getDate(), startDayOfWeek: firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1 };
+
+                // getDay(): Sunday is 0. We shift so Monday is 0.
+                const start = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+
+                return { 
+                    daysInMonth: lastDay.getDate(), 
+                    startDayOfWeek: start 
+                };
             }, [currentDate]);
             
-            const changeMonth = (delta) => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + delta, 1));
+            const changeMonth = (delta) => {
+                setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + delta, 1));
+            };
             
             const generateDays = () => {
                 const days = [];
-                for (let i = 0; i < startDayOfWeek; i++) days.push(<div key={`empty-${i}`} className="h-14"></div>);
+                for (let i = 0; i < startDayOfWeek; i++) {
+                    days.push(<div key={`empty-${i}`} className="h-14"></div>);
+                }
                 for (let i = 1; i <= daysInMonth; i++) {
                     const dateStr = formatDateKey(new Date(currentDate.getFullYear(), currentDate.getMonth(), i));
                     const hasWorkout = savedData[dateStr] && savedData[dateStr].length > 0;
                     const isToday = dateStr === formatDateKey(new Date());
                     days.push(
-                        <button key={i} onClick={() => onSelectDate(dateStr)} className={`h-14 rounded-lg flex flex-col items-center justify-center relative transition-all ${isToday ? 'bg-gym-primary/20 border border-gym-primary text-gym-primary font-bold' : 'bg-slate-800/50 hover:bg-slate-800'}`}>
+                        <button 
+                            key={i} 
+                            onClick={() => onSelectDate(dateStr)} 
+                            className={`h-14 rounded-lg flex flex-col items-center justify-center relative transition-all ${
+                                isToday 
+                                    ? 'bg-gym-primary/20 border border-gym-primary text-gym-primary font-bold' 
+                                    : 'bg-slate-800/50 hover:bg-slate-800'
+                            }`}
+                        >
                             <span className="text-lg">{i}</span>
                             {hasWorkout && <span className="absolute bottom-2 w-1.5 h-1.5 bg-gym-accent rounded-full"></span>}
                         </button>
@@ -584,53 +766,105 @@
                 return days;
             };
 
+            const monthNames = monthNamesByLang[language];
+
             return (
                 <div className="p-4 animate-fade-in flex flex-col h-full">
                     <header className="mb-6 flex justify-between items-center">
                         <div>
-                            <h1 className="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gym-primary to-gym-accent">GYM TRACKER</h1>
-                            <p className="text-gym-muted text-xs">Tu progreso, tu ritmo.</p>
+                            <h1 className="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gym-primary to-gym-accent">
+                                GYM TRACKER
+                            </h1>
+                            <p className="text-gym-muted text-xs">
+                                {getText(language, "Tu progreso, tu ritmo.", "Your progress, your pace.")}
+                            </p>
                         </div>
-                        <div className="flex gap-2">
-                             <button onClick={onGoToSettings} className="bg-slate-800 p-2 rounded-lg text-gym-muted hover:text-white flex flex-col items-center gap-1">
-                                <IconSettings size={20} />
-                                <span className="text-[10px] font-bold">Ajustes</span>
+                        <div className="flex gap-2 items-center">
+                            {/* Language toggle with flag */}
+                            <button
+                                onClick={onToggleLanguage}
+                                className="bg-slate-800 px-2 py-1 rounded-lg text-xl hover:bg-slate-700"
+                                title={getText(language, "Cambiar idioma", "Change language")}
+                            >
+                                {language === 'es' ? 'ESP' : 'EN'}
                             </button>
-                            <button onClick={onGoToTemplates} className="bg-slate-800 p-2 rounded-lg text-gym-primary hover:text-white flex flex-col items-center gap-1">
+
+                            <button 
+                                onClick={onGoToSettings} 
+                                className="bg-slate-800 p-2 rounded-lg text-gym-muted hover:text-white flex flex-col items-center gap-1"
+                            >
+                                <IconSettings size={20} />
+                                <span className="text-[10px] font-bold">
+                                    {getText(language, "Ajustes", "Settings")}
+                                </span>
+                            </button>
+                            <button 
+                                onClick={onGoToTemplates} 
+                                className="bg-slate-800 p-2 rounded-lg text-gym-primary hover:text-white flex flex-col items-center gap-1"
+                            >
                                 <IconClipboard size={20} />
-                                <span className="text-[10px] font-bold">Rutinas</span>
+                                <span className="text-[10px] font-bold">
+                                    {getText(language, "Rutinas", "Routines")}
+                                </span>
                             </button>
                         </div>
                     </header>
 
                     <div className="flex justify-between items-center mb-6 bg-slate-900/50 p-2 rounded-xl">
-                        <button onClick={() => changeMonth(-1)} className="p-2 text-white hover:bg-slate-800 rounded-lg"><IconChevronLeft /></button>
-                        <h2 className="text-lg font-bold capitalize">{monthNames[currentDate.getMonth()]} <span className="text-gym-muted">{currentDate.getFullYear()}</span></h2>
-                        <button onClick={() => changeMonth(1)} className="p-2 text-white hover:bg-slate-800 rounded-lg"><IconChevronRight /></button>
+                        <button 
+                            onClick={() => changeMonth(-1)} 
+                            className="p-2 text-white hover:bg-slate-800 rounded-lg"
+                        >
+                            <IconChevronLeft />
+                        </button>
+                        <h2 className="text-lg font-bold capitalize">
+                            {monthNames[currentDate.getMonth()]}{" "}
+                            <span className="text-gym-muted">{currentDate.getFullYear()}</span>
+                        </h2>
+                        <button 
+                            onClick={() => changeMonth(1)} 
+                            className="p-2 text-white hover:bg-slate-800 rounded-lg"
+                        >
+                            <IconChevronRight />
+                        </button>
                     </div>
 
                     <div className="grid grid-cols-7 gap-2 mb-2 text-center text-xs text-gym-muted font-bold">
-                        <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
+                        {language === 'es' ? (
+                            <>
+                                <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
+                            </>
+                        ) : (
+                            <>
+                                <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
+                            </>
+                        )}
                     </div>
                     <div className="grid grid-cols-7 gap-2">
                         {generateDays()}
                     </div>
 
                     <div className="mt-auto pt-8 pb-4">
-                         <button onClick={() => onSelectDate(formatDateKey(new Date()))} className="w-full py-3 bg-gym-card border border-slate-700 text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-slate-800">
-                             Ir al entrenamiento de hoy
-                         </button>
+                        <button 
+                            onClick={() => onSelectDate(formatDateKey(new Date()))} 
+                            className="w-full py-3 bg-gym-card border border-slate-700 text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-slate-800"
+                        >
+                            {getText(language, "Ir al entrenamiento de hoy", "Go to today's workout")}
+                        </button>
                     </div>
                 </div>
             );
         };
 
-        // --- Vista Día (Editor Principal) ---
-        const DayView = ({ dateStr, data, templates, history, onBack, onSave }) => {
+        // --- Day view and main editor of exercises ---
+        const DayView = ({ dateStr, data, templates, history, onBack, onSave, language }) => {
             const [exercises, setExercises] = useState(data || []);
             const [isAddModalOpen, setAddModalOpen] = useState(false);
 
-            useEffect(() => { onSave(dateStr, exercises); }, [exercises]);
+            // Persist changes every time the exercises list changes
+            useEffect(() => { 
+                onSave(dateStr, exercises); 
+            }, [exercises]);
 
             const handleAddExercise = (exerciseTemplate) => {
                 const newEx = { ...exerciseTemplate, id: Date.now() };
@@ -638,11 +872,15 @@
             };
 
             const handleAddTemplate = (template) => {
-                // Mapear ejercicios de la plantilla a nuevas instancias para el día
                 const newExercises = template.exercises.map((ex, idx) => {
-                    const defaultSets = [{ kg: '', reps: '' }, { kg: '', reps: '' }, { kg: '', reps: '' }];
-                    // Si el template tiene sets, usarlos (aunque sean vacíos), si no, usar 3 sets por defecto
-                    const setsToUse = ex.sets && ex.sets.length > 0 ? ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || ''})) : defaultSets;
+                    const defaultSets = [
+                        { kg: '', reps: '' }, 
+                        { kg: '', reps: '' }, 
+                        { kg: '', reps: '' }
+                    ];
+                    const setsToUse = ex.sets && ex.sets.length > 0 
+                        ? ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || ''})) 
+                        : defaultSets;
 
                     return {
                         id: Date.now() + idx,
@@ -653,15 +891,24 @@
                 setExercises([...exercises, ...newExercises]);
             };
 
-            const niceDate = new Date(dateStr).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+            const niceDate = parseLocalDateFromKey(dateStr).toLocaleDateString(
+                language === 'es' ? 'es-ES' : 'en-US', 
+                { weekday: 'long', day: 'numeric', month: 'long' }
+            );
 
             return (
                 <div className="flex flex-col h-full animate-slide-up bg-gym-bg">
                     <div className="sticky top-0 bg-gym-bg/95 backdrop-blur-sm z-10 p-4 border-b border-slate-800 flex items-center gap-4 shadow-sm">
-                        <button onClick={onBack} className="p-2 -ml-2 text-gym-muted hover:text-white"><IconChevronLeft /></button>
+                        <button onClick={onBack} className="p-2 -ml-2 text-gym-muted hover:text-white">
+                            <IconChevronLeft />
+                        </button>
                         <div>
-                            <h2 className="text-lg font-bold capitalize leading-tight text-white">{niceDate}</h2>
-                            <p className="text-xs text-gym-muted">{exercises.length} ejercicios</p>
+                            <h2 className="text-lg font-bold capitalize leading-tight text-white">
+                                {niceDate}
+                            </h2>
+                            <p className="text-xs text-gym-muted">
+                                {exercises.length} {getText(language, "ejercicios", "exercises")}
+                            </p>
                         </div>
                     </div>
 
@@ -669,8 +916,13 @@
                         {exercises.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-64 text-gym-muted opacity-60">
                                 <IconDumbbell size={64} className="mb-4" />
-                                <p>Día de descanso... ¿o no?</p>
-                                <button onClick={() => setAddModalOpen(true)} className="mt-4 text-gym-primary font-bold text-sm">Empezar Entrenamiento</button>
+                                <p>{getText(language, "Día de descanso... ¿o no?", "Rest day... or maybe not?")}</p>
+                                <button 
+                                    onClick={() => setAddModalOpen(true)} 
+                                    className="mt-4 text-gym-primary font-bold text-sm"
+                                >
+                                    {getText(language, "Empezar Entrenamiento", "Start Workout")}
+                                </button>
                             </div>
                         ) : (
                             exercises.map(ex => (
@@ -678,12 +930,18 @@
                                     key={ex.id} 
                                     exercise={ex} 
                                     onUpdate={(updated) => setExercises(exercises.map(e => e.id === ex.id ? updated : e))}
-                                    onDelete={() => { if(confirm('¿Eliminar ejercicio?')) setExercises(exercises.filter(e => e.id !== ex.id)) }}
+                                    onDelete={() => { 
+                                        if (confirm(getText(language, "¿Eliminar ejercicio?", "Delete exercise?"))) {
+                                            setExercises(exercises.filter(e => e.id !== ex.id));
+                                        }
+                                    }}
+                                    language={language}
                                 />
                             ))
                         )}
                     </div>
 
+                    {/* Main floating button to open AddManager */}
                     <div className="fixed bottom-6 right-6 safe-bottom z-20">
                         <button 
                             onClick={() => setAddModalOpen(true)}
@@ -700,20 +958,233 @@
                         templates={templates}
                         onAddExercise={handleAddExercise}
                         onAddTemplate={handleAddTemplate}
+                        language={language}
                     />
                 </div>
             );
         };
 
-        // --- App Principal ---
+        // --- Floating timer component, always visible and draggable ---
+        const FloatingTimer = ({ language }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [isDragging, setIsDragging] = useState(false);
+            const [position, setPosition] = useState({ x: null, y: null });
+            const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+            const [inputSeconds, setInputSeconds] = useState('');
+            const [remaining, setRemaining] = useState(0);
+            const [running, setRunning] = useState(false);
+
+            const circleRef = useRef(null);
+
+            // Set an initial position bottom right on first render
+            useEffect(() => {
+                if (position.x === null || position.y === null) {
+                    const padding = 16;
+                    const size = 64;
+                    setPosition({
+                        x: window.innerWidth - size - padding,
+                        y: window.innerHeight - size - padding - 20
+                    });
+                }
+            }, [position.x, position.y]);
+
+            // Timer interval behavior
+            useEffect(() => {
+                if (!running || remaining <= 0) return;
+
+                const id = setInterval(() => {
+                    setRemaining(prev => {
+                        if (prev <= 1) {
+                            clearInterval(id);
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+
+                return () => clearInterval(id);
+            }, [running, remaining]);
+
+            useEffect(() => {
+                if (remaining === 0 && running) {
+                    setRunning(false);
+                    // At this point you could add a sound or vibration if you want
+                }
+            }, [remaining, running]);
+
+            const formatTime = (sec) => {
+                const s = Math.max(0, sec | 0);
+                const m = Math.floor(s / 60);
+                const r = s % 60;
+                return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
+            };
+
+            const handleStart = () => {
+                const val = parseInt(inputSeconds, 10);
+                if (isNaN(val) || val <= 0) return;
+                setRemaining(val);
+                setRunning(true);
+            };
+
+            const handleStop = () => {
+                setRunning(false);
+            };
+
+            const handleCircleClick = () => {
+                if (isDragging) return;
+                setIsOpen(prev => !prev);
+            };
+
+            // Mouse drag handlers
+            const onMouseDown = (e) => {
+                e.preventDefault();
+                if (!circleRef.current) return;
+                setIsDragging(true);
+                setDragOffset({
+                    x: e.clientX - position.x,
+                    y: e.clientY - position.y
+                });
+            };
+
+            const onMouseMove = (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const newX = e.clientX - dragOffset.x;
+                const newY = e.clientY - dragOffset.y;
+                setPosition({
+                    x: Math.min(Math.max(0, newX), window.innerWidth - 64),
+                    y: Math.min(Math.max(0, newY), window.innerHeight - 64)
+                });
+            };
+
+            const onMouseUp = () => {
+                setIsDragging(false);
+            };
+
+            // Touch drag handlers
+            const onTouchStart = (e) => {
+                const touch = e.touches[0];
+                if (!touch) return;
+                setIsDragging(true);
+                setDragOffset({
+                    x: touch.clientX - position.x,
+                    y: touch.clientY - position.y
+                });
+            };
+
+            const onTouchMove = (e) => {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                if (!touch) return;
+                const newX = touch.clientX - dragOffset.x;
+                const newY = touch.clientY - dragOffset.y;
+                setPosition({
+                    x: Math.min(Math.max(0, newX), window.innerWidth - 64),
+                    y: Math.min(Math.max(0, newY), window.innerHeight - 64)
+                });
+            };
+
+            const onTouchEnd = () => {
+                setIsDragging(false);
+            };
+
+            // Attach global listeners for a smoother drag experience
+            useEffect(() => {
+                window.addEventListener('mousemove', onMouseMove);
+                window.addEventListener('mouseup', onMouseUp);
+                window.addEventListener('touchmove', onTouchMove, { passive: false });
+                window.addEventListener('touchend', onTouchEnd);
+
+                return () => {
+                    window.removeEventListener('mousemove', onMouseMove);
+                    window.removeEventListener('mouseup', onMouseUp);
+                    window.removeEventListener('touchmove', onTouchMove);
+                    window.removeEventListener('touchend', onTouchEnd);
+                };
+            });
+
+            if (position.x === null || position.y === null) return null;
+
+            return (
+                <>
+                    {/* Draggable circle */}
+                    <div
+                        ref={circleRef}
+                        style={{
+                            position: 'fixed',
+                            left: position.x,
+                            top: position.y,
+                            zIndex: 9999
+                        }}
+                        className="w-16 h-16 rounded-full bg-gym-accent shadow-xl flex items-center justify-center text-slate-900 font-bold text-xs active:scale-95 transition-transform select-none"
+                        onMouseDown={onMouseDown}
+                        onTouchStart={onTouchStart}
+                        onClick={handleCircleClick}
+                    >
+                        {formatTime(remaining)}
+                    </div>
+
+                    {/* Timer panel */}
+                    {isOpen && (
+                        <div
+                            style={{
+                                position: 'fixed',
+                                left: Math.max(8, position.x - 220),
+                                top: Math.max(8, position.y - 10),
+                                zIndex: 9998
+                            }}
+                            className="w-56 bg-gym-card border border-slate-700 rounded-xl p-3 glass shadow-2xl"
+                        >
+                            <div className="text-xs font-bold text-gym-muted mb-2 uppercase tracking-wide">
+                                {getText(language, "Temporizador", "Timer")}
+                            </div>
+                            <div className="flex items-center gap-2 mb-2">
+                                <input
+                                    type="number"
+                                    min="1"
+                                    className="flex-1 bg-slate-900 rounded-lg px-2 py-1 text-sm text-white text-right focus:outline-none focus:ring-1 focus:ring-gym-primary"
+                                    placeholder={getText(language, "Segundos", "Seconds")}
+                                    value={inputSeconds}
+                                    onChange={e => setInputSeconds(e.target.value)}
+                                />
+                                <span className="text-xs text-gym-muted">
+                                    {getText(language, "seg", "sec")}
+                                </span>
+                            </div>
+                            <div className="text-center text-sm text-gym-primary font-mono mb-2">
+                                {formatTime(remaining)}
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleStart}
+                                    className="flex-1 py-1.5 bg-gym-primary/80 hover:bg-gym-primary rounded-lg text-xs font-bold text-white"
+                                >
+                                    {getText(language, "Iniciar", "Start")}
+                                </button>
+                                <button
+                                    onClick={handleStop}
+                                    className="flex-1 py-1.5 bg-gym-danger/70 hover:bg-gym-danger rounded-lg text-xs font-bold text-white"
+                                >
+                                    {getText(language, "Parar", "Stop")}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        };
+
+        // --- Root app component ---
         const App = () => {
-            const [view, setView] = useState('calendar'); // 'calendar', 'day', 'templates', 'settings'
+            const [view, setView] = useState('calendar'); // calendar, day, templates
             const [selectedDate, setSelectedDate] = useState(null);
             const [workouts, setWorkouts] = useState({});
             const [templates, setTemplates] = useState([]);
             const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
+            const [language, setLanguage] = useState('es'); // 'es' or 'en'
 
-            // Cargar datos
+            // Load data from localStorage once on mount
             useEffect(() => {
                 try {
                     const savedWorkouts = localStorage.getItem('gymTrackerData_v1');
@@ -721,10 +1192,12 @@
                     
                     const savedTemplates = localStorage.getItem('gymTrackerTemplates_v1');
                     if (savedTemplates) setTemplates(JSON.parse(savedTemplates));
-                } catch (e) { console.error("Error loading data", e); }
+                } catch (e) { 
+                    console.error("Error loading data", e); 
+                }
             }, []);
 
-            // Historial derivado (memoizado para performance)
+            // History is derived from workouts, memoized for performance
             const history = useMemo(() => getExerciseHistory(workouts), [workouts]);
 
             const handleSaveDay = (date, exercises) => {
@@ -739,14 +1212,23 @@
                 localStorage.setItem('gymTrackerTemplates_v1', JSON.stringify(newTemplates));
             };
 
+            const toggleLanguage = () => {
+                setLanguage(prev => prev === 'es' ? 'en' : 'es');
+            };
+
             return (
                 <div className="max-w-md mx-auto min-h-screen bg-gym-bg relative shadow-2xl overflow-hidden text-gym-text font-sans">
                     {view === 'calendar' && (
                         <CalendarView 
-                            onSelectDate={(date) => { setSelectedDate(date); setView('day'); }} 
+                            onSelectDate={(date) => { 
+                                setSelectedDate(date); 
+                                setView('day'); 
+                            }} 
                             savedData={workouts}
                             onGoToTemplates={() => setView('templates')}
                             onGoToSettings={() => setSettingsModalOpen(true)}
+                            language={language}
+                            onToggleLanguage={toggleLanguage}
                         />
                     )}
                     
@@ -758,6 +1240,7 @@
                             templates={templates}
                             onBack={() => setView('calendar')}
                             onSave={handleSaveDay}
+                            language={language}
                         />
                     )}
 
@@ -766,6 +1249,7 @@
                             templates={templates}
                             onSaveTemplates={handleSaveTemplates}
                             onBack={() => setView('calendar')}
+                            language={language}
                         />
                     )}
 
@@ -776,7 +1260,11 @@
                         templates={templates}
                         setWorkouts={setWorkouts}
                         setTemplates={setTemplates}
+                        language={language}
                     />
+
+                    {/* Floating timer lives at the app level so it is always present */}
+                    <FloatingTimer language={language} />
                 </div>
             );
         };
@@ -786,4 +1274,3 @@
     </script>
 </body>
 </html>
-
