@@ -4,18 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GymTracker Pro</title>
-    
-    <!-- React & ReactDOM -->
+
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel for JSX -->
+
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Tailwind CSS -->
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons -->
+
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <script>
@@ -74,7 +70,7 @@
             background: rgba(30, 41, 59, 0.7); 
             backdrop-filter: blur(10px); 
         }
-        
+
         /* Hide scrollbars on mobile */
         .no-scrollbar::-webkit-scrollbar { 
             display: none; 
@@ -90,7 +86,7 @@
 
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
-        
+
         // Small helper for translation. 
         // You pass the current language and both strings, and it returns the right one.
         const getText = (lang, es, en) => lang === 'es' ? es : en;
@@ -114,6 +110,7 @@
         const IconSettings = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0-.33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1.51-1V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V12a1.65 1.65 0 0 0 1.51 1z"/></svg>;
         const IconUpload = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>;
         const IconDownload = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>;
+        const IconShare = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>;
 
         // --- Utilities ---
 
@@ -150,6 +147,34 @@
             });
             return Object.values(history);
         };
+        
+        // --- Utility for export/import routines (NEW) ---
+        const downloadRoutine = (routine, language) => {
+            const data = {
+                metadata: { version: 'v2.3_routine', exportDate: new Date().toISOString(), type: 'routine' },
+                routine: routine
+            };
+
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            // Sanitizar el nombre para el nombre del archivo
+            const safeName = routine.name.replace(/[^\w\s]/gi, '').trim().replace(/\s+/g, '_');
+            a.download = `GymTracker_Routine_${safeName || 'export'}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert(getText(
+                language,
+                `Rutina "${routine.name}" exportada con éxito.`,
+                `Routine "${routine.name}" exported successfully.`
+            ));
+        };
+
 
         // --- Generic modal component ---
         const Modal = ({ isOpen, onClose, title, children }) => {
@@ -174,7 +199,7 @@
                 </div>
             );
         };
-        
+
         // --- Settings and data migration modal ---
         const SettingsModal = ({ 
             isOpen, 
@@ -186,19 +211,19 @@
             language 
         }) => {
             const fileInputRef = useRef(null);
-            
+
             // Export all data to a JSON file
             const handleExport = () => {
                 const data = {
-                    metadata: { version: 'v2.2', exportDate: new Date().toISOString() },
+                    metadata: { version: 'v2.3_full', exportDate: new Date().toISOString(), type: 'full' },
                     workouts: workouts,
                     templates: templates
                 };
-                
+
                 const jsonString = JSON.stringify(data, null, 2);
                 const blob = new Blob([jsonString], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
-                
+
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = `GymTracker_Backup_${formatDateKey(new Date())}.json`;
@@ -224,13 +249,14 @@
                     "ADVERTENCIA: ¿Estás seguro de que quieres importar datos? Esto SOBRESCRIBIRÁ tu información actual.",
                     "WARNING: Are you sure you want to import data? This will OVERWRITE your current information."
                 ))) return;
-                
+
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
                         const importedData = JSON.parse(e.target.result);
-                        
-                        if (importedData.workouts && importedData.templates) {
+
+                        // Only allow full backup import here
+                        if (importedData.workouts && importedData.templates && importedData.metadata.type === 'full') {
                             setWorkouts(importedData.workouts);
                             localStorage.setItem('gymTrackerData_v1', JSON.stringify(importedData.workouts));
 
@@ -246,8 +272,8 @@
                         } else {
                             alert(getText(
                                 language,
-                                "Error: El archivo JSON no tiene el formato correcto (faltan 'workouts' o 'templates').",
-                                "Error: JSON file does not have the correct format (missing 'workouts' or 'templates')."
+                                "Error: El archivo JSON no tiene el formato de copia de seguridad completo correcto. Usa 'Importar Rutina' para rutinas individuales.",
+                                "Error: JSON file does not have the correct full backup format. Use 'Import Routine' for individual routines."
                             ));
                         }
                     } catch (error) {
@@ -260,6 +286,7 @@
                     }
                 };
                 reader.readAsText(file);
+                event.target.value = null; // Reset file input
             };
 
             const triggerFileInput = () => {
@@ -274,13 +301,13 @@
                 >
                     <div className="space-y-6">
                         <h3 className="text-lg font-semibold text-gym-accent border-b border-slate-700 pb-2">
-                            {getText(language, "Migración y Copia de Seguridad", "Migration and Backup")}
+                            {getText(language, "Copia de Seguridad Completa", "Full Backup")}
                         </h3>
                         <p className="text-sm text-gym-muted">
                             {getText(
                                 language, 
-                                "Usa estas opciones para mover tus datos entre dispositivos o hacer una copia de seguridad local.", 
-                                "Use these options to move your data between devices or create a local backup."
+                                "Exporta o importa TODOS tus entrenamientos y rutinas. La importación sobrescribe lo actual.", 
+                                "Export or import ALL your workouts and routines. Importing overwrites current data."
                             )}
                         </p>
 
@@ -289,9 +316,9 @@
                             className="w-full py-3 bg-gym-success/20 text-gym-success rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gym-success/30 transition-colors"
                         >
                             <IconDownload size={20}/> 
-                            {getText(language, "Exportar Datos (JSON)", "Export Data (JSON)")}
+                            {getText(language, "Exportar Datos Completos (JSON)", "Export Full Data (JSON)")}
                         </button>
-                        
+
                         <input 
                             type="file" 
                             ref={fileInputRef} 
@@ -311,7 +338,7 @@
                             {getText(language, "Información del Sistema", "System Information")}
                         </h3>
                         <p className="text-sm text-gym-muted">
-                            {getText(language, "Versión", "Version")}: <span className="text-white">v2.2</span><br/>
+                            {getText(language, "Versión", "Version")}: <span className="text-white">v2.3</span><br/>
                             {getText(language, "Días de Entrenamiento", "Training Days")}: <span className="text-white">{Object.keys(workouts).length}</span><br/>
                             {getText(language, "Rutinas Guardadas", "Saved Routines")}: <span className="text-white">{templates.length}</span>
                         </p>
@@ -321,7 +348,7 @@
         };
 
 
-        // --- Single exercise card for the day view ---
+        // --- Single exercise card for the day view (no changes) ---
         const ExerciseCard = ({ exercise, onUpdate, onDelete, language }) => {
             const addSet = () => {
                 const lastSet = exercise.sets[exercise.sets.length - 1] || { kg: '', reps: '' };
@@ -362,7 +389,7 @@
                             <div className="col-span-4">{getText(language, "Reps", "Reps")}</div>
                             <div className="col-span-1"></div>
                         </div>
-                        
+
                         {exercise.sets.map((set, idx) => (
                             <div key={idx} className="grid grid-cols-10 gap-2 items-center">
                                 <div className="col-span-1 text-center text-gym-muted font-mono text-xs">{idx + 1}</div>
@@ -403,7 +430,7 @@
             );
         };
 
-        // --- Add manager modal for quickly adding exercises or templates ---
+        // --- Add manager modal for quickly adding exercises or templates (no changes) ---
         const AddManager = ({ isOpen, onClose, history, templates, onAddExercise, onAddTemplate, language }) => {
             const [search, setSearch] = useState('');
             const [tab, setTab] = useState('history'); 
@@ -519,33 +546,111 @@
             );
         };
 
-        // --- Single exercise row inside a template editor ---
-        const TemplateExerciseRow = ({ ex, idx, onChange, onRemove, language }) => (
-            <div className="bg-slate-800 p-3 rounded mb-2 flex gap-2 items-center">
-                <span className="text-gym-muted font-mono">{idx+1}</span>
-                <input 
-                    className="flex-1 bg-transparent border-b border-slate-600 focus:border-gym-primary outline-none"
-                    value={ex.name}
-                    placeholder={getText(language, "Nombre Ejercicio", "Exercise Name")}
-                    onChange={e => onChange({...ex, name: e.target.value})}
-                />
-                <div className="text-xs text-gym-muted">
-                    {ex.sets.length} {getText(language, "series", "sets")}
-                </div>
-                <button onClick={onRemove} className="text-red-400">&times;</button>
-            </div>
-        );
+        // --- Single exercise row inside a template editor (IMPROVED) ---
+        const TemplateExerciseRowImproved = ({ ex, idx, onChange, onRemove, language }) => {
+            const updateSetField = (setIndex, field, value) => {
+                const newSets = [...ex.sets];
+                newSets[setIndex][field] = value;
+                onChange({...ex, sets: newSets});
+            };
 
-        // --- Template management view ---
+            const addSet = () => {
+                // Add a new set with blank values
+                onChange({...ex, sets: [...ex.sets, {kg: '', reps: ''}]});
+            };
+            
+            const deleteSet = (setIndex) => {
+                if (ex.sets.length <= 1) {
+                    alert(getText(language, "Un ejercicio debe tener al menos una serie.", "An exercise must have at least one set."));
+                    return;
+                }
+                onChange({...ex, sets: ex.sets.filter((_, i) => i !== setIndex)});
+            };
+
+            return (
+                <div className="bg-slate-800 p-3 rounded mb-4">
+                    <div className="flex gap-2 items-center mb-2">
+                        <span className="text-gym-muted font-mono">{idx+1}</span>
+                        <input 
+                            className="flex-1 bg-transparent text-white border-b border-slate-600 focus:border-gym-primary outline-none p-1 font-semibold"
+                            value={ex.name}
+                            placeholder={getText(language, "Nombre Ejercicio", "Exercise Name")}
+                            onChange={e => onChange({...ex, name: e.target.value})}
+                        />
+                        <button onClick={onRemove} className="text-red-400 p-1">
+                            <IconTrash size={16} />
+                        </button>
+                    </div>
+
+                    <div className="space-y-1 mt-2">
+                        {/* Headers for sets */}
+                        <div className="grid grid-cols-10 gap-1 text-[10px] text-gym-muted font-bold tracking-widest text-center uppercase">
+                            <div className="col-span-1">#</div>
+                            <div className="col-span-4">{getText(language, "KG", "KG")}</div>
+                            <div className="col-span-4">{getText(language, "Reps", "Reps")}</div>
+                            <div className="col-span-1"></div>
+                        </div>
+                        {/* Set rows */}
+                        {ex.sets.map((set, setIdx) => (
+                            <div key={setIdx} className="grid grid-cols-10 gap-1 items-center">
+                                <div className="col-span-1 text-center text-gym-muted font-mono text-xs">{setIdx + 1}</div>
+                                <div className="col-span-4">
+                                    <input
+                                        type="number"
+                                        placeholder="-"
+                                        value={set.kg}
+                                        onChange={(e) => updateSetField(setIdx, 'kg', e.target.value)}
+                                        className="w-full bg-slate-700 rounded p-1 text-center text-white focus:ring-1 focus:ring-gym-primary outline-none font-mono text-sm"
+                                    />
+                                </div>
+                                <div className="col-span-4">
+                                    <input
+                                        type="number"
+                                        placeholder="-"
+                                        value={set.reps}
+                                        onChange={(e) => updateSetField(setIdx, 'reps', e.target.value)}
+                                        className="w-full bg-slate-700 rounded p-1 text-center text-white focus:ring-1 focus:ring-gym-primary outline-none font-mono text-sm"
+                                    />
+                                </div>
+                                <div className="col-span-1 flex justify-center">
+                                    <button onClick={() => deleteSet(setIdx)} className="text-slate-600 hover:text-red-400">
+                                        &times;
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <button 
+                        onClick={addSet}
+                        className="mt-2 w-full py-1 bg-slate-700/50 hover:bg-slate-700 text-gym-accent text-xs font-bold rounded flex items-center justify-center gap-1 transition-all"
+                    >
+                        <IconPlus size={12} /> {getText(language, "Serie", "Set")}
+                    </button>
+                </div>
+            );
+        };
+
+
+        // --- Template management view (UPDATED with Import/Export) ---
         const TemplatesView = ({ templates, onSaveTemplates, onBack, language }) => {
             const [editingId, setEditingId] = useState(null);
             const [tempName, setTempName] = useState('');
             const [tempExercises, setTempExercises] = useState([]);
+            const fileInputRef = useRef(null);
 
             const startCreate = () => {
                 setEditingId('new');
                 setTempName('');
-                setTempExercises([{ id: Date.now(), name: '', sets: [{kg:'', reps:''}] }]);
+                // Start with a default set of 3x10 just for the template editor clarity
+                setTempExercises([{ 
+                    id: Date.now(), 
+                    name: '', 
+                    sets: [
+                        {kg:'', reps:'10'}, 
+                        {kg:'', reps:'10'}, 
+                        {kg:'', reps:'10'}
+                    ] 
+                }]);
             };
 
             const startEdit = (template) => {
@@ -554,7 +659,8 @@
                 // Make a deep copy so edits do not mutate original until save
                 setTempExercises(template.exercises.map(ex => ({ 
                     ...ex, 
-                    sets: ex.sets.map(s => ({ ...s })) 
+                    // Ensure sets are also deep copied
+                    sets: ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || '' })) 
                 }))); 
             };
 
@@ -563,23 +669,37 @@
                     alert(getText(language, "Ponle nombre a la rutina", "Give the routine a name"));
                     return;
                 }
-                
+
                 const cleanedExercises = tempExercises
-                    .map(ex => ({
-                        id: ex.id,
-                        name: ex.name,
-                        sets: ex.sets.length > 0 
-                            ? ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || ''})) 
-                            : [{kg:'', reps:''}]
-                    }))
-                    .filter(ex => ex.name.trim() !== '');
+                    .map(ex => {
+                        // Clean up sets: remove empty sets and ensure values are strings (for inputs)
+                        const cleanedSets = ex.sets
+                            .map(s => ({ 
+                                kg: String(s.kg || '').trim(), 
+                                reps: String(s.reps || '').trim() 
+                            }))
+                            .filter(s => s.kg !== '' || s.reps !== '');
+
+                        // If no sets are defined, default to one empty set for consistency upon import
+                        const setsToSave = cleanedSets.length > 0 ? cleanedSets : [{kg:'', reps:''}];
+
+                        return {
+                            id: ex.id,
+                            name: ex.name.trim(),
+                            sets: setsToSave
+                        };
+                    })
+                    // Filter out exercises with no name
+                    .filter(ex => ex.name !== '');
 
                 if (cleanedExercises.length === 0) {
-                    alert(getText(
-                        language, 
-                        "La rutina debe tener al menos un ejercicio con nombre.", 
-                        "The routine must have at least one exercise with a name."
-                    ));
+                    alert(
+                        getText(
+                            language, 
+                            "La rutina debe tener al menos un ejercicio con nombre y series definidas.", 
+                            "The routine must have at least one exercise with a name and defined sets."
+                        )
+                    );
                     return;
                 }
 
@@ -591,6 +711,11 @@
 
                 let newTemplates;
                 if (editingId === 'new') {
+                    // Check for duplicate name
+                    if (templates.some(t => t.name.toLowerCase() === newTemplate.name.toLowerCase())) {
+                        alert(getText(language, "Ya existe una rutina con ese nombre.", "A routine with that name already exists."));
+                        return;
+                    }
                     newTemplates = [...templates, newTemplate];
                 } else {
                     newTemplates = templates.map(t => t.id === editingId ? newTemplate : t);
@@ -604,6 +729,61 @@
                     onSaveTemplates(templates.filter(t => t.id !== id));
                 }
             };
+            
+            // --- Import/Export Routine Functions (NEW) ---
+            const triggerImportRoutine = () => {
+                fileInputRef.current.click();
+            };
+
+            const handleFileChange = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        const routine = importedData.routine;
+                        
+                        if (routine && importedData.metadata.type === 'routine' && routine.name && routine.exercises) {
+                            
+                            // Check for duplicate name
+                            if (templates.some(t => t.name.toLowerCase() === routine.name.toLowerCase())) {
+                                alert(getText(language, `Ya existe una rutina con el nombre "${routine.name}". Cámbiale el nombre al archivo o a la rutina antes de importar.`, `A routine named "${routine.name}" already exists. Rename the file or the routine before importing.`));
+                                return;
+                            }
+                            
+                            // Clean up and assign new ID
+                            const newRoutine = {
+                                id: Date.now(),
+                                name: routine.name,
+                                exercises: routine.exercises.map(ex => ({
+                                    // Give new ID to the exercise too
+                                    id: Date.now() + Math.random(), 
+                                    name: ex.name,
+                                    sets: ex.sets.map(s => ({ // Ensure sets are valid
+                                        kg: String(s.kg || '').trim(), 
+                                        reps: String(s.reps || '').trim()
+                                    }))
+                                }))
+                            };
+
+                            onSaveTemplates([...templates, newRoutine]);
+                            alert(getText(language, `Rutina "${newRoutine.name}" importada con éxito.`, `Routine "${newRoutine.name}" imported successfully.`));
+                        } else {
+                            alert(getText(language, "Error: El archivo JSON no contiene una rutina válida (falta metadata.type='routine', name o exercises).", "Error: JSON file does not contain a valid routine (missing metadata.type='routine', name, or exercises)."));
+                        }
+                    } catch (error) {
+                        alert(getText(language, "Error al parsear el archivo JSON. Asegúrate de que es un archivo de rutina válido.", "Error parsing JSON file. Make sure it is a valid routine file."));
+                        console.error("Import routine error:", error);
+                    }
+                    // Reset the file input so the same file can be selected again
+                    event.target.value = null; 
+                };
+                reader.readAsText(file);
+            };
+            // --- END Import/Export Routine Functions ---
+
 
             if (editingId) {
                 return (
@@ -633,10 +813,10 @@
                             />
 
                             <h3 className="text-sm font-bold text-gym-muted uppercase mb-2">
-                                {getText(language, "Ejercicios Base", "Base Exercises")}
+                                {getText(language, "Ejercicios Base (Series/Reps)", "Base Exercises (Sets/Reps)")}
                             </h3>
                             {tempExercises.map((ex, idx) => (
-                                <TemplateExerciseRow 
+                                <TemplateExerciseRowImproved 
                                     key={ex.id} 
                                     ex={ex} 
                                     idx={idx} 
@@ -645,7 +825,7 @@
                                     language={language}
                                 />
                             ))}
-                            
+
                             <button 
                                 onClick={() => setTempExercises([
                                     ...tempExercises, 
@@ -658,8 +838,8 @@
                             <p className="text-xs text-slate-500 mt-4 text-center">
                                 {getText(
                                     language,
-                                    "Nota: Al añadir la rutina a un día, se rellenará con 3 series vacías por defecto.",
-                                    "Note: When you add the routine to a day, it will be filled with 3 empty sets by default."
+                                    "Las series y repeticiones aquí se usarán como valores iniciales al añadir la rutina a un día.",
+                                    "The sets and reps here will be used as initial values when adding the routine to a day."
                                 )}
                             </p>
                         </div>
@@ -678,25 +858,53 @@
                         </h2>
                     </div>
                     <div className="p-4 flex-1 overflow-y-auto no-scrollbar">
-                        <button 
-                            onClick={startCreate}
-                            className="w-full py-4 mb-6 bg-gradient-to-r from-gym-primary to-blue-600 rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-white active:scale-95 transition-transform"
-                        >
-                            <IconPlus /> {getText(language, "Crear Nueva Rutina", "Create New Routine")}
-                        </button>
+                        <div className="flex gap-2 mb-6">
+                            <button 
+                                onClick={startCreate}
+                                className="flex-1 py-4 bg-gradient-to-r from-gym-primary to-blue-600 rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-white text-sm active:scale-95 transition-transform"
+                            >
+                                <IconPlus size={20} /> 
+                                {getText(language, "Nueva Rutina", "New Routine")}
+                            </button>
+                            {/* Hidden file input for import */}
+                            <input 
+                                type="file" 
+                                ref={fileInputRef} 
+                                onChange={handleFileChange} 
+                                accept=".json" 
+                                className="hidden"
+                            />
+                            {/* Button to trigger file input */}
+                            <button 
+                                onClick={triggerImportRoutine}
+                                className="py-4 px-4 bg-gym-success/20 text-gym-success rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-sm hover:bg-gym-success/30 active:scale-95 transition-transform"
+                            >
+                                <IconUpload size={20} /> 
+                                {getText(language, "Importar", "Import")}
+                            </button>
+                        </div>
 
                         <div className="space-y-3">
                             {templates.map(t => (
-                                <div key={t.id} className="bg-gym-card p-4 rounded-xl border border-slate-800 flex justify-between items-center group">
+                                <div key={t.id} className="bg-gym-card p-4 rounded-xl border border-slate-800 flex items-center group">
                                     <div onClick={() => startEdit(t)} className="flex-1 cursor-pointer">
                                         <h3 className="font-bold text-lg text-slate-200">{t.name}</h3>
                                         <p className="text-xs text-gym-muted mt-1">
                                             {t.exercises.length} {getText(language, "Ejercicios", "Exercises")}
                                         </p>
                                     </div>
-                                    <button onClick={() => deleteTemplate(t.id)} className="p-2 text-slate-600 hover:text-red-400">
-                                        <IconTrash size={18} />
-                                    </button>
+                                    <div className="flex gap-2">
+                                        <button 
+                                            onClick={() => downloadRoutine(t, language)} 
+                                            className="p-2 text-gym-primary hover:text-white"
+                                            title={getText(language, "Exportar Rutina", "Export Routine")}
+                                        >
+                                            <IconShare size={20} />
+                                        </button>
+                                        <button onClick={() => deleteTemplate(t.id)} className="p-2 text-slate-600 hover:text-red-400">
+                                            <IconTrash size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                             {templates.length === 0 && (
@@ -710,7 +918,7 @@
             );
         };
 
-        // --- Calendar view ---
+        // --- Calendar view (no changes) ---
         const CalendarView = ({ 
             onSelectDate, 
             savedData, 
@@ -734,11 +942,11 @@
                     startDayOfWeek: start 
                 };
             }, [currentDate]);
-            
+
             const changeMonth = (delta) => {
                 setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + delta, 1));
             };
-            
+
             const generateDays = () => {
                 const days = [];
                 for (let i = 0; i < startDayOfWeek; i++) {
@@ -786,7 +994,7 @@
                                 className="bg-slate-800 px-2 py-1 rounded-lg text-xl hover:bg-slate-700"
                                 title={getText(language, "Cambiar idioma", "Change language")}
                             >
-                                {language === 'es' ? 'ESP' : 'EN'}
+                                {language === 'es' ? '🇪🇸' : '🇬🇧'}
                             </button>
 
                             <button 
@@ -856,7 +1064,7 @@
             );
         };
 
-        // --- Day view and main editor of exercises ---
+        // --- Day view and main editor of exercises (minor change to how template sets are applied) ---
         const DayView = ({ dateStr, data, templates, history, onBack, onSave, language }) => {
             const [exercises, setExercises] = useState(data || []);
             const [isAddModalOpen, setAddModalOpen] = useState(false);
@@ -873,14 +1081,10 @@
 
             const handleAddTemplate = (template) => {
                 const newExercises = template.exercises.map((ex, idx) => {
-                    const defaultSets = [
-                        { kg: '', reps: '' }, 
-                        { kg: '', reps: '' }, 
-                        { kg: '', reps: '' }
-                    ];
+                    // Use the sets saved in the template directly
                     const setsToUse = ex.sets && ex.sets.length > 0 
                         ? ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || ''})) 
-                        : defaultSets;
+                        : [{ kg: '', reps: '' }]; // Fallback to one empty set
 
                     return {
                         id: Date.now() + idx,
@@ -964,7 +1168,7 @@
             );
         };
 
-        // --- Floating timer component, always visible and draggable ---
+        // --- Floating timer component, always visible and draggable (no changes) ---
         const FloatingTimer = ({ language }) => {
             const [isOpen, setIsOpen] = useState(false);
             const [isDragging, setIsDragging] = useState(false);
@@ -1189,9 +1393,13 @@
                 try {
                     const savedWorkouts = localStorage.getItem('gymTrackerData_v1');
                     if (savedWorkouts) setWorkouts(JSON.parse(savedWorkouts));
-                    
+
                     const savedTemplates = localStorage.getItem('gymTrackerTemplates_v1');
                     if (savedTemplates) setTemplates(JSON.parse(savedTemplates));
+                    
+                    const savedLang = localStorage.getItem('gymTrackerLang');
+                    if (savedLang) setLanguage(savedLang);
+                    
                 } catch (e) { 
                     console.error("Error loading data", e); 
                 }
@@ -1213,7 +1421,11 @@
             };
 
             const toggleLanguage = () => {
-                setLanguage(prev => prev === 'es' ? 'en' : 'es');
+                setLanguage(prev => {
+                    const newLang = prev === 'es' ? 'en' : 'es';
+                    localStorage.setItem('gymTrackerLang', newLang);
+                    return newLang;
+                });
             };
 
             return (
@@ -1231,7 +1443,7 @@
                             onToggleLanguage={toggleLanguage}
                         />
                     )}
-                    
+
                     {view === 'day' && (
                         <DayView 
                             dateStr={selectedDate} 
