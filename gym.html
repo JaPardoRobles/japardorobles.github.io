@@ -147,8 +147,8 @@
             });
             return Object.values(history);
         };
-        
-        // --- Utility for export/import routines (NEW) ---
+
+        // --- Utility for export/import routines ---
         const downloadRoutine = (routine, language) => {
             const data = {
                 metadata: { version: 'v2.3_routine', exportDate: new Date().toISOString(), type: 'routine' },
@@ -556,9 +556,10 @@
 
             const addSet = () => {
                 // Add a new set with blank values
-                onChange({...ex, sets: [...ex.sets, {kg: '', reps: ''}]});
+                const lastSet = ex.sets[ex.sets.length - 1] || { kg: '', reps: '' };
+                onChange({...ex, sets: [...ex.sets, {kg: lastSet.kg, reps: lastSet.reps}]});
             };
-            
+
             const deleteSet = (setIndex) => {
                 if (ex.sets.length <= 1) {
                     alert(getText(language, "Un ejercicio debe tener al menos una serie.", "An exercise must have at least one set."));
@@ -630,6 +631,82 @@
             );
         };
 
+        // --- NEW: Modal for pasting JSON code ---
+        const ImportCodeModal = ({ isOpen, onClose, templates, onSaveTemplates, language }) => {
+            const [jsonCode, setJsonCode] = useState('');
+
+            const handleImportCode = () => {
+                if (!jsonCode.trim()) {
+                    alert(getText(language, "Pega el código JSON de la rutina.", "Paste the routine JSON code."));
+                    return;
+                }
+
+                try {
+                    const importedData = JSON.parse(jsonCode);
+                    const routine = importedData.routine;
+
+                    if (routine && importedData.metadata && importedData.metadata.type === 'routine' && routine.name && routine.exercises) {
+
+                        // Check for duplicate name
+                        if (templates.some(t => t.name.toLowerCase() === routine.name.toLowerCase())) {
+                            alert(getText(language, `Ya existe una rutina con el nombre "${routine.name}". Cámbiale el nombre.`, `A routine named "${routine.name}" already exists. Rename it.`));
+                            return;
+                        }
+
+                        // Clean up and assign new ID
+                        const newRoutine = {
+                            id: Date.now(),
+                            name: routine.name,
+                            exercises: routine.exercises.map(ex => ({
+                                // Give new ID to the exercise too
+                                id: Date.now() + Math.random(),
+                                name: ex.name,
+                                sets: ex.sets.map(s => ({ // Ensure sets are valid
+                                    kg: String(s.kg || '').trim(),
+                                    reps: String(s.reps || '').trim()
+                                }))
+                            }))
+                        };
+
+                        onSaveTemplates([...templates, newRoutine]);
+                        alert(getText(language, `Rutina "${newRoutine.name}" importada con éxito.`, `Routine "${newRoutine.name}" imported successfully.`));
+                        setJsonCode('');
+                        onClose();
+                    } else {
+                        alert(getText(language, "Error: El JSON no contiene una rutina válida (falta metadata.type='routine', name o exercises).", "Error: The JSON does not contain a valid routine (missing metadata.type='routine', name, or exercises)."));
+                    }
+                } catch (error) {
+                    alert(getText(language, "Error al parsear el código JSON. Asegúrate de que es un JSON válido.", "Error parsing the JSON code. Make sure it is valid JSON."));
+                    console.error("Import routine error:", error);
+                }
+            };
+
+            return (
+                <Modal
+                    isOpen={isOpen}
+                    onClose={onClose}
+                    title={getText(language, "Importar Rutina por Código", "Import Routine via Code")}
+                >
+                    <p className="text-sm text-gym-muted mb-4">
+                        {getText(language, "Pega el contenido completo del archivo JSON de una rutina exportada a continuación.", "Paste the full content of an exported routine's JSON file below.")}
+                    </p>
+                    <textarea
+                        className="w-full h-64 bg-slate-900 border border-slate-700 rounded-lg p-3 text-white font-mono text-xs focus:ring-1 focus:ring-gym-accent outline-none"
+                        placeholder={getText(language, "Pega el código JSON aquí...", "Paste JSON code here...")}
+                        value={jsonCode}
+                        onChange={e => setJsonCode(e.target.value)}
+                    />
+                    <button
+                        onClick={handleImportCode}
+                        className="w-full py-3 mt-4 bg-gym-accent/80 hover:bg-gym-accent rounded-lg font-bold text-white transition-colors flex items-center justify-center gap-2"
+                    >
+                        <IconUpload size={20} />
+                        {getText(language, "Importar Rutina", "Import Routine")}
+                    </button>
+                </Modal>
+            );
+        };
+
 
         // --- Template management view (UPDATED with Import/Export) ---
         const TemplatesView = ({ templates, onSaveTemplates, onBack, language }) => {
@@ -637,6 +714,7 @@
             const [tempName, setTempName] = useState('');
             const [tempExercises, setTempExercises] = useState([]);
             const fileInputRef = useRef(null);
+            const [isCodeImportModalOpen, setCodeImportModalOpen] = useState(false); // NEW STATE
 
             const startCreate = () => {
                 setEditingId('new');
@@ -729,8 +807,8 @@
                     onSaveTemplates(templates.filter(t => t.id !== id));
                 }
             };
-            
-            // --- Import/Export Routine Functions (NEW) ---
+
+            // --- Import Routine via File Functions ---
             const triggerImportRoutine = () => {
                 fileInputRef.current.click();
             };
@@ -744,15 +822,15 @@
                     try {
                         const importedData = JSON.parse(e.target.result);
                         const routine = importedData.routine;
-                        
-                        if (routine && importedData.metadata.type === 'routine' && routine.name && routine.exercises) {
-                            
+
+                        if (routine && importedData.metadata && importedData.metadata.type === 'routine' && routine.name && routine.exercises) {
+
                             // Check for duplicate name
                             if (templates.some(t => t.name.toLowerCase() === routine.name.toLowerCase())) {
                                 alert(getText(language, `Ya existe una rutina con el nombre "${routine.name}". Cámbiale el nombre al archivo o a la rutina antes de importar.`, `A routine named "${routine.name}" already exists. Rename the file or the routine before importing.`));
                                 return;
                             }
-                            
+
                             // Clean up and assign new ID
                             const newRoutine = {
                                 id: Date.now(),
@@ -782,7 +860,7 @@
                 };
                 reader.readAsText(file);
             };
-            // --- END Import/Export Routine Functions ---
+            // --- END Import Routine via File Functions ---
 
 
             if (editingId) {
@@ -829,7 +907,7 @@
                             <button 
                                 onClick={() => setTempExercises([
                                     ...tempExercises, 
-                                    { id: Date.now(), name: '', sets: [{kg:'', reps:''}, {kg:'', reps:''}, {kg:'', reps:''}] }
+                                    { id: Date.now(), name: '', sets: [{kg:'', reps:'10'}, {kg:'', reps:'10'}, {kg:'', reps:'10'}] }
                                 ])}
                                 className="w-full py-3 mt-2 border border-dashed border-slate-600 text-slate-400 rounded-lg text-sm hover:bg-slate-800 hover:text-white transition-colors"
                             >
@@ -874,13 +952,21 @@
                                 accept=".json" 
                                 className="hidden"
                             />
-                            {/* Button to trigger file input */}
+                            {/* Button to trigger file import */}
                             <button 
                                 onClick={triggerImportRoutine}
                                 className="py-4 px-4 bg-gym-success/20 text-gym-success rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-sm hover:bg-gym-success/30 active:scale-95 transition-transform"
                             >
-                                <IconUpload size={20} /> 
-                                {getText(language, "Importar", "Import")}
+                                <IconDownload size={20} /> 
+                                {getText(language, "Archivo", "File")}
+                            </button>
+                            {/* NEW: Button to open Code Import Modal */}
+                            <button 
+                                onClick={() => setCodeImportModalOpen(true)}
+                                className="py-4 px-4 bg-gym-accent/20 text-gym-accent rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-sm hover:bg-gym-accent/30 active:scale-95 transition-transform"
+                            >
+                                <IconCopy size={20} /> 
+                                {getText(language, "Código", "Code")}
                             </button>
                         </div>
 
@@ -914,6 +1000,15 @@
                             )}
                         </div>
                     </div>
+
+                    {/* NEW: Code Import Modal */}
+                    <ImportCodeModal
+                        isOpen={isCodeImportModalOpen}
+                        onClose={() => setCodeImportModalOpen(false)}
+                        templates={templates}
+                        onSaveTemplates={onSaveTemplates}
+                        language={language}
+                    />
                 </div>
             );
         };
@@ -1396,10 +1491,10 @@
 
                     const savedTemplates = localStorage.getItem('gymTrackerTemplates_v1');
                     if (savedTemplates) setTemplates(JSON.parse(savedTemplates));
-                    
+
                     const savedLang = localStorage.getItem('gymTrackerLang');
                     if (savedLang) setLanguage(savedLang);
-                    
+
                 } catch (e) { 
                     console.error("Error loading data", e); 
                 }
@@ -1486,3 +1581,4 @@
     </script>
 </body>
 </html>
+
