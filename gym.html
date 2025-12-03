@@ -77,6 +77,10 @@
             -ms-overflow-style: none; 
             scrollbar-width: none; 
         }
+        input::placeholder, textarea::placeholder {
+            color: #64748b; 
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -107,6 +111,7 @@
         const IconShare = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>;
         const IconFileText = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>;
         const IconCheck = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+        const IconMessageCircle = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>;
 
         const FlagES = () => (
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" width="24" height="16" className="rounded-sm shadow-sm">
@@ -149,7 +154,8 @@
                         history[ex.name.toLowerCase()] = {
                             name: ex.name,
                             lastSets: lastSets,
-                            lastDate: date
+                            lastDate: date,
+                            note: ex.note || '' // Keep last note in history
                         };
                     }
                 });
@@ -161,6 +167,7 @@
             let text = `RUTINA: ${routine.name}\n\n`;
             routine.exercises.forEach(ex => {
                 text += `- ${ex.name}\n`;
+                if (ex.note) text += `  Nota: ${ex.note}\n`;
                 ex.sets.forEach(s => {
                     text += `  ${s.kg || 0}kg x ${s.reps || 0}\n`;
                 });
@@ -186,25 +193,30 @@
                     currentExercise = {
                         id: Date.now() + Math.random(),
                         name: cleanLine.substring(1).trim(),
-                        sets: []
+                        sets: [],
+                        note: ''
                     };
                     exercises.push(currentExercise);
                 }
                 else if (currentExercise) {
-                    const kgMatch = cleanLine.match(/(\d+(?:\.\d+)?)\s*(?:kg|lb)?/i);
-                    const repsMatch = cleanLine.match(/x\s*(\d+)/i) || cleanLine.match(/(\d+)\s*(?:reps|r)/i);
-                    let kg = '';
-                    let reps = '';
-                    if (cleanLine.includes('x')) {
-                         const parts = cleanLine.split('x');
-                         kg = parts[0].replace(/[^\d.]/g, '');
-                         reps = parts[1].replace(/[^\d]/g, '');
+                    if (cleanLine.toLowerCase().startsWith('nota:') || cleanLine.toLowerCase().startsWith('note:')) {
+                        currentExercise.note = cleanLine.split(':')[1].trim();
                     } else {
-                        kg = cleanLine.replace(/[^\d.]/g, ''); 
-                        reps = '0';
-                    }
-                    if (kg || reps) {
-                        currentExercise.sets.push({ kg: kg || '', reps: reps || '' });
+                        const kgMatch = cleanLine.match(/(\d+(?:\.\d+)?)\s*(?:kg|lb)?/i);
+                        const repsMatch = cleanLine.match(/x\s*(\d+)/i) || cleanLine.match(/(\d+)\s*(?:reps|r)/i);
+                        let kg = '';
+                        let reps = '';
+                        if (cleanLine.includes('x')) {
+                             const parts = cleanLine.split('x');
+                             kg = parts[0].replace(/[^\d.]/g, '');
+                             reps = parts[1].replace(/[^\d]/g, '');
+                        } else {
+                            kg = cleanLine.replace(/[^\d.]/g, ''); 
+                            reps = '0';
+                        }
+                        if (kg || reps) {
+                            currentExercise.sets.push({ kg: kg || '', reps: reps || '' });
+                        }
                     }
                 }
             });
@@ -240,7 +252,7 @@
             
             if (format === 'json') {
                 const data = {
-                    metadata: { version: 'v2.3_routine', exportDate: new Date().toISOString(), type: 'routine' },
+                    metadata: { version: 'v2.4_routine', exportDate: new Date().toISOString(), type: 'routine' },
                     routine: routine
                 };
                 downloadFile(`GymTracker_${safeName}.json`, JSON.stringify(data, null, 2), 'application/json');
@@ -321,7 +333,7 @@
         const SettingsModal = ({ isOpen, onClose, workouts, templates, setWorkouts, setTemplates, language }) => {
             const fileInputRef = useRef(null);
             const handleExport = () => {
-                const data = { metadata: { version: 'v2.3_full', exportDate: new Date().toISOString(), type: 'full' }, workouts: workouts, templates: templates };
+                const data = { metadata: { version: 'v2.4_full', exportDate: new Date().toISOString(), type: 'full' }, workouts: workouts, templates: templates };
                 downloadFile(`GymTracker_Backup_${formatDateKey(new Date())}.json`, JSON.stringify(data, null, 2), 'application/json');
                 alert(getText(language, "Datos exportados con éxito.", "Data exported successfully."));
                 onClose();
@@ -358,7 +370,7 @@
                         <button onClick={triggerFileInput} className="w-full py-3 bg-gym-danger/20 text-gym-danger rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gym-danger/30 transition-colors"><IconUpload size={20}/> {getText(language, "Importar Todo (Sobrescribir)", "Import All (Overwrite)")}</button>
                         <h3 className="text-lg font-semibold text-gym-primary border-b border-slate-700 pb-2 pt-4">{getText(language, "Información del Sistema", "System Information")}</h3>
                         <p className="text-sm text-gym-muted">
-                            {getText(language, "Versión", "Version")}: <span className="text-white">v2.6 (Yellow Ghost)</span><br/>
+                            {getText(language, "Versión", "Version")}: <span className="text-white">v2.7 (Descriptions)</span><br/>
                             {getText(language, "Días de Entrenamiento", "Training Days")}: <span className="text-white">{Object.keys(workouts).length}</span><br/>
                             {getText(language, "Rutinas Guardadas", "Saved Routines")}: <span className="text-white">{templates.length}</span>
                         </p>
@@ -368,6 +380,8 @@
         };
 
         const ExerciseCard = ({ exercise, onUpdate, onDelete, language }) => {
+            const [showNote, setShowNote] = useState(!!exercise.note);
+
             const addSet = () => {
                 const lastSet = exercise.sets[exercise.sets.length - 1] || { kg: '', reps: '' };
                 const newSets = [...exercise.sets, { kg: lastSet.kg, reps: '' }];
@@ -377,16 +391,13 @@
             const updateSet = (index, field, value) => {
                 const newSets = [...exercise.sets];
                 newSets[index][field] = value;
-                // Important: When user types, ensure ghost mode for that specific field is OFF
                 if (field === 'kg') newSets[index].ghostKg = false;
                 if (field === 'reps') newSets[index].ghostReps = false;
-                
                 onUpdate({ ...exercise, sets: newSets });
             };
 
             const handleFocus = (index, field) => {
                 const set = exercise.sets[index];
-                // Only clear if it is currently a "Ghost" value
                 if (field === 'kg' && set.ghostKg) {
                     const newSets = [...exercise.sets];
                     newSets[index] = { ...newSets[index], kg: '', ghostKg: false };
@@ -414,10 +425,28 @@
                             placeholder={getText(language, "Nombre del ejercicio", "Exercise name")}
                             className="bg-transparent text-lg font-bold text-gym-primary placeholder-slate-600 w-full focus:outline-none focus:border-b focus:border-gym-primary"
                         />
-                        <button onClick={onDelete} className="text-gym-muted p-1 hover:text-red-400">
-                            <IconTrash size={18} />
-                        </button>
+                        <div className="flex gap-1">
+                            <button 
+                                onClick={() => setShowNote(!showNote)} 
+                                className={`p-1 hover:text-white transition-colors ${exercise.note ? 'text-gym-accent' : 'text-gym-muted'}`}
+                            >
+                                <IconMessageCircle size={18} />
+                            </button>
+                            <button onClick={onDelete} className="text-gym-muted p-1 hover:text-red-400">
+                                <IconTrash size={18} />
+                            </button>
+                        </div>
                     </div>
+                    
+                    {showNote && (
+                        <textarea
+                            className="w-full bg-slate-800/50 text-sm text-white rounded p-2 mb-3 outline-none border border-slate-700 focus:border-gym-accent resize-none"
+                            placeholder={getText(language, "Añadir notas o descripción...", "Add notes or description...")}
+                            rows="2"
+                            value={exercise.note || ''}
+                            onChange={(e) => onUpdate({...exercise, note: e.target.value})}
+                        />
+                    )}
 
                     <div className="space-y-2">
                         <div className="grid grid-cols-10 gap-2 text-[10px] text-gym-muted font-bold tracking-widest text-center uppercase">
@@ -487,15 +516,14 @@
                                 <input autoFocus type="text" placeholder={getText(language, "Buscar ejercicio...", "Search exercise...")} className="w-full bg-slate-800 rounded-lg py-2 pl-10 pr-4 text-white focus:ring-2 focus:ring-gym-primary outline-none" value={search} onChange={e => setSearch(e.target.value)} />
                             </div>
                             <button onClick={() => { 
-                                // NEW: We don't just add blank, we let DayView handle the history lookup logic
-                                onAddExercise({ id: Date.now(), name: search, sets: [{kg:'', reps:''}] }); 
+                                onAddExercise({ id: Date.now(), name: search, sets: [{kg:'', reps:''}], note: '' }); 
                                 onClose(); 
                             }} className="w-full py-3 mb-2 bg-gym-primary/10 text-gym-primary rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-gym-primary/20"><IconPlus size={18} /> {getText(language, `Crear "${search || 'Nuevo'}"`, `Create "${search || 'New'}"`)}</button>
                             <div className="space-y-2">
                                 {filteredHistory.map((item, idx) => (
                                     <button key={idx} onClick={() => { 
-                                        // Here we just pass the name, DayView logic will handle the ghost population from history again to be safe
-                                        onAddExercise({ id: Date.now(), name: item.name, sets: item.lastSets }); 
+                                        // Pass the whole item so we can extract note if needed, though DayView logic handles ghost sets
+                                        onAddExercise({ id: Date.now(), name: item.name, sets: item.lastSets, note: item.note }); 
                                         onClose(); 
                                     }} className="w-full bg-slate-800/50 p-3 rounded-lg flex justify-between items-center hover:bg-slate-700 text-left group">
                                         <div>
@@ -521,6 +549,8 @@
         };
 
         const TemplateExerciseRowImproved = ({ ex, idx, onChange, onRemove, language }) => {
+            const [showNote, setShowNote] = useState(!!ex.note);
+
             const updateSetField = (setIndex, field, value) => {
                 const newSets = [...ex.sets];
                 newSets[setIndex][field] = value;
@@ -528,9 +558,26 @@
             };
             const addSet = () => { const lastSet = ex.sets[ex.sets.length - 1] || { kg: '', reps: '' }; onChange({...ex, sets: [...ex.sets, {kg: lastSet.kg, reps: lastSet.reps}]}); };
             const deleteSet = (setIndex) => { if (ex.sets.length <= 1) { alert(getText(language, "Un ejercicio debe tener al menos una serie.", "An exercise must have at least one set.")); return; } onChange({...ex, sets: ex.sets.filter((_, i) => i !== setIndex)}); };
+            
             return (
                 <div className="bg-slate-800 p-3 rounded mb-4">
-                    <div className="flex gap-2 items-center mb-2"><span className="text-gym-muted font-mono">{idx+1}</span><input className="flex-1 bg-transparent text-white border-b border-slate-600 focus:border-gym-primary outline-none p-1 font-semibold" value={ex.name} placeholder={getText(language, "Nombre Ejercicio", "Exercise Name")} onChange={e => onChange({...ex, name: e.target.value})} /><button onClick={onRemove} className="text-red-400 p-1"><IconTrash size={16} /></button></div>
+                    <div className="flex gap-2 items-center mb-2">
+                        <span className="text-gym-muted font-mono">{idx+1}</span>
+                        <input className="flex-1 bg-transparent text-white border-b border-slate-600 focus:border-gym-primary outline-none p-1 font-semibold" value={ex.name} placeholder={getText(language, "Nombre Ejercicio", "Exercise Name")} onChange={e => onChange({...ex, name: e.target.value})} />
+                        <button onClick={() => setShowNote(!showNote)} className={`p-1 hover:text-white ${ex.note ? 'text-gym-accent' : 'text-gym-muted'}`}><IconMessageCircle size={16} /></button>
+                        <button onClick={onRemove} className="text-red-400 p-1"><IconTrash size={16} /></button>
+                    </div>
+
+                    {showNote && (
+                        <textarea
+                            className="w-full bg-slate-900/50 text-xs text-white rounded p-2 mb-2 outline-none border border-slate-700 focus:border-gym-accent resize-none"
+                            placeholder={getText(language, "Descripción por defecto para este ejercicio...", "Default description for this exercise...")}
+                            rows="2"
+                            value={ex.note || ''}
+                            onChange={(e) => onChange({...ex, note: e.target.value})}
+                        />
+                    )}
+
                     <div className="space-y-1 mt-2">
                         <div className="grid grid-cols-10 gap-1 text-[10px] text-gym-muted font-bold tracking-widest text-center uppercase"><div className="col-span-1">#</div><div className="col-span-4">{getText(language, "KG", "KG")}</div><div className="col-span-4">{getText(language, "Reps", "Reps")}</div><div className="col-span-1"></div></div>
                         {ex.sets.map((set, setIdx) => (
@@ -556,7 +603,7 @@
                 if (!routine) { routine = parseRoutineText(textCode); }
                 if (routine && routine.name && routine.exercises) {
                     if (templates.some(t => t.name.toLowerCase() === routine.name.toLowerCase())) { alert(getText(language, `Ya existe una rutina llamada "${routine.name}".`, `Routine "${routine.name}" already exists.`)); return; }
-                    const newRoutine = { id: Date.now(), name: routine.name, exercises: routine.exercises.map(ex => ({ id: Date.now() + Math.random(), name: ex.name, sets: ex.sets })) };
+                    const newRoutine = { id: Date.now(), name: routine.name, exercises: routine.exercises.map(ex => ({ id: Date.now() + Math.random(), name: ex.name, sets: ex.sets, note: ex.note || '' })) };
                     onSaveTemplates([...templates, newRoutine]);
                     alert(getText(language, "Importado con éxito.", "Imported successfully."));
                     setTextCode('');
@@ -580,14 +627,14 @@
             const [isCodeImportModalOpen, setCodeImportModalOpen] = useState(false);
             const [exportModalRoutine, setExportModalRoutine] = useState(null);
 
-            const startCreate = () => { setEditingId('new'); setTempName(''); setTempExercises([{ id: Date.now(), name: '', sets: [{kg:'', reps:'10'}, {kg:'', reps:'10'}, {kg:'', reps:'10'}] }]); };
-            const startEdit = (template) => { setEditingId(template.id); setTempName(template.name); setTempExercises(template.exercises.map(ex => ({ ...ex, sets: ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || '' })) }))); };
+            const startCreate = () => { setEditingId('new'); setTempName(''); setTempExercises([{ id: Date.now(), name: '', sets: [{kg:'', reps:'10'}, {kg:'', reps:'10'}, {kg:'', reps:'10'}], note: '' }]); };
+            const startEdit = (template) => { setEditingId(template.id); setTempName(template.name); setTempExercises(template.exercises.map(ex => ({ ...ex, sets: ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || '' })), note: ex.note || '' }))); };
             const saveCurrent = () => {
                 if (!tempName.trim()) { alert(getText(language, "Ponle nombre a la rutina", "Give the routine a name")); return; }
                 const cleanedExercises = tempExercises.map(ex => {
                     const cleanedSets = ex.sets.map(s => ({ kg: String(s.kg || '').trim(), reps: String(s.reps || '').trim() })).filter(s => s.kg !== '' || s.reps !== '');
                     const setsToSave = cleanedSets.length > 0 ? cleanedSets : [{kg:'', reps:''}];
-                    return { id: ex.id, name: ex.name.trim(), sets: setsToSave };
+                    return { id: ex.id, name: ex.name.trim(), sets: setsToSave, note: ex.note || '' };
                 }).filter(ex => ex.name !== '');
                 if (cleanedExercises.length === 0) return;
                 const newTemplate = { id: editingId === 'new' ? Date.now() : editingId, name: tempName.trim(), exercises: cleanedExercises };
@@ -608,7 +655,7 @@
                     if (!routine) { routine = parseRoutineText(content); }
                     if (routine && routine.name) {
                          if (templates.some(t => t.name.toLowerCase() === routine.name.toLowerCase())) { alert(getText(language, `Ya existe "${routine.name}".`, `"${routine.name}" already exists.`)); return; }
-                        const newRoutine = { id: Date.now(), name: routine.name, exercises: routine.exercises.map(ex => ({ id: Date.now() + Math.random(), name: ex.name, sets: ex.sets })) };
+                        const newRoutine = { id: Date.now(), name: routine.name, exercises: routine.exercises.map(ex => ({ id: Date.now() + Math.random(), name: ex.name, sets: ex.sets, note: ex.note || '' })) };
                         onSaveTemplates([...templates, newRoutine]); alert(getText(language, "Importada con éxito.", "Imported successfully."));
                     } else { alert(getText(language, "Archivo no válido.", "Invalid file.")); }
                     event.target.value = null; 
@@ -627,7 +674,7 @@
                         <div className="p-4 flex-1 overflow-y-auto no-scrollbar">
                             <input className="w-full bg-slate-800 p-3 rounded-lg text-lg font-bold mb-6 outline-none focus:ring-1 ring-gym-primary" placeholder={getText(language, "Nombre Rutina", "Routine Name")} value={tempName} onChange={e => setTempName(e.target.value)} />
                             {tempExercises.map((ex, idx) => ( <TemplateExerciseRowImproved key={ex.id} ex={ex} idx={idx} onChange={(newEx) => setTempExercises(tempExercises.map(e => e.id === ex.id ? newEx : e))} onRemove={() => setTempExercises(tempExercises.filter(e => e.id !== ex.id))} language={language} /> ))}
-                            <button onClick={() => setTempExercises([...tempExercises, { id: Date.now(), name: '', sets: [{kg:'', reps:'10'}, {kg:'', reps:'10'}, {kg:'', reps:'10'}] }])} className="w-full py-3 mt-2 border border-dashed border-slate-600 text-slate-400 rounded-lg text-sm hover:bg-slate-800">+ {getText(language, "Añadir Ejercicio", "Add Exercise")}</button>
+                            <button onClick={() => setTempExercises([...tempExercises, { id: Date.now(), name: '', sets: [{kg:'', reps:'10'}, {kg:'', reps:'10'}, {kg:'', reps:'10'}], note: '' }])} className="w-full py-3 mt-2 border border-dashed border-slate-600 text-slate-400 rounded-lg text-sm hover:bg-slate-800">+ {getText(language, "Añadir Ejercicio", "Add Exercise")}</button>
                         </div>
                     </div>
                 );
@@ -719,31 +766,31 @@
             useEffect(() => { onSave(dateStr, exercises); }, [exercises]);
 
             const handleAddExercise = (exerciseTemplate) => {
-                // Check if history exists for this specific exercise
                 const historyItem = history.find(h => h.name.toLowerCase() === exerciseTemplate.name.toLowerCase());
                 let finalSets = exerciseTemplate.sets;
+                let finalNote = exerciseTemplate.note || '';
 
                 if (historyItem) {
-                    // Inject history data marked as ghost
                     finalSets = historyItem.lastSets.map(s => ({
                         kg: s.kg,
                         reps: s.reps,
                         ghostKg: true,
                         ghostReps: true
                     }));
+                    // If no note provided in template, maybe use history note? 
+                    // Let's stick to explicitly passed note or empty, history note is available in AddManager
+                    if (!finalNote && historyItem.note) finalNote = historyItem.note;
                 }
                 
-                setExercises([...exercises, { ...exerciseTemplate, id: Date.now(), sets: finalSets }]);
+                setExercises([...exercises, { ...exerciseTemplate, id: Date.now(), sets: finalSets, note: finalNote }]);
             };
 
             const handleAddTemplate = (template) => {
                 const newExercises = template.exercises.map((ex, idx) => {
-                    // For each exercise in the routine, check if we have history
                     const historyItem = history.find(h => h.name.toLowerCase() === ex.name.toLowerCase());
                     let finalSets = [];
 
                     if (historyItem) {
-                        // Priority 1: History (Ghost)
                         finalSets = historyItem.lastSets.map(s => ({
                             kg: s.kg,
                             reps: s.reps,
@@ -751,17 +798,16 @@
                             ghostReps: true
                         }));
                     } else if (ex.sets && ex.sets.length > 0) {
-                        // Priority 2: Default values from Routine (Not Ghost, actual suggestion)
                         finalSets = ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || ''}));
                     } else {
-                         // Priority 3: Empty
                         finalSets = [{ kg: '', reps: '' }];
                     }
 
                     return {
                         id: Date.now() + idx,
                         name: ex.name,
-                        sets: finalSets
+                        sets: finalSets,
+                        note: ex.note || ''
                     };
                 });
                 setExercises([...exercises, ...newExercises]);
