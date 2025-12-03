@@ -70,8 +70,6 @@
             background: rgba(30, 41, 59, 0.7); 
             backdrop-filter: blur(10px); 
         }
-
-        /* Hide scrollbars on mobile */
         .no-scrollbar::-webkit-scrollbar { 
             display: none; 
         }
@@ -87,17 +85,13 @@
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
 
-        // Small helper for translation. 
-        // You pass the current language and both strings, and it returns the right one.
         const getText = (lang, es, en) => lang === 'es' ? es : en;
 
-        // Month names for both languages
         const monthNamesByLang = {
             es: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
             en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
         };
 
-        // --- Icons ---
         const IconCalendar = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
         const IconPlus = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
         const IconTrash = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>;
@@ -111,11 +105,29 @@
         const IconUpload = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>;
         const IconDownload = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>;
         const IconShare = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>;
+        const IconFileText = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>;
+        const IconCheck = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
 
-        // --- Utilities ---
+        const FlagES = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 500" width="24" height="16" className="rounded-sm shadow-sm">
+                <rect width="750" height="500" fill="#c60b1e"/>
+                <rect width="750" height="250" y="125" fill="#ffc400"/>
+            </svg>
+        );
 
-        // Build a YYYY-MM-DD string in local time.
-        // It avoids timezone issues that you get with toISOString.
+        const FlagUS = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1235 650" width="24" height="16" className="rounded-sm shadow-sm">
+                <rect width="1235" height="650" fill="#b22234"/>
+                <rect width="1235" height="50" y="50" fill="#fff"/>
+                <rect width="1235" height="50" y="150" fill="#fff"/>
+                <rect width="1235" height="50" y="250" fill="#fff"/>
+                <rect width="1235" height="50" y="350" fill="#fff"/>
+                <rect width="1235" height="50" y="450" fill="#fff"/>
+                <rect width="1235" height="50" y="550" fill="#fff"/>
+                <rect width="494" height="350" fill="#3c3b6e"/>
+            </svg>
+        );
+
         const formatDateKey = (date) => {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -123,16 +135,13 @@
             return `${year}-${month}-${day}`;
         };
 
-        // Parse a YYYY-MM-DD key back into a local Date object.
         const parseLocalDateFromKey = (key) => {
             const [y, m, d] = key.split('-').map(Number);
             return new Date(y, m - 1, d);
         };
 
-        // Extract unique exercise history for quick reuse in the search modal
         const getExerciseHistory = (workouts) => {
             const history = {};
-            // Sort dates descending so we keep the latest info for each exercise
             Object.keys(workouts).sort().reverse().forEach(date => {
                 workouts[date].forEach(ex => {
                     if (ex.name && !history[ex.name.toLowerCase()]) {
@@ -148,35 +157,99 @@
             return Object.values(history);
         };
 
-        // --- Utility for export/import routines ---
-        const downloadRoutine = (routine, language) => {
-            const data = {
-                metadata: { version: 'v2.3_routine', exportDate: new Date().toISOString(), type: 'routine' },
-                routine: routine
+        const generateRoutineText = (routine) => {
+            let text = `RUTINA: ${routine.name}\n\n`;
+            routine.exercises.forEach(ex => {
+                text += `- ${ex.name}\n`;
+                ex.sets.forEach(s => {
+                    text += `  ${s.kg || 0}kg x ${s.reps || 0}\n`;
+                });
+                text += `\n`;
+            });
+            return text;
+        };
+
+        const parseRoutineText = (text) => {
+            const lines = text.split('\n');
+            let name = "Nueva Rutina Importada";
+            let currentExercise = null;
+            const exercises = [];
+
+            lines.forEach(line => {
+                const cleanLine = line.trim();
+                if (!cleanLine) return;
+
+                if (cleanLine.toUpperCase().startsWith("RUTINA:") || cleanLine.toUpperCase().startsWith("ROUTINE:")) {
+                    name = cleanLine.split(':')[1].trim();
+                } 
+                else if (line.startsWith('-') || line.startsWith('•')) {
+                    currentExercise = {
+                        id: Date.now() + Math.random(),
+                        name: cleanLine.substring(1).trim(),
+                        sets: []
+                    };
+                    exercises.push(currentExercise);
+                }
+                else if (currentExercise) {
+                    const kgMatch = cleanLine.match(/(\d+(?:\.\d+)?)\s*(?:kg|lb)?/i);
+                    const repsMatch = cleanLine.match(/x\s*(\d+)/i) || cleanLine.match(/(\d+)\s*(?:reps|r)/i);
+                    let kg = '';
+                    let reps = '';
+                    if (cleanLine.includes('x')) {
+                         const parts = cleanLine.split('x');
+                         kg = parts[0].replace(/[^\d.]/g, '');
+                         reps = parts[1].replace(/[^\d]/g, '');
+                    } else {
+                        kg = cleanLine.replace(/[^\d.]/g, ''); 
+                        reps = '0';
+                    }
+                    if (kg || reps) {
+                        currentExercise.sets.push({ kg: kg || '', reps: reps || '' });
+                    }
+                }
+            });
+
+            const validExercises = exercises.filter(e => e.name).map(e => ({
+                ...e,
+                sets: e.sets.length > 0 ? e.sets : [{kg:'', reps:''}]
+            }));
+
+            if (validExercises.length === 0) return null;
+
+            return {
+                id: Date.now(),
+                name,
+                exercises: validExercises
             };
+        };
 
-            const jsonString = JSON.stringify(data, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
+        const downloadFile = (filename, content, type) => {
+            const blob = new Blob([content], { type });
             const url = URL.createObjectURL(blob);
-
             const a = document.createElement('a');
             a.href = url;
-            // Sanitizar el nombre para el nombre del archivo
-            const safeName = routine.name.replace(/[^\w\s]/gi, '').trim().replace(/\s+/g, '_');
-            a.download = `GymTracker_Routine_${safeName || 'export'}.json`;
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            alert(getText(
-                language,
-                `Rutina "${routine.name}" exportada con éxito.`,
-                `Routine "${routine.name}" exported successfully.`
-            ));
         };
 
+        const exportRoutine = (routine, format) => {
+            const safeName = routine.name.replace(/[^\w\s]/gi, '').trim().replace(/\s+/g, '_');
+            
+            if (format === 'json') {
+                const data = {
+                    metadata: { version: 'v2.3_routine', exportDate: new Date().toISOString(), type: 'routine' },
+                    routine: routine
+                };
+                downloadFile(`GymTracker_${safeName}.json`, JSON.stringify(data, null, 2), 'application/json');
+            } else if (format === 'txt') {
+                const text = generateRoutineText(routine);
+                downloadFile(`GymTracker_${safeName}.txt`, text, 'text/plain');
+            }
+        };
 
-        // --- Generic modal component ---
         const Modal = ({ isOpen, onClose, title, children }) => {
             if (!isOpen) return null;
             return (
@@ -200,145 +273,92 @@
             );
         };
 
-        // --- Settings and data migration modal ---
-        const SettingsModal = ({ 
-            isOpen, 
-            onClose, 
-            workouts, 
-            templates, 
-            setWorkouts, 
-            setTemplates,
-            language 
-        }) => {
-            const fileInputRef = useRef(null);
+        const ExportModal = ({ isOpen, onClose, routine, language }) => {
+            const [copied, setCopied] = useState(false);
+            if (!routine) return null;
 
-            // Export all data to a JSON file
-            const handleExport = () => {
-                const data = {
-                    metadata: { version: 'v2.3_full', exportDate: new Date().toISOString(), type: 'full' },
-                    workouts: workouts,
-                    templates: templates
-                };
-
-                const jsonString = JSON.stringify(data, null, 2);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `GymTracker_Backup_${formatDateKey(new Date())}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                alert(getText(
-                    language,
-                    "Datos exportados con éxito. Busca el archivo .json en tu carpeta de descargas.",
-                    "Data exported successfully. Check your Downloads folder for the .json file."
-                ));
-                onClose();
-            };
-
-            // Handle JSON import and local overwrite
-            const handleFileChange = (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                if (!confirm(getText(
-                    language,
-                    "ADVERTENCIA: ¿Estás seguro de que quieres importar datos? Esto SOBRESCRIBIRÁ tu información actual.",
-                    "WARNING: Are you sure you want to import data? This will OVERWRITE your current information."
-                ))) return;
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-
-                        // Only allow full backup import here
-                        if (importedData.workouts && importedData.templates && importedData.metadata.type === 'full') {
-                            setWorkouts(importedData.workouts);
-                            localStorage.setItem('gymTrackerData_v1', JSON.stringify(importedData.workouts));
-
-                            setTemplates(importedData.templates);
-                            localStorage.setItem('gymTrackerTemplates_v1', JSON.stringify(importedData.templates));
-
-                            alert(getText(
-                                language,
-                                "Datos importados y guardados con éxito.",
-                                "Data imported and saved successfully."
-                            ));
-                            onClose();
-                        } else {
-                            alert(getText(
-                                language,
-                                "Error: El archivo JSON no tiene el formato de copia de seguridad completo correcto. Usa 'Importar Rutina' para rutinas individuales.",
-                                "Error: JSON file does not have the correct full backup format. Use 'Import Routine' for individual routines."
-                            ));
-                        }
-                    } catch (error) {
-                        alert(getText(
-                            language,
-                            "Error al parsear el archivo JSON. Asegúrate de que es un archivo de copia de seguridad válido.",
-                            "Error parsing JSON file. Make sure it is a valid backup file."
-                        ));
-                        console.error("Import error:", error);
-                    }
-                };
-                reader.readAsText(file);
-                event.target.value = null; // Reset file input
-            };
-
-            const triggerFileInput = () => {
-                fileInputRef.current.click();
+            const handleCopy = () => {
+                const text = generateRoutineText(routine);
+                navigator.clipboard.writeText(text).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                });
             };
 
             return (
                 <Modal 
                     isOpen={isOpen} 
                     onClose={onClose} 
-                    title={getText(language, "Configuración y Migración", "Settings and Migration")}
+                    title={getText(language, "Exportar Rutina", "Export Routine")}
                 >
-                    <div className="space-y-6">
-                        <h3 className="text-lg font-semibold text-gym-accent border-b border-slate-700 pb-2">
-                            {getText(language, "Copia de Seguridad Completa", "Full Backup")}
-                        </h3>
-                        <p className="text-sm text-gym-muted">
-                            {getText(
-                                language, 
-                                "Exporta o importa TODOS tus entrenamientos y rutinas. La importación sobrescribe lo actual.", 
-                                "Export or import ALL your workouts and routines. Importing overwrites current data."
-                            )}
+                    <div className="space-y-3">
+                        <p className="text-sm text-gym-muted mb-4">
+                            {getText(language, `Elige como quieres exportar "${routine.name}"`, `Choose how to export "${routine.name}"`)}
                         </p>
-
-                        <button 
-                            onClick={handleExport}
-                            className="w-full py-3 bg-gym-success/20 text-gym-success rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gym-success/30 transition-colors"
-                        >
-                            <IconDownload size={20}/> 
-                            {getText(language, "Exportar Datos Completos (JSON)", "Export Full Data (JSON)")}
+                        <button onClick={() => { exportRoutine(routine, 'json'); onClose(); }} className="w-full py-3 bg-slate-800 border border-slate-700 hover:bg-slate-700 rounded-lg flex items-center justify-between px-4">
+                            <span className="flex items-center gap-2"><span className="text-gym-accent font-mono text-xs border border-gym-accent px-1 rounded">JSON</span><span className="font-bold text-white">{getText(language, "Archivo de Datos", "Data File")}</span></span>
+                            <IconDownload size={20} className="text-gym-muted"/>
                         </button>
-
-                        <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            onChange={handleFileChange} 
-                            accept=".json" 
-                            className="hidden"
-                        />
-                        <button 
-                            onClick={triggerFileInput}
-                            className="w-full py-3 bg-gym-danger/20 text-gym-danger rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gym-danger/30 transition-colors"
-                        >
-                            <IconUpload size={20}/> 
-                            {getText(language, "Importar Datos (Sobrescribir)", "Import Data (Overwrite)")}
+                        <button onClick={() => { exportRoutine(routine, 'txt'); onClose(); }} className="w-full py-3 bg-slate-800 border border-slate-700 hover:bg-slate-700 rounded-lg flex items-center justify-between px-4">
+                            <span className="flex items-center gap-2"><span className="text-gym-primary font-mono text-xs border border-gym-primary px-1 rounded">TXT</span><span className="font-bold text-white">{getText(language, "Archivo de Texto", "Text File")}</span></span>
+                            <IconFileText size={20} className="text-gym-muted"/>
                         </button>
+                        <div className="relative">
+                            <button onClick={handleCopy} className="w-full py-3 bg-slate-800 border border-slate-700 hover:bg-slate-700 rounded-lg flex items-center justify-between px-4">
+                                <span className="flex items-center gap-2"><span className="text-green-500 font-mono text-xs border border-green-500 px-1 rounded">COPY</span><span className="font-bold text-white">{getText(language, "Copiar al Portapapeles", "Copy to Clipboard")}</span></span>
+                                {copied ? <IconCheck size={20} className="text-green-500"/> : <IconCopy size={20} className="text-gym-muted"/>}
+                            </button>
+                            {copied && <div className="absolute top-0 right-12 -mt-8 bg-green-500 text-black text-xs font-bold px-2 py-1 rounded shadow animate-fade-in">{getText(language, "¡Copiado!", "Copied!")}</div>}
+                        </div>
+                        <div className="mt-4 p-3 bg-slate-900 rounded-lg border border-slate-800">
+                            <p className="text-xs text-gym-muted font-mono whitespace-pre-wrap max-h-32 overflow-y-auto">{generateRoutineText(routine)}</p>
+                        </div>
+                    </div>
+                </Modal>
+            );
+        };
 
-                        <h3 className="text-lg font-semibold text-gym-primary border-b border-slate-700 pb-2 pt-4">
-                            {getText(language, "Información del Sistema", "System Information")}
-                        </h3>
+        const SettingsModal = ({ isOpen, onClose, workouts, templates, setWorkouts, setTemplates, language }) => {
+            const fileInputRef = useRef(null);
+            const handleExport = () => {
+                const data = { metadata: { version: 'v2.3_full', exportDate: new Date().toISOString(), type: 'full' }, workouts: workouts, templates: templates };
+                downloadFile(`GymTracker_Backup_${formatDateKey(new Date())}.json`, JSON.stringify(data, null, 2), 'application/json');
+                alert(getText(language, "Datos exportados con éxito.", "Data exported successfully."));
+                onClose();
+            };
+            const handleFileChange = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                if (!confirm(getText(language, "ADVERTENCIA: ¿Estás seguro de que quieres importar datos? Esto SOBRESCRIBIRÁ tu información actual.", "WARNING: Are you sure you want to import data? This will OVERWRITE your current information."))) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (importedData.workouts && importedData.templates && importedData.metadata.type === 'full') {
+                            setWorkouts(importedData.workouts);
+                            localStorage.setItem('gymTrackerData_v1', JSON.stringify(importedData.workouts));
+                            setTemplates(importedData.templates);
+                            localStorage.setItem('gymTrackerTemplates_v1', JSON.stringify(importedData.templates));
+                            alert(getText(language, "Datos importados y guardados con éxito.", "Data imported and saved successfully."));
+                            onClose();
+                        } else { alert(getText(language, "Error: El archivo JSON no tiene el formato correcto.", "Error: JSON file does not have the correct format.")); }
+                    } catch (error) { alert(getText(language, "Error al parsear el archivo JSON.", "Error parsing JSON file.")); }
+                };
+                reader.readAsText(file);
+                event.target.value = null;
+            };
+            const triggerFileInput = () => fileInputRef.current.click();
+            return (
+                <Modal isOpen={isOpen} onClose={onClose} title={getText(language, "Configuración y Migración", "Settings and Migration")}>
+                    <div className="space-y-6">
+                        <h3 className="text-lg font-semibold text-gym-accent border-b border-slate-700 pb-2">{getText(language, "Copia de Seguridad Completa", "Full Backup")}</h3>
+                        <p className="text-sm text-gym-muted">{getText(language, "Exporta o importa TODOS tus entrenamientos y rutinas.", "Export or import ALL your workouts and routines.")}</p>
+                        <button onClick={handleExport} className="w-full py-3 bg-gym-success/20 text-gym-success rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gym-success/30 transition-colors"><IconDownload size={20}/> {getText(language, "Exportar Todo (JSON)", "Export All (JSON)")}</button>
+                        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".json" className="hidden" />
+                        <button onClick={triggerFileInput} className="w-full py-3 bg-gym-danger/20 text-gym-danger rounded-lg font-bold flex items-center justify-center gap-3 hover:bg-gym-danger/30 transition-colors"><IconUpload size={20}/> {getText(language, "Importar Todo (Sobrescribir)", "Import All (Overwrite)")}</button>
+                        <h3 className="text-lg font-semibold text-gym-primary border-b border-slate-700 pb-2 pt-4">{getText(language, "Información del Sistema", "System Information")}</h3>
                         <p className="text-sm text-gym-muted">
-                            {getText(language, "Versión", "Version")}: <span className="text-white">v2.3</span><br/>
+                            {getText(language, "Versión", "Version")}: <span className="text-white">v2.6 (Yellow Ghost)</span><br/>
                             {getText(language, "Días de Entrenamiento", "Training Days")}: <span className="text-white">{Object.keys(workouts).length}</span><br/>
                             {getText(language, "Rutinas Guardadas", "Saved Routines")}: <span className="text-white">{templates.length}</span>
                         </p>
@@ -347,8 +367,6 @@
             );
         };
 
-
-        // --- Single exercise card for the day view (no changes) ---
         const ExerciseCard = ({ exercise, onUpdate, onDelete, language }) => {
             const addSet = () => {
                 const lastSet = exercise.sets[exercise.sets.length - 1] || { kg: '', reps: '' };
@@ -359,7 +377,26 @@
             const updateSet = (index, field, value) => {
                 const newSets = [...exercise.sets];
                 newSets[index][field] = value;
+                // Important: When user types, ensure ghost mode for that specific field is OFF
+                if (field === 'kg') newSets[index].ghostKg = false;
+                if (field === 'reps') newSets[index].ghostReps = false;
+                
                 onUpdate({ ...exercise, sets: newSets });
+            };
+
+            const handleFocus = (index, field) => {
+                const set = exercise.sets[index];
+                // Only clear if it is currently a "Ghost" value
+                if (field === 'kg' && set.ghostKg) {
+                    const newSets = [...exercise.sets];
+                    newSets[index] = { ...newSets[index], kg: '', ghostKg: false };
+                    onUpdate({ ...exercise, sets: newSets });
+                }
+                if (field === 'reps' && set.ghostReps) {
+                    const newSets = [...exercise.sets];
+                    newSets[index] = { ...newSets[index], reps: '', ghostReps: false };
+                    onUpdate({ ...exercise, sets: newSets });
+                }
             };
 
             const deleteSet = (index) => {
@@ -398,8 +435,9 @@
                                         type="number"
                                         placeholder="-"
                                         value={set.kg}
+                                        onFocus={() => handleFocus(idx, 'kg')}
                                         onChange={(e) => updateSet(idx, 'kg', e.target.value)}
-                                        className="w-full bg-slate-800 rounded p-2 text-center text-white focus:ring-1 focus:ring-gym-primary outline-none font-mono"
+                                        className={`w-full bg-slate-800 rounded p-2 text-center focus:ring-1 focus:ring-gym-primary outline-none font-mono transition-colors ${set.ghostKg ? 'text-gym-accent' : 'text-white'}`}
                                     />
                                 </div>
                                 <div className="col-span-4">
@@ -407,8 +445,9 @@
                                         type="number"
                                         placeholder="-"
                                         value={set.reps}
+                                        onFocus={() => handleFocus(idx, 'reps')}
                                         onChange={(e) => updateSet(idx, 'reps', e.target.value)}
-                                        className="w-full bg-slate-800 rounded p-2 text-center text-white focus:ring-1 focus:ring-gym-primary outline-none font-mono"
+                                        className={`w-full bg-slate-800 rounded p-2 text-center focus:ring-1 focus:ring-gym-primary outline-none font-mono transition-colors ${set.ghostReps ? 'text-gym-accent' : 'text-white'}`}
                                     />
                                 </div>
                                 <div className="col-span-1 flex justify-center">
@@ -430,90 +469,38 @@
             );
         };
 
-        // --- Add manager modal for quickly adding exercises or templates (no changes) ---
         const AddManager = ({ isOpen, onClose, history, templates, onAddExercise, onAddTemplate, language }) => {
             const [search, setSearch] = useState('');
             const [tab, setTab] = useState('history'); 
-
             const filteredHistory = history.filter(h => h.name.toLowerCase().includes(search.toLowerCase()));
 
             return (
-                <Modal 
-                    isOpen={isOpen} 
-                    onClose={onClose} 
-                    title={getText(language, "Añadir a la sesión", "Add to session")}
-                >
-                    {/* Tabs for exercises vs routines */}
+                <Modal isOpen={isOpen} onClose={onClose} title={getText(language, "Añadir a la sesión", "Add to session")}>
                     <div className="flex p-1 bg-slate-800 rounded-lg mb-4">
-                        <button 
-                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${tab === 'history' ? 'bg-gym-card text-white shadow' : 'text-gym-muted'}`}
-                            onClick={() => setTab('history')}
-                        >
-                            {getText(language, "Ejercicios", "Exercises")}
-                        </button>
-                        <button 
-                            className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${tab === 'templates' ? 'bg-gym-card text-white shadow' : 'text-gym-muted'}`}
-                            onClick={() => setTab('templates')}
-                        >
-                            {getText(language, "Rutinas", "Routines")}
-                        </button>
+                        <button className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${tab === 'history' ? 'bg-gym-card text-white shadow' : 'text-gym-muted'}`} onClick={() => setTab('history')}>{getText(language, "Ejercicios", "Exercises")}</button>
+                        <button className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${tab === 'templates' ? 'bg-gym-card text-white shadow' : 'text-gym-muted'}`} onClick={() => setTab('templates')}>{getText(language, "Rutinas", "Routines")}</button>
                     </div>
-
                     {tab === 'history' ? (
                         <>
                             <div className="relative mb-4">
                                 <IconSearch className="absolute left-3 top-2.5 text-slate-500" size={18} />
-                                <input 
-                                    autoFocus
-                                    type="text" 
-                                    placeholder={getText(language, "Buscar ejercicio...", "Search exercise...")} 
-                                    className="w-full bg-slate-800 rounded-lg py-2 pl-10 pr-4 text-white focus:ring-2 focus:ring-gym-primary outline-none"
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                />
+                                <input autoFocus type="text" placeholder={getText(language, "Buscar ejercicio...", "Search exercise...")} className="w-full bg-slate-800 rounded-lg py-2 pl-10 pr-4 text-white focus:ring-2 focus:ring-gym-primary outline-none" value={search} onChange={e => setSearch(e.target.value)} />
                             </div>
-
-                            <button 
-                                onClick={() => { 
-                                    onAddExercise({ id: Date.now(), name: search, sets: [{kg:'', reps:''}] }); 
-                                    onClose(); 
-                                }}
-                                className="w-full py-3 mb-2 bg-gym-primary/10 text-gym-primary rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-gym-primary/20"
-                            >
-                                <IconPlus size={18} /> 
-                                {getText(
-                                    language, 
-                                    `Crear "${search || 'Nuevo'}"`,
-                                    `Create "${search || 'New'}"`
-                                )}
-                            </button>
-
+                            <button onClick={() => { 
+                                // NEW: We don't just add blank, we let DayView handle the history lookup logic
+                                onAddExercise({ id: Date.now(), name: search, sets: [{kg:'', reps:''}] }); 
+                                onClose(); 
+                            }} className="w-full py-3 mb-2 bg-gym-primary/10 text-gym-primary rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-gym-primary/20"><IconPlus size={18} /> {getText(language, `Crear "${search || 'Nuevo'}"`, `Create "${search || 'New'}"`)}</button>
                             <div className="space-y-2">
-                                <h4 className="text-xs font-bold text-gym-muted uppercase mt-4 mb-2">
-                                    {getText(language, "Recientes / Historial", "Recent / History")}
-                                </h4>
-                                {filteredHistory.length === 0 && (
-                                    <p className="text-center text-slate-600 py-4">
-                                        {getText(language, "No se encontraron ejercicios", "No exercises found")}
-                                    </p>
-                                )}
                                 {filteredHistory.map((item, idx) => (
-                                    <button 
-                                        key={idx}
-                                        onClick={() => { 
-                                            onAddExercise({ id: Date.now(), name: item.name, sets: item.lastSets }); 
-                                            onClose(); 
-                                        }}
-                                        className="w-full bg-slate-800/50 p-3 rounded-lg flex justify-between items-center hover:bg-slate-700 text-left group"
-                                    >
+                                    <button key={idx} onClick={() => { 
+                                        // Here we just pass the name, DayView logic will handle the ghost population from history again to be safe
+                                        onAddExercise({ id: Date.now(), name: item.name, sets: item.lastSets }); 
+                                        onClose(); 
+                                    }} className="w-full bg-slate-800/50 p-3 rounded-lg flex justify-between items-center hover:bg-slate-700 text-left group">
                                         <div>
                                             <div className="font-semibold text-slate-200">{item.name}</div>
-                                            <div className="text-xs text-gym-muted">
-                                                {getText(language, "Último", "Last")}: {item.lastSets.length} {getText(language, "series", "sets")} {getText(language, "el", "on")} {item.lastDate}
-                                            </div>
-                                        </div>
-                                        <div className="text-gym-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <IconCopy size={16} />
+                                            <div className="text-xs text-gym-muted">{getText(language, "Último", "Last")}: {item.lastSets.length} {getText(language, "series", "sets")} {getText(language, "el", "on")} {item.lastDate}</div>
                                         </div>
                                     </button>
                                 ))}
@@ -521,405 +508,126 @@
                         </>
                     ) : (
                         <div className="space-y-2">
-                             {templates.length === 0 ? (
-                                <div className="text-center py-8 text-gym-muted">
-                                    <p>{getText(language, "No tienes rutinas guardadas.", "You have no saved routines.")}</p>
-                                    <p className="text-sm mt-2">{getText(language, "Crea una para reutilizarla.", "Create one so you can reuse it.")}</p>
-                                </div>
-                             ) : (
-                                 templates.map(t => (
-                                    <button 
-                                        key={t.id}
-                                        onClick={() => { onAddTemplate(t); onClose(); }}
-                                        className="w-full bg-slate-800 p-4 rounded-lg flex justify-between items-center hover:bg-slate-700 text-left border border-slate-700 hover:border-gym-primary"
-                                    >
-                                        <div className="font-bold text-white">{t.name}</div>
-                                        <div className="text-xs bg-slate-900 px-2 py-1 rounded text-gym-muted">
-                                            {t.exercises.length} {getText(language, "ejercicios", "exercises")}
-                                        </div>
-                                    </button>
-                                 ))
-                             )}
+                             {templates.length === 0 ? <div className="text-center py-8 text-gym-muted"><p>{getText(language, "No tienes rutinas guardadas.", "You have no saved routines.")}</p></div> : templates.map(t => (
+                                <button key={t.id} onClick={() => { onAddTemplate(t); onClose(); }} className="w-full bg-slate-800 p-4 rounded-lg flex justify-between items-center hover:bg-slate-700 text-left border border-slate-700 hover:border-gym-primary">
+                                    <div className="font-bold text-white">{t.name}</div>
+                                    <div className="text-xs bg-slate-900 px-2 py-1 rounded text-gym-muted">{t.exercises.length} {getText(language, "ejercicios", "exercises")}</div>
+                                </button>
+                             ))}
                         </div>
                     )}
                 </Modal>
             );
         };
 
-        // --- Single exercise row inside a template editor (IMPROVED) ---
         const TemplateExerciseRowImproved = ({ ex, idx, onChange, onRemove, language }) => {
             const updateSetField = (setIndex, field, value) => {
                 const newSets = [...ex.sets];
                 newSets[setIndex][field] = value;
                 onChange({...ex, sets: newSets});
             };
-
-            const addSet = () => {
-                // Add a new set with blank values
-                const lastSet = ex.sets[ex.sets.length - 1] || { kg: '', reps: '' };
-                onChange({...ex, sets: [...ex.sets, {kg: lastSet.kg, reps: lastSet.reps}]});
-            };
-
-            const deleteSet = (setIndex) => {
-                if (ex.sets.length <= 1) {
-                    alert(getText(language, "Un ejercicio debe tener al menos una serie.", "An exercise must have at least one set."));
-                    return;
-                }
-                onChange({...ex, sets: ex.sets.filter((_, i) => i !== setIndex)});
-            };
-
+            const addSet = () => { const lastSet = ex.sets[ex.sets.length - 1] || { kg: '', reps: '' }; onChange({...ex, sets: [...ex.sets, {kg: lastSet.kg, reps: lastSet.reps}]}); };
+            const deleteSet = (setIndex) => { if (ex.sets.length <= 1) { alert(getText(language, "Un ejercicio debe tener al menos una serie.", "An exercise must have at least one set.")); return; } onChange({...ex, sets: ex.sets.filter((_, i) => i !== setIndex)}); };
             return (
                 <div className="bg-slate-800 p-3 rounded mb-4">
-                    <div className="flex gap-2 items-center mb-2">
-                        <span className="text-gym-muted font-mono">{idx+1}</span>
-                        <input 
-                            className="flex-1 bg-transparent text-white border-b border-slate-600 focus:border-gym-primary outline-none p-1 font-semibold"
-                            value={ex.name}
-                            placeholder={getText(language, "Nombre Ejercicio", "Exercise Name")}
-                            onChange={e => onChange({...ex, name: e.target.value})}
-                        />
-                        <button onClick={onRemove} className="text-red-400 p-1">
-                            <IconTrash size={16} />
-                        </button>
-                    </div>
-
+                    <div className="flex gap-2 items-center mb-2"><span className="text-gym-muted font-mono">{idx+1}</span><input className="flex-1 bg-transparent text-white border-b border-slate-600 focus:border-gym-primary outline-none p-1 font-semibold" value={ex.name} placeholder={getText(language, "Nombre Ejercicio", "Exercise Name")} onChange={e => onChange({...ex, name: e.target.value})} /><button onClick={onRemove} className="text-red-400 p-1"><IconTrash size={16} /></button></div>
                     <div className="space-y-1 mt-2">
-                        {/* Headers for sets */}
-                        <div className="grid grid-cols-10 gap-1 text-[10px] text-gym-muted font-bold tracking-widest text-center uppercase">
-                            <div className="col-span-1">#</div>
-                            <div className="col-span-4">{getText(language, "KG", "KG")}</div>
-                            <div className="col-span-4">{getText(language, "Reps", "Reps")}</div>
-                            <div className="col-span-1"></div>
-                        </div>
-                        {/* Set rows */}
+                        <div className="grid grid-cols-10 gap-1 text-[10px] text-gym-muted font-bold tracking-widest text-center uppercase"><div className="col-span-1">#</div><div className="col-span-4">{getText(language, "KG", "KG")}</div><div className="col-span-4">{getText(language, "Reps", "Reps")}</div><div className="col-span-1"></div></div>
                         {ex.sets.map((set, setIdx) => (
                             <div key={setIdx} className="grid grid-cols-10 gap-1 items-center">
                                 <div className="col-span-1 text-center text-gym-muted font-mono text-xs">{setIdx + 1}</div>
-                                <div className="col-span-4">
-                                    <input
-                                        type="number"
-                                        placeholder="-"
-                                        value={set.kg}
-                                        onChange={(e) => updateSetField(setIdx, 'kg', e.target.value)}
-                                        className="w-full bg-slate-700 rounded p-1 text-center text-white focus:ring-1 focus:ring-gym-primary outline-none font-mono text-sm"
-                                    />
-                                </div>
-                                <div className="col-span-4">
-                                    <input
-                                        type="number"
-                                        placeholder="-"
-                                        value={set.reps}
-                                        onChange={(e) => updateSetField(setIdx, 'reps', e.target.value)}
-                                        className="w-full bg-slate-700 rounded p-1 text-center text-white focus:ring-1 focus:ring-gym-primary outline-none font-mono text-sm"
-                                    />
-                                </div>
-                                <div className="col-span-1 flex justify-center">
-                                    <button onClick={() => deleteSet(setIdx)} className="text-slate-600 hover:text-red-400">
-                                        &times;
-                                    </button>
-                                </div>
+                                <div className="col-span-4"><input type="number" placeholder="-" value={set.kg} onChange={(e) => updateSetField(setIdx, 'kg', e.target.value)} className="w-full bg-slate-700 rounded p-1 text-center text-white focus:ring-1 focus:ring-gym-primary outline-none font-mono text-sm" /></div>
+                                <div className="col-span-4"><input type="number" placeholder="-" value={set.reps} onChange={(e) => updateSetField(setIdx, 'reps', e.target.value)} className="w-full bg-slate-700 rounded p-1 text-center text-white focus:ring-1 focus:ring-gym-primary outline-none font-mono text-sm" /></div>
+                                <div className="col-span-1 flex justify-center"><button onClick={() => deleteSet(setIdx)} className="text-slate-600 hover:text-red-400">&times;</button></div>
                             </div>
                         ))}
                     </div>
-                    <button 
-                        onClick={addSet}
-                        className="mt-2 w-full py-1 bg-slate-700/50 hover:bg-slate-700 text-gym-accent text-xs font-bold rounded flex items-center justify-center gap-1 transition-all"
-                    >
-                        <IconPlus size={12} /> {getText(language, "Serie", "Set")}
-                    </button>
+                    <button onClick={addSet} className="mt-2 w-full py-1 bg-slate-700/50 hover:bg-slate-700 text-gym-accent text-xs font-bold rounded flex items-center justify-center gap-1 transition-all"><IconPlus size={12} /> {getText(language, "Serie", "Set")}</button>
                 </div>
             );
         };
 
-        // --- NEW: Modal for pasting JSON code ---
         const ImportCodeModal = ({ isOpen, onClose, templates, onSaveTemplates, language }) => {
-            const [jsonCode, setJsonCode] = useState('');
-
+            const [textCode, setTextCode] = useState('');
             const handleImportCode = () => {
-                if (!jsonCode.trim()) {
-                    alert(getText(language, "Pega el código JSON de la rutina.", "Paste the routine JSON code."));
-                    return;
-                }
-
-                try {
-                    const importedData = JSON.parse(jsonCode);
-                    const routine = importedData.routine;
-
-                    if (routine && importedData.metadata && importedData.metadata.type === 'routine' && routine.name && routine.exercises) {
-
-                        // Check for duplicate name
-                        if (templates.some(t => t.name.toLowerCase() === routine.name.toLowerCase())) {
-                            alert(getText(language, `Ya existe una rutina con el nombre "${routine.name}". Cámbiale el nombre.`, `A routine named "${routine.name}" already exists. Rename it.`));
-                            return;
-                        }
-
-                        // Clean up and assign new ID
-                        const newRoutine = {
-                            id: Date.now(),
-                            name: routine.name,
-                            exercises: routine.exercises.map(ex => ({
-                                // Give new ID to the exercise too
-                                id: Date.now() + Math.random(),
-                                name: ex.name,
-                                sets: ex.sets.map(s => ({ // Ensure sets are valid
-                                    kg: String(s.kg || '').trim(),
-                                    reps: String(s.reps || '').trim()
-                                }))
-                            }))
-                        };
-
-                        onSaveTemplates([...templates, newRoutine]);
-                        alert(getText(language, `Rutina "${newRoutine.name}" importada con éxito.`, `Routine "${newRoutine.name}" imported successfully.`));
-                        setJsonCode('');
-                        onClose();
-                    } else {
-                        alert(getText(language, "Error: El JSON no contiene una rutina válida (falta metadata.type='routine', name o exercises).", "Error: The JSON does not contain a valid routine (missing metadata.type='routine', name, or exercises)."));
-                    }
-                } catch (error) {
-                    alert(getText(language, "Error al parsear el código JSON. Asegúrate de que es un JSON válido.", "Error parsing the JSON code. Make sure it is valid JSON."));
-                    console.error("Import routine error:", error);
-                }
+                if (!textCode.trim()) { alert(getText(language, "Pega el contenido.", "Paste content.")); return; }
+                let routine = null;
+                try { const json = JSON.parse(textCode); if (json.routine) routine = json.routine; } catch (e) {}
+                if (!routine) { routine = parseRoutineText(textCode); }
+                if (routine && routine.name && routine.exercises) {
+                    if (templates.some(t => t.name.toLowerCase() === routine.name.toLowerCase())) { alert(getText(language, `Ya existe una rutina llamada "${routine.name}".`, `Routine "${routine.name}" already exists.`)); return; }
+                    const newRoutine = { id: Date.now(), name: routine.name, exercises: routine.exercises.map(ex => ({ id: Date.now() + Math.random(), name: ex.name, sets: ex.sets })) };
+                    onSaveTemplates([...templates, newRoutine]);
+                    alert(getText(language, "Importado con éxito.", "Imported successfully."));
+                    setTextCode('');
+                    onClose();
+                } else { alert(getText(language, "Formato no válido (ni JSON ni Texto válido).", "Invalid format (neither JSON nor valid Text).")); }
             };
-
             return (
-                <Modal
-                    isOpen={isOpen}
-                    onClose={onClose}
-                    title={getText(language, "Importar Rutina por Código", "Import Routine via Code")}
-                >
-                    <p className="text-sm text-gym-muted mb-4">
-                        {getText(language, "Pega el contenido completo del archivo JSON de una rutina exportada a continuación.", "Paste the full content of an exported routine's JSON file below.")}
-                    </p>
-                    <textarea
-                        className="w-full h-64 bg-slate-900 border border-slate-700 rounded-lg p-3 text-white font-mono text-xs focus:ring-1 focus:ring-gym-accent outline-none"
-                        placeholder={getText(language, "Pega el código JSON aquí...", "Paste JSON code here...")}
-                        value={jsonCode}
-                        onChange={e => setJsonCode(e.target.value)}
-                    />
-                    <button
-                        onClick={handleImportCode}
-                        className="w-full py-3 mt-4 bg-gym-accent/80 hover:bg-gym-accent rounded-lg font-bold text-white transition-colors flex items-center justify-center gap-2"
-                    >
-                        <IconUpload size={20} />
-                        {getText(language, "Importar Rutina", "Import Routine")}
-                    </button>
+                <Modal isOpen={isOpen} onClose={onClose} title={getText(language, "Importar Rutina (Texto/JSON)", "Import Routine (Text/JSON)")}>
+                    <p className="text-sm text-gym-muted mb-4">{getText(language, "Pega aquí el JSON o el texto de la rutina.", "Paste JSON or routine text here.")}</p>
+                    <textarea className="w-full h-64 bg-slate-900 border border-slate-700 rounded-lg p-3 text-white font-mono text-xs focus:ring-1 focus:ring-gym-accent outline-none" placeholder="RUTINA: Mi Rutina..." value={textCode} onChange={e => setTextCode(e.target.value)} />
+                    <button onClick={handleImportCode} className="w-full py-3 mt-4 bg-gym-accent/80 hover:bg-gym-accent rounded-lg font-bold text-white transition-colors flex items-center justify-center gap-2"><IconUpload size={20} />{getText(language, "Importar", "Import")}</button>
                 </Modal>
             );
         };
 
-
-        // --- Template management view (UPDATED with Import/Export) ---
         const TemplatesView = ({ templates, onSaveTemplates, onBack, language }) => {
             const [editingId, setEditingId] = useState(null);
             const [tempName, setTempName] = useState('');
             const [tempExercises, setTempExercises] = useState([]);
             const fileInputRef = useRef(null);
-            const [isCodeImportModalOpen, setCodeImportModalOpen] = useState(false); // NEW STATE
+            const [isCodeImportModalOpen, setCodeImportModalOpen] = useState(false);
+            const [exportModalRoutine, setExportModalRoutine] = useState(null);
 
-            const startCreate = () => {
-                setEditingId('new');
-                setTempName('');
-                // Start with a default set of 3x10 just for the template editor clarity
-                setTempExercises([{ 
-                    id: Date.now(), 
-                    name: '', 
-                    sets: [
-                        {kg:'', reps:'10'}, 
-                        {kg:'', reps:'10'}, 
-                        {kg:'', reps:'10'}
-                    ] 
-                }]);
-            };
-
-            const startEdit = (template) => {
-                setEditingId(template.id);
-                setTempName(template.name);
-                // Make a deep copy so edits do not mutate original until save
-                setTempExercises(template.exercises.map(ex => ({ 
-                    ...ex, 
-                    // Ensure sets are also deep copied
-                    sets: ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || '' })) 
-                }))); 
-            };
-
+            const startCreate = () => { setEditingId('new'); setTempName(''); setTempExercises([{ id: Date.now(), name: '', sets: [{kg:'', reps:'10'}, {kg:'', reps:'10'}, {kg:'', reps:'10'}] }]); };
+            const startEdit = (template) => { setEditingId(template.id); setTempName(template.name); setTempExercises(template.exercises.map(ex => ({ ...ex, sets: ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || '' })) }))); };
             const saveCurrent = () => {
-                if (!tempName.trim()) {
-                    alert(getText(language, "Ponle nombre a la rutina", "Give the routine a name"));
-                    return;
-                }
-
-                const cleanedExercises = tempExercises
-                    .map(ex => {
-                        // Clean up sets: remove empty sets and ensure values are strings (for inputs)
-                        const cleanedSets = ex.sets
-                            .map(s => ({ 
-                                kg: String(s.kg || '').trim(), 
-                                reps: String(s.reps || '').trim() 
-                            }))
-                            .filter(s => s.kg !== '' || s.reps !== '');
-
-                        // If no sets are defined, default to one empty set for consistency upon import
-                        const setsToSave = cleanedSets.length > 0 ? cleanedSets : [{kg:'', reps:''}];
-
-                        return {
-                            id: ex.id,
-                            name: ex.name.trim(),
-                            sets: setsToSave
-                        };
-                    })
-                    // Filter out exercises with no name
-                    .filter(ex => ex.name !== '');
-
-                if (cleanedExercises.length === 0) {
-                    alert(
-                        getText(
-                            language, 
-                            "La rutina debe tener al menos un ejercicio con nombre y series definidas.", 
-                            "The routine must have at least one exercise with a name and defined sets."
-                        )
-                    );
-                    return;
-                }
-
-                const newTemplate = {
-                    id: editingId === 'new' ? Date.now() : editingId,
-                    name: tempName.trim(),
-                    exercises: cleanedExercises
-                };
-
+                if (!tempName.trim()) { alert(getText(language, "Ponle nombre a la rutina", "Give the routine a name")); return; }
+                const cleanedExercises = tempExercises.map(ex => {
+                    const cleanedSets = ex.sets.map(s => ({ kg: String(s.kg || '').trim(), reps: String(s.reps || '').trim() })).filter(s => s.kg !== '' || s.reps !== '');
+                    const setsToSave = cleanedSets.length > 0 ? cleanedSets : [{kg:'', reps:''}];
+                    return { id: ex.id, name: ex.name.trim(), sets: setsToSave };
+                }).filter(ex => ex.name !== '');
+                if (cleanedExercises.length === 0) return;
+                const newTemplate = { id: editingId === 'new' ? Date.now() : editingId, name: tempName.trim(), exercises: cleanedExercises };
                 let newTemplates;
-                if (editingId === 'new') {
-                    // Check for duplicate name
-                    if (templates.some(t => t.name.toLowerCase() === newTemplate.name.toLowerCase())) {
-                        alert(getText(language, "Ya existe una rutina con ese nombre.", "A routine with that name already exists."));
-                        return;
-                    }
-                    newTemplates = [...templates, newTemplate];
-                } else {
-                    newTemplates = templates.map(t => t.id === editingId ? newTemplate : t);
-                }
-                onSaveTemplates(newTemplates);
-                setEditingId(null);
+                if (editingId === 'new') { if (templates.some(t => t.name.toLowerCase() === newTemplate.name.toLowerCase())) { alert(getText(language, "Ya existe una rutina con ese nombre.", "A routine with that name already exists.")); return; } newTemplates = [...templates, newTemplate]; } else { newTemplates = templates.map(t => t.id === editingId ? newTemplate : t); }
+                onSaveTemplates(newTemplates); setEditingId(null);
             };
-
-            const deleteTemplate = (id) => {
-                if (confirm(getText(language, "¿Borrar esta rutina?", "Delete this routine?"))) {
-                    onSaveTemplates(templates.filter(t => t.id !== id));
-                }
-            };
-
-            // --- Import Routine via File Functions ---
-            const triggerImportRoutine = () => {
-                fileInputRef.current.click();
-            };
-
+            const deleteTemplate = (id) => { if (confirm(getText(language, "¿Borrar esta rutina?", "Delete this routine?"))) { onSaveTemplates(templates.filter(t => t.id !== id)); } };
+            const triggerImportRoutine = () => fileInputRef.current.click();
             const handleFileChange = (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-                        const routine = importedData.routine;
-
-                        if (routine && importedData.metadata && importedData.metadata.type === 'routine' && routine.name && routine.exercises) {
-
-                            // Check for duplicate name
-                            if (templates.some(t => t.name.toLowerCase() === routine.name.toLowerCase())) {
-                                alert(getText(language, `Ya existe una rutina con el nombre "${routine.name}". Cámbiale el nombre al archivo o a la rutina antes de importar.`, `A routine named "${routine.name}" already exists. Rename the file or the routine before importing.`));
-                                return;
-                            }
-
-                            // Clean up and assign new ID
-                            const newRoutine = {
-                                id: Date.now(),
-                                name: routine.name,
-                                exercises: routine.exercises.map(ex => ({
-                                    // Give new ID to the exercise too
-                                    id: Date.now() + Math.random(), 
-                                    name: ex.name,
-                                    sets: ex.sets.map(s => ({ // Ensure sets are valid
-                                        kg: String(s.kg || '').trim(), 
-                                        reps: String(s.reps || '').trim()
-                                    }))
-                                }))
-                            };
-
-                            onSaveTemplates([...templates, newRoutine]);
-                            alert(getText(language, `Rutina "${newRoutine.name}" importada con éxito.`, `Routine "${newRoutine.name}" imported successfully.`));
-                        } else {
-                            alert(getText(language, "Error: El archivo JSON no contiene una rutina válida (falta metadata.type='routine', name o exercises).", "Error: JSON file does not contain a valid routine (missing metadata.type='routine', name, or exercises)."));
-                        }
-                    } catch (error) {
-                        alert(getText(language, "Error al parsear el archivo JSON. Asegúrate de que es un archivo de rutina válido.", "Error parsing JSON file. Make sure it is a valid routine file."));
-                        console.error("Import routine error:", error);
-                    }
-                    // Reset the file input so the same file can be selected again
+                    const content = e.target.result;
+                    let routine = null;
+                    try { const json = JSON.parse(content); if (json.routine) routine = json.routine; } catch(err) {}
+                    if (!routine) { routine = parseRoutineText(content); }
+                    if (routine && routine.name) {
+                         if (templates.some(t => t.name.toLowerCase() === routine.name.toLowerCase())) { alert(getText(language, `Ya existe "${routine.name}".`, `"${routine.name}" already exists.`)); return; }
+                        const newRoutine = { id: Date.now(), name: routine.name, exercises: routine.exercises.map(ex => ({ id: Date.now() + Math.random(), name: ex.name, sets: ex.sets })) };
+                        onSaveTemplates([...templates, newRoutine]); alert(getText(language, "Importada con éxito.", "Imported successfully."));
+                    } else { alert(getText(language, "Archivo no válido.", "Invalid file.")); }
                     event.target.value = null; 
                 };
                 reader.readAsText(file);
             };
-            // --- END Import Routine via File Functions ---
-
 
             if (editingId) {
                 return (
                     <div className="h-full flex flex-col bg-gym-bg animate-slide-up">
                         <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900 sticky top-0 z-20">
-                            <button onClick={() => setEditingId(null)} className="text-slate-400">
-                                {getText(language, "Cancelar", "Cancel")}
-                            </button>
-                            <h2 className="font-bold">
-                                {editingId === 'new' 
-                                    ? getText(language, "Nueva Rutina", "New Routine") 
-                                    : getText(language, "Editar Rutina", "Edit Routine")}
-                            </h2>
-                            <button onClick={saveCurrent} className="text-gym-primary font-bold">
-                                {getText(language, "Guardar", "Save")}
-                            </button>
+                            <button onClick={() => setEditingId(null)} className="text-slate-400">{getText(language, "Cancelar", "Cancel")}</button>
+                            <h2 className="font-bold">{editingId === 'new' ? getText(language, "Nueva", "New") : getText(language, "Editar", "Edit")}</h2>
+                            <button onClick={saveCurrent} className="text-gym-primary font-bold">{getText(language, "Guardar", "Save")}</button>
                         </div>
                         <div className="p-4 flex-1 overflow-y-auto no-scrollbar">
-                            <label className="block text-xs text-gym-muted mb-1">
-                                {getText(language, "Nombre de la Rutina", "Routine Name")}
-                            </label>
-                            <input 
-                                className="w-full bg-slate-800 p-3 rounded-lg text-lg font-bold mb-6 outline-none focus:ring-1 ring-gym-primary"
-                                placeholder={getText(language, "Ej. Empuje A (Pecho/Tríceps)", "Ex. Push A (Chest/Triceps)")}
-                                value={tempName}
-                                onChange={e => setTempName(e.target.value)}
-                            />
-
-                            <h3 className="text-sm font-bold text-gym-muted uppercase mb-2">
-                                {getText(language, "Ejercicios Base (Series/Reps)", "Base Exercises (Sets/Reps)")}
-                            </h3>
-                            {tempExercises.map((ex, idx) => (
-                                <TemplateExerciseRowImproved 
-                                    key={ex.id} 
-                                    ex={ex} 
-                                    idx={idx} 
-                                    onChange={(newEx) => setTempExercises(tempExercises.map(e => e.id === ex.id ? newEx : e))}
-                                    onRemove={() => setTempExercises(tempExercises.filter(e => e.id !== ex.id))}
-                                    language={language}
-                                />
-                            ))}
-
-                            <button 
-                                onClick={() => setTempExercises([
-                                    ...tempExercises, 
-                                    { id: Date.now(), name: '', sets: [{kg:'', reps:'10'}, {kg:'', reps:'10'}, {kg:'', reps:'10'}] }
-                                ])}
-                                className="w-full py-3 mt-2 border border-dashed border-slate-600 text-slate-400 rounded-lg text-sm hover:bg-slate-800 hover:text-white transition-colors"
-                            >
-                                + {getText(language, "Añadir Ejercicio", "Add Exercise")}
-                            </button>
-                            <p className="text-xs text-slate-500 mt-4 text-center">
-                                {getText(
-                                    language,
-                                    "Las series y repeticiones aquí se usarán como valores iniciales al añadir la rutina a un día.",
-                                    "The sets and reps here will be used as initial values when adding the routine to a day."
-                                )}
-                            </p>
+                            <input className="w-full bg-slate-800 p-3 rounded-lg text-lg font-bold mb-6 outline-none focus:ring-1 ring-gym-primary" placeholder={getText(language, "Nombre Rutina", "Routine Name")} value={tempName} onChange={e => setTempName(e.target.value)} />
+                            {tempExercises.map((ex, idx) => ( <TemplateExerciseRowImproved key={ex.id} ex={ex} idx={idx} onChange={(newEx) => setTempExercises(tempExercises.map(e => e.id === ex.id ? newEx : e))} onRemove={() => setTempExercises(tempExercises.filter(e => e.id !== ex.id))} language={language} /> ))}
+                            <button onClick={() => setTempExercises([...tempExercises, { id: Date.now(), name: '', sets: [{kg:'', reps:'10'}, {kg:'', reps:'10'}, {kg:'', reps:'10'}] }])} className="w-full py-3 mt-2 border border-dashed border-slate-600 text-slate-400 rounded-lg text-sm hover:bg-slate-800">+ {getText(language, "Añadir Ejercicio", "Add Exercise")}</button>
                         </div>
                     </div>
                 );
@@ -928,139 +636,52 @@
             return (
                 <div className="h-full flex flex-col animate-fade-in">
                     <div className="p-4 border-b border-slate-800 flex items-center gap-4 bg-gym-bg sticky top-0 z-10">
-                        <button onClick={onBack} className="p-2 -ml-2 text-gym-muted hover:text-white">
-                            <IconChevronLeft />
-                        </button>
-                        <h2 className="text-xl font-bold">
-                            {getText(language, "Mis Rutinas", "My Routines")}
-                        </h2>
+                        <button onClick={onBack} className="p-2 -ml-2 text-gym-muted hover:text-white"><IconChevronLeft /></button>
+                        <h2 className="text-xl font-bold">{getText(language, "Mis Rutinas", "My Routines")}</h2>
                     </div>
                     <div className="p-4 flex-1 overflow-y-auto no-scrollbar">
                         <div className="flex gap-2 mb-6">
-                            <button 
-                                onClick={startCreate}
-                                className="flex-1 py-4 bg-gradient-to-r from-gym-primary to-blue-600 rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-white text-sm active:scale-95 transition-transform"
-                            >
-                                <IconPlus size={20} /> 
-                                {getText(language, "Nueva Rutina", "New Routine")}
-                            </button>
-                            {/* Hidden file input for import */}
-                            <input 
-                                type="file" 
-                                ref={fileInputRef} 
-                                onChange={handleFileChange} 
-                                accept=".json" 
-                                className="hidden"
-                            />
-                            {/* Button to trigger file import */}
-                            <button 
-                                onClick={triggerImportRoutine}
-                                className="py-4 px-4 bg-gym-success/20 text-gym-success rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-sm hover:bg-gym-success/30 active:scale-95 transition-transform"
-                            >
-                                <IconDownload size={20} /> 
-                                {getText(language, "Archivo", "File")}
-                            </button>
-                            {/* NEW: Button to open Code Import Modal */}
-                            <button 
-                                onClick={() => setCodeImportModalOpen(true)}
-                                className="py-4 px-4 bg-gym-accent/20 text-gym-accent rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-sm hover:bg-gym-accent/30 active:scale-95 transition-transform"
-                            >
-                                <IconCopy size={20} /> 
-                                {getText(language, "Código", "Code")}
-                            </button>
+                            <button onClick={startCreate} className="flex-1 py-4 bg-gradient-to-r from-gym-primary to-blue-600 rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-white text-sm active:scale-95 transition-transform"><IconPlus size={20} /> {getText(language, "Nueva", "New")}</button>
+                            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".json,.txt" className="hidden" />
+                            <button onClick={triggerImportRoutine} className="py-4 px-4 bg-gym-success/20 text-gym-success rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-sm hover:bg-gym-success/30 active:scale-95 transition-transform"><IconDownload size={20} /> {getText(language, "Archivo", "File")}</button>
+                            <button onClick={() => setCodeImportModalOpen(true)} className="py-4 px-4 bg-gym-accent/20 text-gym-accent rounded-xl shadow-lg flex items-center justify-center gap-2 font-bold text-sm hover:bg-gym-accent/30 active:scale-95 transition-transform"><IconCopy size={20} /> {getText(language, "Texto", "Text")}</button>
                         </div>
-
                         <div className="space-y-3">
                             {templates.map(t => (
                                 <div key={t.id} className="bg-gym-card p-4 rounded-xl border border-slate-800 flex items-center group">
-                                    <div onClick={() => startEdit(t)} className="flex-1 cursor-pointer">
-                                        <h3 className="font-bold text-lg text-slate-200">{t.name}</h3>
-                                        <p className="text-xs text-gym-muted mt-1">
-                                            {t.exercises.length} {getText(language, "Ejercicios", "Exercises")}
-                                        </p>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        <button 
-                                            onClick={() => downloadRoutine(t, language)} 
-                                            className="p-2 text-gym-primary hover:text-white"
-                                            title={getText(language, "Exportar Rutina", "Export Routine")}
-                                        >
-                                            <IconShare size={20} />
-                                        </button>
-                                        <button onClick={() => deleteTemplate(t.id)} className="p-2 text-slate-600 hover:text-red-400">
-                                            <IconTrash size={18} />
-                                        </button>
-                                    </div>
+                                    <div onClick={() => startEdit(t)} className="flex-1 cursor-pointer"><h3 className="font-bold text-lg text-slate-200">{t.name}</h3><p className="text-xs text-gym-muted mt-1">{t.exercises.length} {getText(language, "Ejercicios", "Exercises")}</p></div>
+                                    <div className="flex gap-2"><button onClick={() => setExportModalRoutine(t)} className="p-2 text-gym-primary hover:text-white"><IconShare size={20} /></button><button onClick={() => deleteTemplate(t.id)} className="p-2 text-slate-600 hover:text-red-400"><IconTrash size={18} /></button></div>
                                 </div>
                             ))}
-                            {templates.length === 0 && (
-                                <div className="text-center text-slate-600 mt-10">
-                                    {getText(language, "No hay rutinas creadas.", "No routines created yet.")}
-                                </div>
-                            )}
                         </div>
                     </div>
-
-                    {/* NEW: Code Import Modal */}
-                    <ImportCodeModal
-                        isOpen={isCodeImportModalOpen}
-                        onClose={() => setCodeImportModalOpen(false)}
-                        templates={templates}
-                        onSaveTemplates={onSaveTemplates}
-                        language={language}
-                    />
+                    <ImportCodeModal isOpen={isCodeImportModalOpen} onClose={() => setCodeImportModalOpen(false)} templates={templates} onSaveTemplates={onSaveTemplates} language={language} />
+                    <ExportModal isOpen={!!exportModalRoutine} onClose={() => setExportModalRoutine(null)} routine={exportModalRoutine} language={language} />
                 </div>
             );
         };
 
-        // --- Calendar view (no changes) ---
-        const CalendarView = ({ 
-            onSelectDate, 
-            savedData, 
-            onGoToTemplates, 
-            onGoToSettings,
-            language,
-            onToggleLanguage 
-        }) => {
+        const CalendarView = ({ onSelectDate, savedData, onGoToTemplates, onGoToSettings, language, onToggleLanguage }) => {
             const [currentDate, setCurrentDate] = useState(new Date());
             const { daysInMonth, startDayOfWeek } = useMemo(() => {
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
                 const firstDay = new Date(year, month, 1);
                 const lastDay = new Date(year, month + 1, 0);
-
-                // getDay(): Sunday is 0. We shift so Monday is 0.
                 const start = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-
-                return { 
-                    daysInMonth: lastDay.getDate(), 
-                    startDayOfWeek: start 
-                };
+                return { daysInMonth: lastDay.getDate(), startDayOfWeek: start };
             }, [currentDate]);
 
-            const changeMonth = (delta) => {
-                setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + delta, 1));
-            };
-
+            const changeMonth = (delta) => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + delta, 1));
             const generateDays = () => {
                 const days = [];
-                for (let i = 0; i < startDayOfWeek; i++) {
-                    days.push(<div key={`empty-${i}`} className="h-14"></div>);
-                }
+                for (let i = 0; i < startDayOfWeek; i++) days.push(<div key={`empty-${i}`} className="h-14"></div>);
                 for (let i = 1; i <= daysInMonth; i++) {
                     const dateStr = formatDateKey(new Date(currentDate.getFullYear(), currentDate.getMonth(), i));
                     const hasWorkout = savedData[dateStr] && savedData[dateStr].length > 0;
                     const isToday = dateStr === formatDateKey(new Date());
                     days.push(
-                        <button 
-                            key={i} 
-                            onClick={() => onSelectDate(dateStr)} 
-                            className={`h-14 rounded-lg flex flex-col items-center justify-center relative transition-all ${
-                                isToday 
-                                    ? 'bg-gym-primary/20 border border-gym-primary text-gym-primary font-bold' 
-                                    : 'bg-slate-800/50 hover:bg-slate-800'
-                            }`}
-                        >
+                        <button key={i} onClick={() => onSelectDate(dateStr)} className={`h-14 rounded-lg flex flex-col items-center justify-center relative transition-all ${isToday ? 'bg-gym-primary/20 border border-gym-primary text-gym-primary font-bold' : 'bg-slate-800/50 hover:bg-slate-800'}`}>
                             <span className="text-lg">{i}</span>
                             {hasWorkout && <span className="absolute bottom-2 w-1.5 h-1.5 bg-gym-accent rounded-full"></span>}
                         </button>
@@ -1069,159 +690,97 @@
                 return days;
             };
 
-            const monthNames = monthNamesByLang[language];
-
             return (
                 <div className="p-4 animate-fade-in flex flex-col h-full">
                     <header className="mb-6 flex justify-between items-center">
-                        <div>
-                            <h1 className="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gym-primary to-gym-accent">
-                                GYM TRACKER
-                            </h1>
-                            <p className="text-gym-muted text-xs">
-                                {getText(language, "Tu progreso, tu ritmo.", "Your progress, your pace.")}
-                            </p>
-                        </div>
+                        <div><h1 className="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gym-primary to-gym-accent">GYM TRACKER</h1></div>
                         <div className="flex gap-2 items-center">
-                            {/* Language toggle with flag */}
-                            <button
-                                onClick={onToggleLanguage}
-                                className="bg-slate-800 px-2 py-1 rounded-lg text-xl hover:bg-slate-700"
-                                title={getText(language, "Cambiar idioma", "Change language")}
-                            >
-                                {language === 'es' ? '🇪🇸' : '🇬🇧'}
-                            </button>
-
-                            <button 
-                                onClick={onGoToSettings} 
-                                className="bg-slate-800 p-2 rounded-lg text-gym-muted hover:text-white flex flex-col items-center gap-1"
-                            >
-                                <IconSettings size={20} />
-                                <span className="text-[10px] font-bold">
-                                    {getText(language, "Ajustes", "Settings")}
-                                </span>
-                            </button>
-                            <button 
-                                onClick={onGoToTemplates} 
-                                className="bg-slate-800 p-2 rounded-lg text-gym-primary hover:text-white flex flex-col items-center gap-1"
-                            >
-                                <IconClipboard size={20} />
-                                <span className="text-[10px] font-bold">
-                                    {getText(language, "Rutinas", "Routines")}
-                                </span>
-                            </button>
+                            <button onClick={onToggleLanguage} className="bg-slate-800 px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center justify-center" title={getText(language, "Cambiar idioma", "Change language")}>{language === 'es' ? <FlagES /> : <FlagUS />}</button>
+                            <button onClick={onGoToSettings} className="bg-slate-800 p-2 rounded-lg text-gym-muted hover:text-white"><IconSettings size={20} /></button>
+                            <button onClick={onGoToTemplates} className="bg-slate-800 p-2 rounded-lg text-gym-primary hover:text-white"><IconClipboard size={20} /></button>
                         </div>
                     </header>
-
                     <div className="flex justify-between items-center mb-6 bg-slate-900/50 p-2 rounded-xl">
-                        <button 
-                            onClick={() => changeMonth(-1)} 
-                            className="p-2 text-white hover:bg-slate-800 rounded-lg"
-                        >
-                            <IconChevronLeft />
-                        </button>
-                        <h2 className="text-lg font-bold capitalize">
-                            {monthNames[currentDate.getMonth()]}{" "}
-                            <span className="text-gym-muted">{currentDate.getFullYear()}</span>
-                        </h2>
-                        <button 
-                            onClick={() => changeMonth(1)} 
-                            className="p-2 text-white hover:bg-slate-800 rounded-lg"
-                        >
-                            <IconChevronRight />
-                        </button>
+                        <button onClick={() => changeMonth(-1)} className="p-2 text-white hover:bg-slate-800 rounded-lg"><IconChevronLeft /></button>
+                        <h2 className="text-lg font-bold capitalize">{monthNamesByLang[language][currentDate.getMonth()]} <span className="text-gym-muted">{currentDate.getFullYear()}</span></h2>
+                        <button onClick={() => changeMonth(1)} className="p-2 text-white hover:bg-slate-800 rounded-lg"><IconChevronRight /></button>
                     </div>
-
-                    <div className="grid grid-cols-7 gap-2 mb-2 text-center text-xs text-gym-muted font-bold">
-                        {language === 'es' ? (
-                            <>
-                                <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
-                            </>
-                        ) : (
-                            <>
-                                <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
-                            </>
-                        )}
-                    </div>
-                    <div className="grid grid-cols-7 gap-2">
-                        {generateDays()}
-                    </div>
-
-                    <div className="mt-auto pt-8 pb-4">
-                        <button 
-                            onClick={() => onSelectDate(formatDateKey(new Date()))} 
-                            className="w-full py-3 bg-gym-card border border-slate-700 text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-slate-800"
-                        >
-                            {getText(language, "Ir al entrenamiento de hoy", "Go to today's workout")}
-                        </button>
-                    </div>
+                    <div className="grid grid-cols-7 gap-2 mb-2 text-center text-xs text-gym-muted font-bold">{language === 'es' ? <><div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div></> : <><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div></>}</div>
+                    <div className="grid grid-cols-7 gap-2">{generateDays()}</div>
+                    <div className="mt-auto pt-8 pb-4"><button onClick={() => onSelectDate(formatDateKey(new Date()))} className="w-full py-3 bg-gym-card border border-slate-700 text-white rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-slate-800">{getText(language, "Ir al entrenamiento de hoy", "Go to today's workout")}</button></div>
                 </div>
             );
         };
 
-        // --- Day view and main editor of exercises (minor change to how template sets are applied) ---
         const DayView = ({ dateStr, data, templates, history, onBack, onSave, language }) => {
             const [exercises, setExercises] = useState(data || []);
             const [isAddModalOpen, setAddModalOpen] = useState(false);
 
-            // Persist changes every time the exercises list changes
-            useEffect(() => { 
-                onSave(dateStr, exercises); 
-            }, [exercises]);
+            useEffect(() => { onSave(dateStr, exercises); }, [exercises]);
 
             const handleAddExercise = (exerciseTemplate) => {
-                const newEx = { ...exerciseTemplate, id: Date.now() };
-                setExercises([...exercises, newEx]);
+                // Check if history exists for this specific exercise
+                const historyItem = history.find(h => h.name.toLowerCase() === exerciseTemplate.name.toLowerCase());
+                let finalSets = exerciseTemplate.sets;
+
+                if (historyItem) {
+                    // Inject history data marked as ghost
+                    finalSets = historyItem.lastSets.map(s => ({
+                        kg: s.kg,
+                        reps: s.reps,
+                        ghostKg: true,
+                        ghostReps: true
+                    }));
+                }
+                
+                setExercises([...exercises, { ...exerciseTemplate, id: Date.now(), sets: finalSets }]);
             };
 
             const handleAddTemplate = (template) => {
                 const newExercises = template.exercises.map((ex, idx) => {
-                    // Use the sets saved in the template directly
-                    const setsToUse = ex.sets && ex.sets.length > 0 
-                        ? ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || ''})) 
-                        : [{ kg: '', reps: '' }]; // Fallback to one empty set
+                    // For each exercise in the routine, check if we have history
+                    const historyItem = history.find(h => h.name.toLowerCase() === ex.name.toLowerCase());
+                    let finalSets = [];
+
+                    if (historyItem) {
+                        // Priority 1: History (Ghost)
+                        finalSets = historyItem.lastSets.map(s => ({
+                            kg: s.kg,
+                            reps: s.reps,
+                            ghostKg: true,
+                            ghostReps: true
+                        }));
+                    } else if (ex.sets && ex.sets.length > 0) {
+                        // Priority 2: Default values from Routine (Not Ghost, actual suggestion)
+                        finalSets = ex.sets.map(s => ({ kg: s.kg || '', reps: s.reps || ''}));
+                    } else {
+                         // Priority 3: Empty
+                        finalSets = [{ kg: '', reps: '' }];
+                    }
 
                     return {
                         id: Date.now() + idx,
                         name: ex.name,
-                        sets: setsToUse
+                        sets: finalSets
                     };
                 });
                 setExercises([...exercises, ...newExercises]);
             };
 
-            const niceDate = parseLocalDateFromKey(dateStr).toLocaleDateString(
-                language === 'es' ? 'es-ES' : 'en-US', 
-                { weekday: 'long', day: 'numeric', month: 'long' }
-            );
+            const niceDate = parseLocalDateFromKey(dateStr).toLocaleDateString(language === 'es' ? 'es-ES' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' });
 
             return (
                 <div className="flex flex-col h-full animate-slide-up bg-gym-bg">
                     <div className="sticky top-0 bg-gym-bg/95 backdrop-blur-sm z-10 p-4 border-b border-slate-800 flex items-center gap-4 shadow-sm">
-                        <button onClick={onBack} className="p-2 -ml-2 text-gym-muted hover:text-white">
-                            <IconChevronLeft />
-                        </button>
-                        <div>
-                            <h2 className="text-lg font-bold capitalize leading-tight text-white">
-                                {niceDate}
-                            </h2>
-                            <p className="text-xs text-gym-muted">
-                                {exercises.length} {getText(language, "ejercicios", "exercises")}
-                            </p>
-                        </div>
+                        <button onClick={onBack} className="p-2 -ml-2 text-gym-muted hover:text-white"><IconChevronLeft /></button>
+                        <div><h2 className="text-lg font-bold capitalize leading-tight text-white">{niceDate}</h2><p className="text-xs text-gym-muted">{exercises.length} {getText(language, "ejercicios", "exercises")}</p></div>
                     </div>
-
                     <div className="flex-1 overflow-y-auto p-4 pb-28 safe-bottom no-scrollbar">
                         {exercises.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-64 text-gym-muted opacity-60">
                                 <IconDumbbell size={64} className="mb-4" />
                                 <p>{getText(language, "Día de descanso... ¿o no?", "Rest day... or maybe not?")}</p>
-                                <button 
-                                    onClick={() => setAddModalOpen(true)} 
-                                    className="mt-4 text-gym-primary font-bold text-sm"
-                                >
-                                    {getText(language, "Empezar Entrenamiento", "Start Workout")}
-                                </button>
+                                <button onClick={() => setAddModalOpen(true)} className="mt-4 text-gym-primary font-bold text-sm">{getText(language, "Empezar Entrenamiento", "Start Workout")}</button>
                             </div>
                         ) : (
                             exercises.map(ex => (
@@ -1229,292 +788,76 @@
                                     key={ex.id} 
                                     exercise={ex} 
                                     onUpdate={(updated) => setExercises(exercises.map(e => e.id === ex.id ? updated : e))}
-                                    onDelete={() => { 
-                                        if (confirm(getText(language, "¿Eliminar ejercicio?", "Delete exercise?"))) {
-                                            setExercises(exercises.filter(e => e.id !== ex.id));
-                                        }
-                                    }}
+                                    onDelete={() => { if (confirm(getText(language, "¿Eliminar ejercicio?", "Delete exercise?"))) setExercises(exercises.filter(e => e.id !== ex.id)); }}
                                     language={language}
                                 />
                             ))
                         )}
                     </div>
-
-                    {/* Main floating button to open AddManager */}
-                    <div className="fixed bottom-6 right-6 safe-bottom z-20">
-                        <button 
-                            onClick={() => setAddModalOpen(true)}
-                            className="w-16 h-16 bg-gym-primary rounded-full shadow-lg shadow-blue-500/30 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform"
-                        >
-                            <IconPlus size={36} />
-                        </button>
-                    </div>
-
-                    <AddManager 
-                        isOpen={isAddModalOpen} 
-                        onClose={() => setAddModalOpen(false)} 
-                        history={history}
-                        templates={templates}
-                        onAddExercise={handleAddExercise}
-                        onAddTemplate={handleAddTemplate}
-                        language={language}
-                    />
+                    <div className="fixed bottom-6 right-6 safe-bottom z-20"><button onClick={() => setAddModalOpen(true)} className="w-16 h-16 bg-gym-primary rounded-full shadow-lg shadow-blue-500/30 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform"><IconPlus size={36} /></button></div>
+                    <AddManager isOpen={isAddModalOpen} onClose={() => setAddModalOpen(false)} history={history} templates={templates} onAddExercise={handleAddExercise} onAddTemplate={handleAddTemplate} language={language} />
                 </div>
             );
         };
 
-        // --- Floating timer component, always visible and draggable (no changes) ---
         const FloatingTimer = ({ language }) => {
             const [isOpen, setIsOpen] = useState(false);
             const [isDragging, setIsDragging] = useState(false);
             const [position, setPosition] = useState({ x: null, y: null });
             const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-
             const [inputSeconds, setInputSeconds] = useState('');
             const [remaining, setRemaining] = useState(0);
             const [running, setRunning] = useState(false);
-
             const circleRef = useRef(null);
 
-            // Set an initial position bottom right on first render
-            useEffect(() => {
-                if (position.x === null || position.y === null) {
-                    const padding = 16;
-                    const size = 64;
-                    setPosition({
-                        x: window.innerWidth - size - padding,
-                        y: window.innerHeight - size - padding - 20
-                    });
-                }
-            }, [position.x, position.y]);
+            useEffect(() => { if (position.x === null) setPosition({ x: window.innerWidth - 80, y: window.innerHeight - 100 }); }, [position.x]);
+            useEffect(() => { if (!running || remaining <= 0) return; const id = setInterval(() => setRemaining(p => p <= 1 ? (setRunning(false), 0) : p - 1), 1000); return () => clearInterval(id); }, [running, remaining]);
 
-            // Timer interval behavior
-            useEffect(() => {
-                if (!running || remaining <= 0) return;
-
-                const id = setInterval(() => {
-                    setRemaining(prev => {
-                        if (prev <= 1) {
-                            clearInterval(id);
-                            return 0;
-                        }
-                        return prev - 1;
-                    });
-                }, 1000);
-
-                return () => clearInterval(id);
-            }, [running, remaining]);
-
-            useEffect(() => {
-                if (remaining === 0 && running) {
-                    setRunning(false);
-                    // At this point you could add a sound or vibration if you want
-                }
-            }, [remaining, running]);
-
-            const formatTime = (sec) => {
-                const s = Math.max(0, sec | 0);
-                const m = Math.floor(s / 60);
-                const r = s % 60;
-                return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
-            };
-
-            const handleStart = () => {
-                const val = parseInt(inputSeconds, 10);
-                if (isNaN(val) || val <= 0) return;
-                setRemaining(val);
-                setRunning(true);
-            };
-
-            const handleStop = () => {
-                setRunning(false);
-            };
-
-            const handleCircleClick = () => {
-                if (isDragging) return;
-                setIsOpen(prev => !prev);
-            };
-
-            // Mouse drag handlers
-            const onMouseDown = (e) => {
-                e.preventDefault();
-                if (!circleRef.current) return;
-                setIsDragging(true);
-                setDragOffset({
-                    x: e.clientX - position.x,
-                    y: e.clientY - position.y
-                });
-            };
-
-            const onMouseMove = (e) => {
-                if (!isDragging) return;
-                e.preventDefault();
-                const newX = e.clientX - dragOffset.x;
-                const newY = e.clientY - dragOffset.y;
-                setPosition({
-                    x: Math.min(Math.max(0, newX), window.innerWidth - 64),
-                    y: Math.min(Math.max(0, newY), window.innerHeight - 64)
-                });
-            };
-
-            const onMouseUp = () => {
-                setIsDragging(false);
-            };
-
-            // Touch drag handlers
-            const onTouchStart = (e) => {
-                const touch = e.touches[0];
-                if (!touch) return;
-                setIsDragging(true);
-                setDragOffset({
-                    x: touch.clientX - position.x,
-                    y: touch.clientY - position.y
-                });
-            };
-
-            const onTouchMove = (e) => {
-                if (!isDragging) return;
-                const touch = e.touches[0];
-                if (!touch) return;
-                const newX = touch.clientX - dragOffset.x;
-                const newY = touch.clientY - dragOffset.y;
-                setPosition({
-                    x: Math.min(Math.max(0, newX), window.innerWidth - 64),
-                    y: Math.min(Math.max(0, newY), window.innerHeight - 64)
-                });
-            };
-
-            const onTouchEnd = () => {
-                setIsDragging(false);
-            };
-
-            // Attach global listeners for a smoother drag experience
-            useEffect(() => {
-                window.addEventListener('mousemove', onMouseMove);
-                window.addEventListener('mouseup', onMouseUp);
-                window.addEventListener('touchmove', onTouchMove, { passive: false });
-                window.addEventListener('touchend', onTouchEnd);
-
-                return () => {
-                    window.removeEventListener('mousemove', onMouseMove);
-                    window.removeEventListener('mouseup', onMouseUp);
-                    window.removeEventListener('touchmove', onTouchMove);
-                    window.removeEventListener('touchend', onTouchEnd);
-                };
-            });
-
-            if (position.x === null || position.y === null) return null;
-
+            const formatTime = (sec) => `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+            const handleStart = () => { const val = parseInt(inputSeconds, 10); if (!isNaN(val) && val > 0) { setRemaining(val); setRunning(true); } };
+            const handleMove = (clientX, clientY) => { if (!isDragging) return; setPosition({ x: Math.min(Math.max(0, clientX - dragOffset.x), window.innerWidth - 64), y: Math.min(Math.max(0, clientY - dragOffset.y), window.innerHeight - 64) }); };
+            const onMouseDown = (e) => { setIsDragging(true); setDragOffset({ x: e.clientX - position.x, y: e.clientY - position.y }); };
+            const onTouchStart = (e) => { setIsDragging(true); setDragOffset({ x: e.touches[0].clientX - position.x, y: e.touches[0].clientY - position.y }); };
+            useEffect(() => { const move = (e) => handleMove(e.clientX, e.clientY); const tMove = (e) => handleMove(e.touches[0].clientX, e.touches[0].clientY); const up = () => setIsDragging(false); window.addEventListener('mousemove', move); window.addEventListener('mouseup', up); window.addEventListener('touchmove', tMove, {passive:false}); window.addEventListener('touchend', up); return () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); window.removeEventListener('touchmove', tMove); window.removeEventListener('touchend', up); }; });
+            if (position.x === null) return null;
             return (
                 <>
-                    {/* Draggable circle */}
-                    <div
-                        ref={circleRef}
-                        style={{
-                            position: 'fixed',
-                            left: position.x,
-                            top: position.y,
-                            zIndex: 9999
-                        }}
-                        className="w-16 h-16 rounded-full bg-gym-accent shadow-xl flex items-center justify-center text-slate-900 font-bold text-xs active:scale-95 transition-transform select-none"
-                        onMouseDown={onMouseDown}
-                        onTouchStart={onTouchStart}
-                        onClick={handleCircleClick}
-                    >
-                        {formatTime(remaining)}
-                    </div>
-
-                    {/* Timer panel */}
-                    {isOpen && (
-                        <div
-                            style={{
-                                position: 'fixed',
-                                left: Math.max(8, position.x - 220),
-                                top: Math.max(8, position.y - 10),
-                                zIndex: 9998
-                            }}
-                            className="w-56 bg-gym-card border border-slate-700 rounded-xl p-3 glass shadow-2xl"
-                        >
-                            <div className="text-xs font-bold text-gym-muted mb-2 uppercase tracking-wide">
-                                {getText(language, "Temporizador", "Timer")}
-                            </div>
-                            <div className="flex items-center gap-2 mb-2">
-                                <input
-                                    type="number"
-                                    min="1"
-                                    className="flex-1 bg-slate-900 rounded-lg px-2 py-1 text-sm text-white text-right focus:outline-none focus:ring-1 focus:ring-gym-primary"
-                                    placeholder={getText(language, "Segundos", "Seconds")}
-                                    value={inputSeconds}
-                                    onChange={e => setInputSeconds(e.target.value)}
-                                />
-                                <span className="text-xs text-gym-muted">
-                                    {getText(language, "seg", "sec")}
-                                </span>
-                            </div>
-                            <div className="text-center text-sm text-gym-primary font-mono mb-2">
-                                {formatTime(remaining)}
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={handleStart}
-                                    className="flex-1 py-1.5 bg-gym-primary/80 hover:bg-gym-primary rounded-lg text-xs font-bold text-white"
-                                >
-                                    {getText(language, "Iniciar", "Start")}
-                                </button>
-                                <button
-                                    onClick={handleStop}
-                                    className="flex-1 py-1.5 bg-gym-danger/70 hover:bg-gym-danger rounded-lg text-xs font-bold text-white"
-                                >
-                                    {getText(language, "Parar", "Stop")}
-                                </button>
-                            </div>
-                        </div>
-                    )}
+                    <div ref={circleRef} style={{ left: position.x, top: position.y }} className="fixed z-[9999] w-16 h-16 rounded-full bg-gym-accent shadow-xl flex items-center justify-center text-slate-900 font-bold text-xs active:scale-95 transition-transform select-none cursor-move" onMouseDown={onMouseDown} onTouchStart={onTouchStart} onClick={() => !isDragging && setIsOpen(!isOpen)}>{formatTime(remaining)}</div>
+                    {isOpen && ( <div style={{ left: Math.max(8, position.x - 220), top: Math.max(8, position.y - 10) }} className="fixed z-[9998] w-56 bg-gym-card border border-slate-700 rounded-xl p-3 glass shadow-2xl"><div className="text-xs font-bold text-gym-muted mb-2 uppercase">{getText(language, "Temporizador", "Timer")}</div><div className="flex items-center gap-2 mb-2"><input type="number" className="flex-1 bg-slate-900 rounded-lg px-2 py-1 text-sm text-white text-right outline-none" placeholder="Sec" value={inputSeconds} onChange={e => setInputSeconds(e.target.value)} /></div><div className="flex gap-2"><button onClick={handleStart} className="flex-1 py-1.5 bg-gym-primary rounded text-xs font-bold text-white">Go</button><button onClick={() => setRunning(false)} className="flex-1 py-1.5 bg-gym-danger rounded text-xs font-bold text-white">Stop</button></div></div> )}
                 </>
             );
         };
 
-        // --- Root app component ---
         const App = () => {
-            const [view, setView] = useState('calendar'); // calendar, day, templates
+            const [view, setView] = useState('calendar');
             const [selectedDate, setSelectedDate] = useState(null);
             const [workouts, setWorkouts] = useState({});
             const [templates, setTemplates] = useState([]);
             const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
-            const [language, setLanguage] = useState('es'); // 'es' or 'en'
+            const [language, setLanguage] = useState('es');
 
-            // Load data from localStorage once on mount
             useEffect(() => {
                 try {
                     const savedWorkouts = localStorage.getItem('gymTrackerData_v1');
                     if (savedWorkouts) setWorkouts(JSON.parse(savedWorkouts));
-
                     const savedTemplates = localStorage.getItem('gymTrackerTemplates_v1');
                     if (savedTemplates) setTemplates(JSON.parse(savedTemplates));
-
                     const savedLang = localStorage.getItem('gymTrackerLang');
                     if (savedLang) setLanguage(savedLang);
-
-                } catch (e) { 
-                    console.error("Error loading data", e); 
-                }
+                } catch (e) {}
             }, []);
 
-            // History is derived from workouts, memoized for performance
             const history = useMemo(() => getExerciseHistory(workouts), [workouts]);
-
             const handleSaveDay = (date, exercises) => {
                 const newWorkouts = { ...workouts, [date]: exercises };
                 if (exercises.length === 0) delete newWorkouts[date];
                 setWorkouts(newWorkouts);
                 localStorage.setItem('gymTrackerData_v1', JSON.stringify(newWorkouts));
             };
-
             const handleSaveTemplates = (newTemplates) => {
                 setTemplates(newTemplates);
                 localStorage.setItem('gymTrackerTemplates_v1', JSON.stringify(newTemplates));
             };
-
             const toggleLanguage = () => {
                 setLanguage(prev => {
                     const newLang = prev === 'es' ? 'en' : 'es';
@@ -1525,52 +868,10 @@
 
             return (
                 <div className="max-w-md mx-auto min-h-screen bg-gym-bg relative shadow-2xl overflow-hidden text-gym-text font-sans">
-                    {view === 'calendar' && (
-                        <CalendarView 
-                            onSelectDate={(date) => { 
-                                setSelectedDate(date); 
-                                setView('day'); 
-                            }} 
-                            savedData={workouts}
-                            onGoToTemplates={() => setView('templates')}
-                            onGoToSettings={() => setSettingsModalOpen(true)}
-                            language={language}
-                            onToggleLanguage={toggleLanguage}
-                        />
-                    )}
-
-                    {view === 'day' && (
-                        <DayView 
-                            dateStr={selectedDate} 
-                            data={workouts[selectedDate]} 
-                            history={history}
-                            templates={templates}
-                            onBack={() => setView('calendar')}
-                            onSave={handleSaveDay}
-                            language={language}
-                        />
-                    )}
-
-                    {view === 'templates' && (
-                        <TemplatesView 
-                            templates={templates}
-                            onSaveTemplates={handleSaveTemplates}
-                            onBack={() => setView('calendar')}
-                            language={language}
-                        />
-                    )}
-
-                    <SettingsModal
-                        isOpen={isSettingsModalOpen}
-                        onClose={() => setSettingsModalOpen(false)}
-                        workouts={workouts}
-                        templates={templates}
-                        setWorkouts={setWorkouts}
-                        setTemplates={setTemplates}
-                        language={language}
-                    />
-
-                    {/* Floating timer lives at the app level so it is always present */}
+                    {view === 'calendar' && ( <CalendarView onSelectDate={(date) => { setSelectedDate(date); setView('day'); }} savedData={workouts} onGoToTemplates={() => setView('templates')} onGoToSettings={() => setSettingsModalOpen(true)} language={language} onToggleLanguage={toggleLanguage} /> )}
+                    {view === 'day' && ( <DayView dateStr={selectedDate} data={workouts[selectedDate]} history={history} templates={templates} onBack={() => setView('calendar')} onSave={handleSaveDay} language={language} /> )}
+                    {view === 'templates' && ( <TemplatesView templates={templates} onSaveTemplates={handleSaveTemplates} onBack={() => setView('calendar')} language={language} /> )}
+                    <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setSettingsModalOpen(false)} workouts={workouts} templates={templates} setWorkouts={setWorkouts} setTemplates={setTemplates} language={language} />
                     <FloatingTimer language={language} />
                 </div>
             );
@@ -1581,4 +882,3 @@
     </script>
 </body>
 </html>
-
