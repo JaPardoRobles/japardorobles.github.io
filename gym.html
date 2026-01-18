@@ -110,6 +110,7 @@
         const IconDownload = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>;
         const IconShare = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>;
         const IconFileText = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>;
+        const IconChart = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-5"/><circle cx="7" cy="14" r="1"/><circle cx="10" cy="11" r="1"/><circle cx="13" cy="14" r="1"/><circle cx="18" cy="9" r="1"/></svg>;
         const IconCheck = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
         const IconMessageCircle = ({size=20}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>;
 
@@ -735,7 +736,7 @@
             );
         };
 
-        const CalendarView = ({ onSelectDate, savedData, onGoToTemplates, onGoToSettings, language, onToggleLanguage }) => {
+        const CalendarView = ({ onSelectDate, savedData, onGoToTemplates, onGoToSettings, onGoToAnalytics, language, onToggleLanguage }) => {
             const [currentDate, setCurrentDate] = useState(new Date());
             const { daysInMonth, startDayOfWeek } = useMemo(() => {
                 const year = currentDate.getFullYear();
@@ -769,8 +770,8 @@
                     <header className="mb-6 flex justify-between items-center">
                         <div><h1 className="text-2xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-gym-primary to-gym-accent">GYM TRACKER</h1></div>
                         <div className="flex gap-2 items-center">
-                            <button onClick={onToggleLanguage} className="bg-slate-800 px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center justify-center" title={getText(language, "Cambiar idioma", "Change language")}>{language === 'es' ? <FlagES /> : <FlagUS />}</button>
-                            <button onClick={onGoToSettings} className="bg-slate-800 p-2 rounded-lg text-gym-muted hover:text-white"><IconSettings size={20} /></button>
+                            <button onClick={onToggleLanguage} className="bg-slate-800 px-3 py-2 rounded-lg hover:bg-slate-700 flex items-center justify-center" title={getText(language, "Cambiar idioma", "Change language")}>{language === 'es' ? <FlagES /> : <FlagUS />}</button>                            <button onClick={onGoToAnalytics} className="bg-slate-800 p-2 rounded-lg text-gym-accent hover:text-white" title={getText(language, "Análisis", "Analytics")}><IconChart size={20} /></button>
+<button onClick={onGoToSettings} className="bg-slate-800 p-2 rounded-lg text-gym-muted hover:text-white"><IconSettings size={20} /></button>
                             <button onClick={onGoToTemplates} className="bg-slate-800 p-2 rounded-lg text-gym-primary hover:text-white"><IconClipboard size={20} /></button>
                         </div>
                     </header>
@@ -1058,6 +1059,338 @@
             );
         };
 
+        const clamp01 = (v) => Math.min(1, Math.max(0, v));
+
+        const parseNumber = (v) => {
+            if (v === null || v === undefined) return null;
+            const n = typeof v === 'number' ? v : parseFloat(String(v).replace(',', '.'));
+            return isFinite(n) ? n : null;
+        };
+
+        const getExerciseTimeSeries = (workouts, exerciseName) => {
+            const nameKey = (exerciseName || '').toLowerCase().trim();
+            if (!nameKey) return [];
+
+            const dates = Object.keys(workouts || {}).sort(); // asc
+            const points = [];
+
+            for (const date of dates) {
+                const day = workouts[date];
+                if (!Array.isArray(day)) continue;
+
+                const matches = day.filter(e => (e?.name || '').toLowerCase().trim() === nameKey);
+                if (matches.length === 0) continue;
+
+                // Merge sets across duplicates of the same exercise name in a day
+                const allSets = [];
+                for (const ex of matches) {
+                    if (Array.isArray(ex?.sets)) allSets.push(...ex.sets);
+                }
+
+                const setMetrics = allSets
+                    .map(s => {
+                        const kg = parseNumber(s?.kg);
+                        const reps = parseNumber(s?.reps);
+                        if (kg === null && reps === null) return null;
+                        const rpm = (kg !== null && reps !== null) ? estimateRPM(kg, reps) : null;
+                        const volume = (kg !== null && reps !== null) ? kg * reps : null;
+                        return { kg, reps, rpm, volume };
+                    })
+                    .filter(Boolean);
+
+                if (setMetrics.length === 0) continue;
+
+                const sum = (arr) => arr.reduce((a, b) => a + b, 0);
+                const pick = (arr) => arr.filter(v => v !== null && v !== undefined && isFinite(v));
+
+                const kgs = pick(setMetrics.map(s => s.kg));
+                const reps = pick(setMetrics.map(s => s.reps));
+                const rpms = pick(setMetrics.map(s => s.rpm));
+                const vols = pick(setMetrics.map(s => s.volume));
+
+                const maxKg = kgs.length ? Math.max(...kgs) : null;
+                const totalReps = reps.length ? sum(reps) : null;
+                const bestRPM = rpms.length ? Math.max(...rpms) : null;
+                const avgRPM = rpms.length ? (sum(rpms) / rpms.length) : null;
+                const totalVolume = vols.length ? sum(vols) : null;
+
+                // Scatter clouds for this day (include date for click-to-inspect)
+                const scatter = setMetrics.map(s => ({ date, kg: s.kg, reps: s.reps, rpm: s.rpm, volume: s.volume }));
+
+                points.push({ date, maxKg, totalReps, bestRPM, avgRPM, totalVolume, scatter });
+            }
+
+            return points;
+        };
+
+        const formatShortDate = (dateStr, lang) => {
+            try {
+                const d = parseLocalDateFromKey(dateStr);
+                return d.toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { day: '2-digit', month: '2-digit' });
+            } catch (e) {
+                return dateStr;
+            }
+        };
+
+        const ChartCard = ({ title, subtitle, children }) => (
+            <div className="bg-gym-card rounded-xl p-4 shadow-lg border border-slate-700/50">
+                <div className="mb-3">
+                    <div className="font-bold text-white">{title}</div>
+                    {subtitle ? <div className="text-xs text-gym-muted mt-0.5">{subtitle}</div> : null}
+                </div>
+                {children}
+            </div>
+        );
+
+        const LineChart = ({ data, labelFormatter, valueFormatter, height=140 }) => {
+            const w = 320;
+            const h = height;
+            const pad = 20;
+
+            const [selected, setSelected] = useState(null);
+
+            const values = data.map(d => d.value).filter(v => v !== null && v !== undefined && isFinite(v));
+            if (values.length < 2) {
+                return (
+                    <div className="text-sm text-gym-muted">{data.length === 0 ? 'Sin datos' : 'Faltan datos para trazar una línea'}</div>
+                );
+            }
+
+            const minV = Math.min(...values);
+            const maxV = Math.max(...values);
+            const span = (maxV - minV) || 1;
+
+            const xFor = (i) => pad + (i * (w - pad*2) / Math.max(1, data.length - 1));
+            const yFor = (v) => {
+                const t = (v - minV) / span;
+                return (h - pad) - t * (h - pad*2);
+            };
+
+            const pts = data.map((d, i) => {
+                if (d.value === null || d.value === undefined || !isFinite(d.value)) return null;
+                return `${xFor(i)},${yFor(d.value)}`;
+            }).filter(Boolean).join(' ');
+
+            const last = [...data].reverse().find(d => d.value !== null && d.value !== undefined && isFinite(d.value));
+            const first = data.find(d => d.value !== null && d.value !== undefined && isFinite(d.value));
+
+            return (
+                <div>
+                    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto">
+                        <line x1={pad} y1={h-pad} x2={w-pad} y2={h-pad} stroke="rgba(100,116,139,0.6)" strokeWidth="1" />
+                        <line x1={pad} y1={pad} x2={pad} y2={h-pad} stroke="rgba(100,116,139,0.6)" strokeWidth="1" />
+                        <polyline points={pts} fill="none" stroke="currentColor" strokeWidth="2" className="text-gym-primary" strokeLinejoin="round" strokeLinecap="round" />
+                        {data.map((d, i) => {
+                            if (d.value === null || d.value === undefined || !isFinite(d.value)) return null;
+                            const isSel = selected?.index === i;
+                            return (
+                                <circle
+                                    key={i}
+                                    cx={xFor(i)}
+                                    cy={yFor(d.value)}
+                                    r={isSel ? 5 : 3}
+                                    className="text-gym-accent"
+                                    fill="currentColor"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => setSelected({ index: i, label: d.label, value: d.value })}
+                                />
+                            );
+                        })}
+                    </svg>
+                    <div className="flex justify-between text-xs text-gym-muted mt-2">
+                        <span>{first ? labelFormatter(first.label) : ''}</span>
+                        <span>{last ? labelFormatter(last.label) : ''}</span>
+                    </div>
+                    <div className="text-xs text-slate-300 mt-1">
+                        {first && last ? (
+                            <span>
+                                {valueFormatter(first.value)} → {valueFormatter(last.value)}
+                            </span>
+                        ) : null}
+                    </div>
+
+                    {selected ? (
+                        <div className="mt-2 text-xs text-slate-300 bg-slate-900/40 border border-slate-800 rounded-lg p-2">
+                            <div className="font-bold text-slate-200">{labelFormatter(selected.label)}</div>
+                            <div>{valueFormatter(selected.value)}</div>
+                        </div>
+                    ) : (
+                        <div className="mt-2 text-[11px] text-gym-muted">Pulsa un punto para ver el detalle</div>
+                    )}
+                </div>
+            );
+        };
+
+        const ScatterPlot = ({ points, xKey, yKey, xLabel, yLabel, height=180, labelFormatter }) => {
+            const w = 320;
+            const h = height;
+            const pad = 24;
+
+            const [selected, setSelected] = useState(null);
+
+            const clean = (points || [])
+                .map((p, idx) => ({
+                    idx,
+                    raw: p,
+                    x: p?.[xKey],
+                    y: p?.[yKey]
+                }))
+                .filter(p => p.x !== null && p.x !== undefined && isFinite(p.x) && p.y !== null && p.y !== undefined && isFinite(p.y));
+
+            if (clean.length < 2) {
+                return <div className="text-sm text-gym-muted">{clean.length === 0 ? 'Sin datos' : 'Faltan datos para ver la nube'}</div>;
+            }
+
+            const xs = clean.map(p => p.x);
+            const ys = clean.map(p => p.y);
+            const minX = Math.min(...xs), maxX = Math.max(...xs);
+            const minY = Math.min(...ys), maxY = Math.max(...ys);
+            const spanX = (maxX - minX) || 1;
+            const spanY = (maxY - minY) || 1;
+
+            const xFor = (x) => pad + ((x - minX) / spanX) * (w - pad*2);
+            const yFor = (y) => (h - pad) - ((y - minY) / spanY) * (h - pad*2);
+
+            return (
+                <div>
+                    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto">
+                        <line x1={pad} y1={h-pad} x2={w-pad} y2={h-pad} stroke="rgba(100,116,139,0.6)" strokeWidth="1" />
+                        <line x1={pad} y1={pad} x2={pad} y2={h-pad} stroke="rgba(100,116,139,0.6)" strokeWidth="1" />
+                        {clean.map((p) => {
+                            const isSel = selected?.idx === p.idx;
+                            return (
+                                <circle
+                                    key={p.idx}
+                                    cx={xFor(p.x)}
+                                    cy={yFor(p.y)}
+                                    r={isSel ? 5 : 3}
+                                    className="text-gym-accent"
+                                    fill="currentColor"
+                                    opacity={0.9}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => setSelected(p)}
+                                />
+                            );
+                        })}
+                    </svg>
+                    <div className="flex justify-between text-xs text-gym-muted mt-2">
+                        <span>{xLabel}: {minX.toFixed(1)} - {maxX.toFixed(1)}</span>
+                        <span>{yLabel}: {minY.toFixed(1)} - {maxY.toFixed(1)}</span>
+                    </div>
+
+                    {selected ? (
+                        <div className="mt-2 text-xs text-slate-300 bg-slate-900/40 border border-slate-800 rounded-lg p-2">
+                            <div className="font-bold text-slate-200">
+                                {selected.raw?.date ? (labelFormatter ? labelFormatter(selected.raw.date) : selected.raw.date) : 'Serie'}
+                            </div>
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-1 mt-1">
+                                <div>kg: {isFinite(selected.raw?.kg) ? Number(selected.raw.kg).toFixed(1) : '-'}</div>
+                                <div>reps: {isFinite(selected.raw?.reps) ? Number(selected.raw.reps).toFixed(0) : '-'}</div>
+                                <div>RPM: {isFinite(selected.raw?.rpm) ? Number(selected.raw.rpm).toFixed(1) : '-'}</div>
+                                <div>vol: {isFinite(selected.raw?.volume) ? Math.round(Number(selected.raw.volume)) : '-'}</div>
+                            </div>
+                            <div className="text-[11px] text-gym-muted mt-1">X: {xLabel}={Number(selected.x).toFixed(2)} | Y: {yLabel}={Number(selected.y).toFixed(2)}</div>
+                        </div>
+                    ) : (
+                        <div className="mt-2 text-[11px] text-gym-muted">Pulsa un punto para ver el detalle</div>
+                    )}
+                </div>
+            );
+        };
+
+        const AnalyticsView = ({ workouts, history, onBack, language }) => {
+            const [search, setSearch] = useState('');
+            const [selected, setSelected] = useState('');
+
+            const exerciseOptions = useMemo(() => {
+                const list = (history || []).map(h => h.name).filter(Boolean);
+                list.sort((a, b) => a.localeCompare(b));
+                return list;
+            }, [history]);
+
+            const filtered = useMemo(() => {
+                const s = search.toLowerCase().trim();
+                if (!s) return exerciseOptions;
+                return exerciseOptions.filter(n => n.toLowerCase().includes(s));
+            }, [exerciseOptions, search]);
+
+            useEffect(() => {
+                if (!selected && exerciseOptions.length) setSelected(exerciseOptions[0]);
+            }, [exerciseOptions, selected]);
+
+            const series = useMemo(() => getExerciseTimeSeries(workouts, selected), [workouts, selected]);
+
+            const lineData = (key) => series.map(p => ({ label: p.date, value: p[key] }));
+            const allScatter = series.flatMap(p => p.scatter || []);
+
+            const unit = {
+                kg: (v) => `${v.toFixed(1)} kg`,
+                reps: (v) => `${v.toFixed(0)} reps`,
+                rpm: (v) => `${v.toFixed(1)} kg`,
+                vol: (v) => `${Math.round(v)} kg·reps`,
+            };
+
+            return (
+                <div className="h-full flex flex-col animate-fade-in">
+                    <div className="p-4 border-b border-slate-800 flex items-center gap-4 bg-gym-bg sticky top-0 z-10">
+                        <button onClick={onBack} className="p-2 -ml-2 text-gym-muted hover:text-white"><IconChevronLeft /></button>
+                        <div className="flex-1">
+                            <h2 className="text-xl font-bold">{getText(language, 'Análisis', 'Analytics')}</h2>
+                            <p className="text-xs text-gym-muted">{getText(language, 'Gráficas por ejercicio (peso, reps, RPM estimado)', 'Charts per exercise (weight, reps, estimated RPM)')}</p>
+                        </div>
+                    </div>
+
+                    <div className="p-4 flex-1 overflow-y-auto no-scrollbar">
+                        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-3 mb-4">
+                            <div className="relative">
+                                <IconSearch className="absolute left-3 top-2.5 text-slate-500" size={18} />
+                                <input type="text" placeholder={getText(language, 'Buscar ejercicio...', 'Search exercise...')} className="w-full bg-slate-800 rounded-lg py-2 pl-10 pr-4 text-white focus:ring-2 focus:ring-gym-primary outline-none" value={search} onChange={e => setSearch(e.target.value)} />
+                            </div>
+                            <div className="mt-3">
+                                <select className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white outline-none" value={selected} onChange={e => setSelected(e.target.value)}>
+                                    {filtered.map((n) => <option key={n} value={n}>{n}</option>)}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                            <ChartCard
+                                title={getText(language, 'RPM estimado (mejor serie)', 'Estimated RPM (best set)')}
+                                subtitle={getText(
+                                    language,
+                                    'Estimación 1RM (Epley): kg*(1+reps/30)',
+                                    '1RM estimate (Epley): kg*(1+reps/30)'
+                                )}
+                            >
+                                <LineChart data={lineData('bestRPM')} labelFormatter={(d) => formatShortDate(d, language)} valueFormatter={(v) => unit.rpm(v)} />
+                            </ChartCard>
+
+                            <ChartCard title={getText(language, 'Volumen total', 'Total volume')} subtitle={getText(language, 'Suma de kg*reps del día', 'Sum of kg*reps per day')}>
+                                <LineChart data={lineData('totalVolume')} labelFormatter={(d) => formatShortDate(d, language)} valueFormatter={(v) => unit.vol(v)} />
+                            </ChartCard>
+
+                            <ChartCard title={getText(language, 'Peso máximo', 'Max weight')} subtitle={getText(language, 'Mejor kg del día', 'Best kg of the day')}>
+                                <LineChart data={lineData('maxKg')} labelFormatter={(d) => formatShortDate(d, language)} valueFormatter={(v) => unit.kg(v)} />
+                            </ChartCard>
+
+                            <ChartCard title={getText(language, 'Repeticiones totales', 'Total reps')} subtitle={getText(language, 'Suma de reps del día', 'Sum of reps per day')}>
+                                <LineChart data={lineData('totalReps')} labelFormatter={(d) => formatShortDate(d, language)} valueFormatter={(v) => unit.reps(v)} />
+                            </ChartCard>
+                        </div>
+
+                        <div className="text-xs text-gym-muted mt-6 bg-slate-900/40 border border-slate-800 rounded-xl p-3">
+                            <div className="font-bold text-slate-300 mb-1">{getText(language, 'Notas importantes', 'Important notes')}</div>
+                            <ul className="list-disc pl-5 space-y-1">
+                                <li>{getText(language, '"Epley" es una fórmula clásica para estimar tu 1RM (la repetición máxima) a partir de kg y reps. Aquí se usa como tu "RPM" estimado.', '"Epley" is a classic formula to estimate your 1RM (one-rep max) from weight and reps. Here it is used as your estimated "RPM".')}</li>
+                                <li>{getText(language, 'Si una serie no tiene kg o reps, no entra en las gráficas derivadas.', 'If a set is missing kg or reps, it will not be used for derived charts.')}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+
 
         const App = () => {
             const [view, setView] = useState('calendar');
@@ -1099,9 +1432,10 @@
 
             return (
                 <div className="max-w-md mx-auto min-h-screen bg-gym-bg relative shadow-2xl overflow-hidden text-gym-text font-sans">
-                    {view === 'calendar' && ( <CalendarView onSelectDate={(date) => { setSelectedDate(date); setView('day'); }} savedData={workouts} onGoToTemplates={() => setView('templates')} onGoToSettings={() => setSettingsModalOpen(true)} language={language} onToggleLanguage={toggleLanguage} /> )}
+                    {view === 'calendar' && ( <CalendarView onSelectDate={(date) => { setSelectedDate(date); setView('day'); }} savedData={workouts} onGoToTemplates={() => setView('templates')} onGoToSettings={() => setSettingsModalOpen(true)} onGoToAnalytics={() => setView('analytics')} language={language} onToggleLanguage={toggleLanguage} /> )}
                     {view === 'day' && ( <DayView dateStr={selectedDate} data={workouts[selectedDate]} history={history} templates={templates} onBack={() => setView('calendar')} onSave={handleSaveDay} language={language} /> )}
-                    {view === 'templates' && ( <TemplatesView templates={templates} onSaveTemplates={handleSaveTemplates} onBack={() => setView('calendar')} language={language} /> )}
+                                        {view === 'analytics' && ( <AnalyticsView workouts={workouts} history={history} onBack={() => setView('calendar')} language={language} /> )}
+{view === 'templates' && ( <TemplatesView templates={templates} onSaveTemplates={handleSaveTemplates} onBack={() => setView('calendar')} language={language} /> )}
                     <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setSettingsModalOpen(false)} workouts={workouts} templates={templates} setWorkouts={setWorkouts} setTemplates={setTemplates} language={language} />
                     <FloatingTimer language={language} />
                 </div>
