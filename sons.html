@@ -99,6 +99,17 @@ details[open]>summary:before{content:"▾ "}
 details>*:not(summary){padding:0 12px}
 details>*:last-child{padding-bottom:10px}
 
+/* Ficha plegable: el <summary> ES la cabecera dorada de la unidad */
+details.ds{border:1px solid var(--line);overflow:hidden}
+details.ds>summary.ds-head{background:linear-gradient(90deg,var(--blue),var(--blue2));padding:10px 14px;border-bottom:2px solid var(--gold)}
+details.ds:not([open])>summary.ds-head{border-bottom:0}
+details.ds>summary.ds-head:before{content:"▸";color:var(--gold);margin-right:8px;flex:none}
+details.ds[open]>summary.ds-head:before{content:"▾"}
+details.ds>.ds-body{padding:12px 14px}
+details.ds>summary.ds-head:hover{filter:brightness(1.25)}
+.ds-sub{font-size:11px;color:#b9c6da;font-weight:400;display:block;margin-top:2px;text-transform:none;letter-spacing:0}
+.foldbar{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+
 .listrow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:8px 0}
 .listrow.over{background:#1c1013}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -142,6 +153,27 @@ table.wt td.hl{outline:2px solid var(--gold)}
  header{position:static}
 }
 @media(max-width:700px){
+ /* Nada debe desbordar a lo ancho: solo se hace scroll vertical */
+ html,body{max-width:100%;overflow-x:hidden}
+ *{min-width:0}
+ body{overflow-wrap:anywhere}
+ .scroll{overflow-x:visible}
+ /* Las tablas de armas se reflujan a bloques: cada fila es una tarjeta con
+    su etiqueta delante del valor, así no hace falta barra horizontal */
+ table.wep{display:block}
+ table.wep thead{display:none}
+ table.wep tbody,table.wep tr{display:block}
+ table.wep tr{padding:8px 0;border-bottom:1px solid var(--line)}
+ table.wep tr:last-child{border-bottom:0}
+ table.wep td{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+   text-align:right;padding:3px 0;border:0}
+ table.wep td:first-child{display:block;text-align:left;font-weight:600;margin-bottom:5px}
+ table.wep td[data-l]:before{content:attr(data-l);color:var(--gold);font-size:11px;
+   letter-spacing:.8px;font-weight:400;text-align:left;flex:none}
+ table.wep tr:hover td{background:none}
+ /* Glosario y textos largos: a una sola columna, alineados a la izquierda */
+ table.gl td{display:block;text-align:left}
+ table.gl td:before{display:block;margin-bottom:2px}
  .wrap{padding:10px}
  h1{font-size:17px;line-height:1.3}
  header{padding:10px 0}
@@ -173,7 +205,17 @@ table.wt td.hl{outline:2px solid var(--gold)}
  details>*:not(summary){padding:0 10px}
  summary{padding:10px}
  #tip{max-width:86vw;font-size:13px}
+ /* La matriz de herir se compacta y oculta T1-T2 (no los usa nadie) para
+    caber entera en el ancho del móvil sin barra horizontal */
  .wt-wrap{max-height:60vh}
+ table.wt{border-spacing:1px}
+ table.wt th,table.wt td{font-size:11px;padding:3px 1px;min-width:23px}
+ table.wt th.rh{min-width:36px;padding-right:4px}
+ table.wt thead tr>*:nth-child(2),table.wt tbody tr>*:nth-child(2),
+ table.wt thead tr>*:nth-child(3),table.wt tbody tr>*:nth-child(3){display:none}
+ .hide-mob{display:none}
+ details.ds>summary.ds-head{padding:9px 10px}
+ details.ds>.ds-body{padding:10px}
 }
 @media(max-width:430px){
  .kpis{grid-template-columns:1fr}
@@ -1769,6 +1811,16 @@ detName=localStorage.getItem("ts11det_v7")||"Grand Coven";
 if(!DET[detName])detName="Grand Coven";
 let target={t:4,sv:3,inv:0,kw:["INFANTRY"],half:false,cover:false};
 let simAttacker=0,simBuffs={};
+/* Las fichas nacen plegadas. Guardamos qué has abierto para que un cambio en un
+   contador no te cierre la tarjeta que estabas editando al redibujar. */
+let openCards={};
+function setOpen(k,v){if(v)openCards[k]=1;else delete openCards[k]}
+function isOpen(k){return !!openCards[k]}
+function foldAll(prefix,v){
+ if(v){army.forEach((x,i)=>{openCards[prefix+i]=1})}
+ else{Object.keys(openCards).forEach(k=>{if(k.indexOf(prefix)===0)delete openCards[k]})}
+ renderTab(activeTab);
+}
 try{const s=JSON.parse(localStorage.getItem("ts11sim_v7")||"null");if(s){target=Object.assign(target,s.target||{});simBuffs=s.buffs||{}}}catch(e){}
 function saveSim(){try{localStorage.setItem("ts11sim_v7",JSON.stringify({target:target,buffs:simBuffs}))}catch(e){}}
 
@@ -2245,13 +2297,16 @@ function loadoutShort(x){
    ========================================================================= */
 function renderBuilder(){
  $("builder").innerHTML=`<h2>Editar unidades</h2>
- <div class="note">Aquí eliges <b>exactamente cuántos</b> warpflamers, soulreaper cannons, etc. lleva cada unidad. Los contadores respetan los máximos legales del datasheet, y todo lo que elijas se refleja en el loadout, en los puntos y en el daño estimado.</div>
+ <div class="note">Aquí eliges <b>exactamente cuántos</b> warpflamers, soulreaper cannons, etc. lleva cada unidad. Los contadores respetan los máximos legales del datasheet, y todo lo que elijas se refleja en el loadout, en los puntos y en el daño estimado.
+ <br><span class="small">Las fichas empiezan plegadas: <b>pulsa el nombre de la unidad</b> para abrirla. La que abras se queda abierta aunque cambies contadores.</span></div>
  ${simPanel()}
+ ${army.length?`<div class="foldbar"><button onclick="foldAll('b',true)">Desplegar todo</button><button onclick="foldAll('b',false)">Plegar todo</button></div>`:""}
  ${army.map((x,i)=>editCard(x,i)).join("")||`<p class="muted">No hay unidades. Añade una desde el panel izquierdo.</p>`}`;
  applyGlossary($("builder"));
 }
 
-/* ---- Simulador de ataque: NO es un <details>, así que nunca se contrae ---- */
+/* ---- Simulador de ataque: panel fijo, no plegable, para que nunca se contraiga
+       mientras escribes en sus campos numéricos ---- */
 const PRESETS=[
  {n:"Infantería ligera (Guardia, Cultistas)",t:3,sv:5,inv:0,kw:["INFANTRY"]},
  {n:"Marine táctico",t:4,sv:3,inv:0,kw:["INFANTRY"]},
@@ -2310,7 +2365,7 @@ function simPanel(){
 function simOutput(S){
  const rows=Object.keys(S.best).map(g=>S.best[g]).sort((a,b)=>b.v-a.v);
  const line=r=>`<tr><td><span class="wcount">${r.count}×</span>${r.n}${r.owner!==simAttacker?' <span class="small">(personaje)</span>':""}
-   <span class="wkw">[${r.K.join(", ")}]</span></td><td>${r.melee?"Combate":"Distancia"}</td><td><b>${r.v.toFixed(2)}</b></td></tr>`;
+   <span class="wkw">[${r.K.join(", ")}]</span></td><td data-l="FASE">${r.melee?"Combate":"Distancia"}</td><td data-l="HERIDAS"><b>${r.v.toFixed(2)}</b></td></tr>`;
  return `<div class="secbar">Resultado</div>
  <div class="scroll"><table class="wep"><thead><tr><th>Arma (perfil más eficaz)</th><th>Fase</th><th>Heridas esperadas</th></tr></thead>
  <tbody>${rows.length?rows.map(line).join(""):`<tr><td colspan="3">Sin armas.</td></tr>`}</tbody></table></div>
@@ -2411,8 +2466,10 @@ function editCard(x,i){
   joinBlock=`<div class="small" style="margin-top:8px">Este personaje no tiene la habilidad Leader en 11ª: actúa por su cuenta.</div>`;
  }
 
- return `<div class="ds">
- <div class="ds-head"><h3>${i+1}. ${x.u}</h3><span class="pts">${unitCost(x,i)} pts</span></div>
+ const k="b"+i;
+ const sel=loadoutShort(x);
+ return `<details class="ds"${isOpen(k)?" open":""} ontoggle="setOpen('${k}',this.open)">
+ <summary class="ds-head"><h3>${i+1}. ${x.u}<span class="ds-sub">${sizeOf(x)} modelos${x.enh?" · ⚜ "+x.enh:""}${sel?" · "+sel:""}${x.join?" · lidera "+x.join:""}</span></h3><span class="pts">${unitCost(x,i)} pts</span></summary>
  <div class="ds-body">
   <div class="two">
    <div><label>Datasheet</label><select onchange="changeUnit(${i},this.value)">${unitOpts}</select></div>
@@ -2434,7 +2491,7 @@ function editCard(x,i){
   </div>
   ${synergyBlock(i)}
   <div class="row" style="margin-top:10px"><button class="danger" onclick="delUnit(${i})">Eliminar unidad</button><button onclick="dupUnit(${i})">Duplicar</button></div>
- </div></div>`;
+ </div></details>`;
 }
 
 function loadoutTable(x){
@@ -2444,10 +2501,12 @@ function loadoutTable(x){
  return (r?`<div class="scroll"><table class="wep"><thead><tr><th>Armas a distancia</th><th data-noglossary>RANGE</th><th><span class="gterm" data-g="A">A</span></th><th><span class="gterm" data-g="BS">BS</span></th><th><span class="gterm" data-g="S">S</span></th><th><span class="gterm" data-g="AP">AP</span></th><th><span class="gterm" data-g="D">D</span></th></tr></thead><tbody>${r}</tbody></table></div>`:"")
   +(m?`<div class="scroll" style="margin-top:8px"><table class="wep"><thead><tr><th>Armas de combate</th><th data-noglossary>RANGE</th><th><span class="gterm" data-g="A">A</span></th><th><span class="gterm" data-g="WS">WS</span></th><th><span class="gterm" data-g="S">S</span></th><th><span class="gterm" data-g="AP">AP</span></th><th><span class="gterm" data-g="D">D</span></th></tr></thead><tbody>${m}</tbody></table></div>`:"");
 }
+/* data-l alimenta el reflujo móvil: en pantalla estrecha cada celda muestra su
+   etiqueta delante del valor y la tabla deja de necesitar scroll horizontal. */
 function weaponRow(w,count,isMelee){
  const skill=isMelee?w.ws:w.bs;
  return `<tr><td>${count?`<span class="wcount">${count}×</span>`:""}${w.n}${(w.k&&w.k.length)?`<span class="wkw">[${w.k.join(", ")}]</span>`:""}</td>
- <td>${w.r}</td><td>${w.a}</td><td>${skill}</td><td>${w.s}</td><td>${w.ap}</td><td>${w.d}</td></tr>`;
+ <td data-l="ALCANCE">${w.r}</td><td data-l="ATAQUES">${w.a}</td><td data-l="${isMelee?"WS":"BS"}">${skill}</td><td data-l="FUERZA">${w.s}</td><td data-l="AP">${w.ap}</td><td data-l="DAÑO">${w.d}</td></tr>`;
 }
 
 /* =========================================================================
@@ -2692,13 +2751,14 @@ function stratCard(s){
  </div></div>`;
 }
 
-function renderDatasheet(name,x,i){
+function renderDatasheet(name,x,i,key){
  const d=ds(name);if(!d)return "";
  const L=x?loadout(x):null;
  const pts=x?unitCost(x,i):d.sizes.map(s=>`${s.m} → ${s.p}${s.p2?"/"+s.p2:""}`).join(" · ");
  const dmg=(x&&i>=0)?unitDamageNet(x,i):null;
- return `<div class="ds">
- <div class="ds-head"><h3>${name}</h3><span class="pts">${x?pts+" pts":pts}</span></div>
+ const sub=x?`${sizeOf(x)} modelos${x.enh?" · ⚜ "+x.enh:""}${loadoutShort(x)?" · "+loadoutShort(x):""}`:d.role;
+ return `<details class="ds"${isOpen(key)?" open":""} ontoggle="setOpen('${key}',this.open)">
+ <summary class="ds-head"><h3>${name}<span class="ds-sub">${sub}</span></h3><span class="pts">${x?pts+" pts":pts}</span></summary>
  <div class="ds-body">
   <div class="small">${d.role}${d.legends?" · Warhammer Legends":""}</div>
   ${d.profiles.map(p=>`${d.profiles.length>1?`<div class="profname">${p.n}</div>`:""}${statline(p)}`).join("")}
@@ -2714,7 +2774,7 @@ function renderDatasheet(name,x,i){
   ${x?synergyBlock(i):""}
   ${d.tip?`<div class="note"><b>Cómo usarla</b><br>${d.tip}</div>`:""}
   <div class="kwbar"><b>PALABRAS CLAVE:</b> ${d.kw.join(", ")}</div>
- </div></div>`;
+ </div></details>`;
 }
 
 function renderCodex(){
@@ -2724,11 +2784,13 @@ function renderCodex(){
  const near=cs.filter(z=>!z.s.active&&z.s.fails.length===1);
  const syn=armySynergyCount();
  $("codex").innerHTML=`<h2>Codex de mi lista</h2>
- <div class="note">Solo se muestra lo que has elegido: el armamento con sus cantidades, las habilidades de wargear activas y las reglas de <b>${detName}</b> que afectan a cada unidad. Los términos subrayados tienen explicación al pasar el ratón.</div>
+ <div class="note">Solo se muestra lo que has elegido: el armamento con sus cantidades, las habilidades de wargear activas y las reglas de <b>${detName}</b> que afectan a cada unidad. Los términos subrayados tienen explicación al pasar el ratón (o al pulsarlos, en móvil).
+ <br><span class="small"><b>Pulsa el nombre de una unidad</b> para desplegar su ficha completa.</span></div>
  ${on.length?`<div class="note ok"><b>✓ Combos aplicables con esta lista (${on.length})</b><br>${on.map(c=>c.n).join("<br>")}<br><span class="small">Los tienes explicados paso a paso en la pestaña 🧩 Combos.</span></div>`:""}
  ${near.length?`<div class="note warn"><b>⚠ Combos a un solo requisito de funcionar (${near.length})</b><br>${near.map(z=>`<b>${z.c.n}</b> — ${z.s.fails[0].t}`).join("<br>")}</div>`:""}
  ${syn.bad?`<div class="note bad"><b>⚠ ${syn.bad} buff${syn.bad>1?"s":""} se está desperdiciando</b><br><span class="small">Cada unidad afectada lo indica en su bloque «Sinergias detectadas», más abajo.</span></div>`:""}
- ${army.length?army.map((x,i)=>renderDatasheet(x.u,x,i)).join(""):`<p class="muted">Añade unidades para ver su ficha.</p>`}`;
+ ${army.length?`<div class="foldbar"><button onclick="foldAll('c',true)">Desplegar todo</button><button onclick="foldAll('c',false)">Plegar todo</button></div>`:""}
+ ${army.length?army.map((x,i)=>renderDatasheet(x.u,x,i,"c"+i)).join(""):`<p class="muted">Añade unidades para ver su ficha.</p>`}`;
  applyGlossary($("codex"));
 }
 
@@ -2740,8 +2802,9 @@ function renderCatalog(refocus){
  });
  $("catalog").innerHTML=`<h2>Catálogo completo — ${NAMES.length} datasheets 11ª ed.</h2>
  <input id="catSearch" value="${esc(q)}" placeholder="Buscar unidad, arma o palabra clave..." oninput="renderCatalog(true)">
- <p class="small">Puntos mostrados como «modelos → coste» y, cuando el MFM define tramos, «primeras unidades / unidades siguientes».</p>
- ${list.map(n=>renderDatasheet(n,null,-1)).join("")||`<p class="muted">Sin resultados.</p>`}`;
+ <p class="small">Puntos mostrados como «modelos → coste» y, cuando el MFM define tramos, «primeras unidades / unidades siguientes». Pulsa el nombre de una unidad para abrir su ficha.</p>
+ <div class="foldbar"><button onclick="foldAll('k',false)">Plegar todo</button></div>
+ ${list.map(n=>renderDatasheet(n,null,-1,"k"+n.replace(/[^A-Za-z0-9]/g,""))).join("")||`<p class="muted">Sin resultados.</p>`}`;
  applyGlossary($("catalog"));
  if(refocus){const el=$("catSearch");if(el){el.focus();el.setSelectionRange(q.length,q.length)}}
 }
@@ -3492,7 +3555,7 @@ function renderRules(){
  $("rules").innerHTML=`<h2>📕 Glosario y reglas rápidas</h2>
  <div class="note"><b>Capa oficial de actualización — Faction Pack 22/07/2026 (v1.1).</b> Estas correcciones tienen prioridad sobre versiones anteriores.</div>
  <details open><summary>Cambios de julio incorporados</summary>${JULY.map(z=>`<div class="ab"><b>${z[0]}</b> — ${z[1]}</div>`).join("")}</details>
- ${Object.keys(groups).map(g=>`<div class="secbar">${g}</div><div class="scroll"><table class="wep"><tbody>${groups[g].map(k=>{
+ ${Object.keys(groups).map(g=>`<div class="secbar">${g}</div><div class="scroll"><table class="wep gl"><tbody>${groups[g].map(k=>{
    const e=GLOSSARY[k];if(!e)return "";
    return `<tr><td style="min-width:150px"><b>${k}</b><br><span class="small">${e.n}</span></td><td style="text-align:left">${e.t}</td></tr>`;
   }).join("")}</tbody></table></div>`).join("")}
@@ -3508,7 +3571,7 @@ function renderRules(){
  </div></div><div class="ds"><div class="ds-body">
   <h3>Probabilidades útiles</h3>
   <div class="scroll"><table class="wep"><thead><tr><th>Necesitas</th><th>1D6</th><th>2D6</th></tr></thead><tbody>
-   ${[2,3,4,5,6,7,8,9,10,11,12].map(n=>`<tr><td><b>${n}+</b></td><td>${n<=6?Math.round((7-n)/6*100)+"%":"—"}</td><td>${Math.round(prob(2,n)*100)}%</td></tr>`).join("")}
+   ${[2,3,4,5,6,7,8,9,10,11,12].map(n=>`<tr><td><b>${n}+</b></td><td data-l="CON 1D6">${n<=6?Math.round((7-n)/6*100)+"%":"—"}</td><td data-l="CON 2D6">${Math.round(prob(2,n)*100)}%</td></tr>`).join("")}
   </tbody></table></div>
   <p class="small">La columna 1D6 es para impactar, herir y salvar. La de 2D6 es para Battle-shock, cargas y Psychic tests.</p>
   <p class="small">Por eso Twist of Fate (Warp Charge 9) casi exige a Magnus (+2), Ahriman (+1) o el Mutalith (+1): a pelo sale el 28% de las veces.</p>
