@@ -1209,7 +1209,7 @@ const DS={
 "Exalted Sorcerer":{role:"Character",
  profiles:[{n:"Exalted Sorcerer",st:['6"','4','3+','5','6+','1'],inv:'4+'}],
  comp:`1 Exalted Sorcerer.`,
- sizes:[{m:1,p:90}],tier:99,
+ sizes:[{m:1,p:95}],tier:99,
  base:()=>({"Astral Blast":1,"Inferno bolt pistol":1,"Force weapon":1}),
  ranged:[
   {n:"Astral Blast",r:'18"',a:'D6',bs:'2+',s:'6',ap:'-2',d:'D3',k:["BLAST","DEVASTATING WOUNDS","PSYCHIC"]},
@@ -1247,7 +1247,7 @@ const DS={
 "Infernal Master":{role:"Character",
  profiles:[{n:"Infernal Master",st:['6"','4','3+','4','6+','1'],inv:'5+'}],
  comp:`1 Infernal Master.`,
- sizes:[{m:1,p:95}],tier:99,
+ sizes:[{m:1,p:100}],tier:99,
  base:()=>({"Fires of the Abyss – witchfire":1,"Fires of the Abyss – focused witchfire":1,"Inferno bolt pistol":1,"Force weapon":1}),
  ranged:[
   {n:"Fires of the Abyss – witchfire",r:'18"',a:'D6',bs:'—',s:'6',ap:'-2',d:'1',k:["PSYCHIC","TORRENT"]},
@@ -1265,7 +1265,7 @@ const DS={
 "Sorcerer":{role:"Character",
  profiles:[{n:"Sorcerer",st:['6"','4','3+','4','6+','1'],inv:'5+'}],
  comp:`1 Sorcerer.`,
- sizes:[{m:1,p:85}],tier:2,
+ sizes:[{m:1,p:95,p2:105}],tier:2,
  base:()=>({"Pandaemonic Delusion":1,"Inferno bolt pistol":1,"Force weapon":1}),
  ranged:[
   {n:"Pandaemonic Delusion",r:'24"',a:'6',bs:'3+',s:'5',ap:'-1',d:'1',k:["PSYCHIC","SUSTAINED HITS 3"]},
@@ -1652,7 +1652,7 @@ const DS={
 "Defiler":{role:"Vehicle / Walker",
  profiles:[{n:"Defiler",st:['12"','11','3+','18','6+','5'],inv:'5+'}],
  comp:`1 Defiler. Va equipado con hades battle cannon, 2 excruciator cannon, heavy baleflamer, heavy missile launcher y shearing claws.`,
- sizes:[{m:1,p:290,p2:320}],tier:1,
+ sizes:[{m:1,p:290,p2:350}],tier:1,
  base:()=>({"Hades battle cannon":1,"Excruciator cannon":2,"Heavy baleflamer":1,"Heavy missile launcher – krak":1,"Heavy missile launcher – frag":1,"Shearing claws – Strike":1,"Shearing claws – Sweep":1}),
  ranged:[
   {n:"Hades battle cannon",r:'48"',a:'D6+3',bs:'3+',s:'10',ap:'-1',d:'3',k:["BLAST"]},
@@ -1682,7 +1682,7 @@ const DS={
   {n:"Destroyer of Futures",t:`Puedes seleccionar esta unidad para la Stratagem Counter-offensive una vez por fase con -1 CP, y ese uso no impide otros usos de Counter-offensive en esa fase.`},
   {n:"Damaged: 1-6 heridas",t:`Mientras le queden entre 1 y 6 heridas, resta 1 a sus tiradas de impactar.`}],wg:[]},
  kw:["VEHICLE","WALKER","CHAOS","TZEENTCH","DAEMON","THOUSAND SONS"],
- tip:`300 pts, 18 heridas, T11 e inv 5+. Actualización de julio: ya NO tiene FEEL NO PAIN 6+. Su valor está en Destroyer of Futures (Counter-offensive barato) y en pegar S16 AP-3 D6+1 en combate.`},
+ tip:`290 pts, 18 heridas, T11 e inv 5+ Actualización de julio: ya NO tiene FEEL NO PAIN 6+. Su valor está en Destroyer of Futures (Counter-offensive barato) y en pegar S16 AP-3 D6+1 en combate.`},
 
 "Forgefiend":{role:"Vehicle / Walker",
  profiles:[{n:"Forgefiend",st:['8"','10','3+','12','6+','3'],inv:'5+'}],
@@ -1923,10 +1923,10 @@ const MFM_DEFAULTS={
  units:{
   "Ahriman":{sizes:{"1":[100,100,100,100]},weapons:{}},
   "Magnus the Red":{sizes:{"1":[455,455,455,455]},weapons:{}},
-  "Exalted Sorcerer":{sizes:{"1":[90,90,90,90]},weapons:{}},
+  "Exalted Sorcerer":{sizes:{"1":[95,95,95,95]},weapons:{}},
   "Exalted Sorcerer on Disc of Tzeentch":{sizes:{"1":[90,90,90,90]},weapons:{}},
-  "Infernal Master":{sizes:{"1":[95,95,95,95]},weapons:{}},
-  "Sorcerer":{sizes:{"1":[85,85,85,85]},weapons:{}},
+  "Infernal Master":{sizes:{"1":[100,100,100,100]},weapons:{}},
+  "Sorcerer":{sizes:{"1":[95,95,105,105]},weapons:{}},
   "Sorcerer in Terminator Armour":{sizes:{"1":[100,100,110,110]},weapons:{}},
   "Daemon Prince of Tzeentch":{sizes:{"1":[170,170,170,170]},weapons:{}},
   "Daemon Prince of Tzeentch with Wings":{sizes:{"1":[170,180,180,180]},weapons:{}},
@@ -1943,7 +1943,7 @@ const MFM_DEFAULTS={
   "Chaos Predator Annihilator":{sizes:{"1":[130,140,140,140]},weapons:{}},
   "Chaos Predator Destructor":{sizes:{"1":[130,140,140,140]},weapons:{}},
   "Chaos Vindicator":{sizes:{"1":[185,195,195,195]},weapons:{}},
-  "Defiler":{sizes:{"1":[290,320,320,320]},weapons:{balLas:10,balAuto:10,mlLas:10,mlAuto:10}},
+  "Defiler":{sizes:{"1":[290,350,350,350]},weapons:{balLas:15,balAuto:15,mlLas:15,mlAuto:15}},
   "Forgefiend":{sizes:{"1":[135,145,145,145]},weapons:{ecto:10}},
   "Helbrute":{sizes:{"1":[110,110,110,110]},weapons:{}},
   "Heldrake":{sizes:{"1":[175,175,175,175]},weapons:{}},
@@ -1960,7 +1960,7 @@ const MFM_DEFAULTS={
  },
  enhancements:{
   "Diabolic Savant":20,"Duplicitous Malediction":15,"Nethershriek Mind-Eater":10,"Tome of True Names":20,
-  "Eldritch Vortex of E'taph":35,"Incandaeum":15,"Lord of Forbidden Lore":20,"Umbralefic Crystal":20,
+  "Eldritch Vortex of E'taph":35,"Incandaeum":15,"Lord of Forbidden Lore":20,"Umbralefic Crystal":30,
   "Arcane Might":20,"Empowered Manifestation":20,"Empyric Onslaught":25,"Noctilith Mantle":15,
   "Curse of Life":20,"Eruption of Vitality":35,
   "Arcane Thralls":5,"Lord of the Rubricae":15,"Risen Rubricae":30,"Stave Abominus":20,
@@ -1990,10 +1990,10 @@ function normalizeMfmConfig(c){
 }
 let mfmCosts=normalizeMfmConfig(cloneMfmDefaults());
 try{
- const saved=JSON.parse(localStorage.getItem("ts11mfm_v2")||"null");
+ const saved=JSON.parse(localStorage.getItem("ts11mfm_v3")||"null");
  if(saved)mfmCosts=normalizeMfmConfig(saved);
 }catch(e){}
-function saveMfm(){try{localStorage.setItem("ts11mfm_v2",JSON.stringify(mfmCosts))}catch(e){}}
+function saveMfm(){try{localStorage.setItem("ts11mfm_v3",JSON.stringify(mfmCosts))}catch(e){}}
 function mfmUnitConfig(name,size){
  const d=DS[name],def=deriveMfmCosts(name,size),o=mfmCosts.units[name]||{};
  let raw=null;
@@ -2581,7 +2581,7 @@ function renderMfm(){
  }).join("");
  const enhNames=[...new Set([...army.filter(x=>x.enh).map(x=>x.enh),...(DET[detName].enh||[]).map(e=>e.n)])];
  const enhBlock=enhNames.length?`<div class="mfm-unit"><div class="mfm-unit-head"><b>Enhancements</b><span class="small">${esc(detName)}</span></div>${enhNames.map(name=>{const e=(DET[detName].enh||[]).find(z=>z.n===name),fallback=e?e.p:0,v=mfmEnhancementCost(name,fallback);return `<div class="mfm-weapon-row"><div><b>⚜ ${esc(name)}</b><br><span class="small">${e?esc(e.rq):"Enhancement guardado anteriormente"} · ${e?"coste actual MFM: "+fallback+" pts":"sin entrada en el destacamento actual"}</span></div><input type="number" min="0" step="1" value="${v}" onchange="setMfmEnhancement('${esc(name)}',this.value)"></div>`}).join("")}</div>`:"";
- $("mfm").innerHTML=`<h2>⚙ Costes MFM</h2><div class="note mfm-note"><b>Munitorum Field Manual vigente.</b> Los valores actuales se aplican automáticamente al cálculo de la lista. Los personajes o datasheets con una sola entrada de coste muestran solo un campo; los datasheets con tramos muestran 1ª / 2ª+ / 3ª+ / 4ª+ y los tamaños de unidad disponibles se separan por tamaño.<br><span class="small">Los costes de armamento son incrementos de puntos de la opción seleccionada. Puedes sobrescribirlos manualmente y la personalización se guarda.</span></div><div class="note"><b>Enhancements de la lista:</b> ${mfmEnhancementTotal()} pts en total.</div>${unitBlocks}${enhBlock}<div class="mfm-actions"><button class="primary" onclick="resetMfmDefaults()">Restablecer valores MFM actuales</button></div><div class="small" style="margin-top:8px">Los cambios se guardan en este navegador y viajan en las listas exportadas/guardadas.</div>`;
+ $("mfm").innerHTML=`<h2>⚙ Costes MFM</h2><div class="note mfm-note"><b>Munitorum Field Manual vigente a 4/09/2026.</b> Los valores de puntos se han sincronizado con la actualización de agosto de 2026 y se aplican automáticamente al cálculo de la lista. Los personajes o datasheets con una sola entrada de coste muestran solo un campo; los datasheets con tramos muestran 1ª / 2ª+ / 3ª+ / 4ª+ y los tamaños de unidad disponibles se separan por tamaño.<br><span class="small">Los costes de armamento son incrementos de puntos de la opción seleccionada. Puedes sobrescribirlos manualmente y la personalización se guarda.</span></div><div class="note"><b>Enhancements de la lista:</b> ${mfmEnhancementTotal()} pts en total.</div>${unitBlocks}${enhBlock}<div class="mfm-actions"><button class="primary" onclick="resetMfmDefaults()">Restablecer valores MFM actuales</button></div><div class="small" style="margin-top:8px">Los cambios se guardan en este navegador y viajan en las listas exportadas/guardadas.</div>`;
  applyGlossary($("mfm"));
 }
 function setMfmUnitCost(name,index,value,size){
