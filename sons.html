@@ -115,6 +115,17 @@ details.ds>summary.ds-head:hover{filter:brightness(1.25)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
 
+/* ---------- QUICK ARMY GUIDE ---------- */
+.quick-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:10px 0}
+.quick-card{border:1px solid var(--line);border-radius:8px;background:#0b1220;padding:9px 11px}
+.quick-card b{color:var(--gold2)}
+.quick-phase{border-left:3px solid var(--gold);background:#0d1622;padding:9px 11px;margin:8px 0;border-radius:0 7px 7px 0}
+.quick-phase h3{color:var(--gold2);margin:0 0 6px}
+.quick-item{padding:6px 0;border-bottom:1px solid var(--line)}
+.quick-item:last-child{border-bottom:0}
+.quick-tag{display:inline-block;border:1px solid var(--gold);border-radius:999px;padding:1px 7px;font-size:10px;color:var(--gold2);margin-right:5px}
+.acronym{display:inline-block;min-width:42px;color:var(--gold2);font-weight:700}
+
 /* ---------- GLOSSARY TOOLTIP ---------- */
 .gterm{border-bottom:1px dotted var(--gold);cursor:help}
 #tip{position:fixed;z-index:999;max-width:340px;background:#0a1220;border:1px solid var(--gold);border-radius:7px;padding:9px 11px;font-size:12.5px;line-height:1.45;box-shadow:0 8px 26px #000c;pointer-events:none;display:none}
@@ -143,6 +154,26 @@ table.wt td.hl{outline:2px solid var(--gold)}
 .wt-legend i{width:16px;height:16px;border-radius:4px;display:inline-block}
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .bigans{font-size:30px;color:var(--gold2);font-weight:800;line-height:1.2}
+
+
+/* ---------- MFM COST EDITOR ---------- */
+.mfm-note{margin-bottom:12px}
+.mfm-unit{border:1px solid var(--line);border-radius:9px;background:#0b1220;padding:11px 12px;margin:10px 0}
+.mfm-unit-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.mfm-unit-head b{color:var(--gold2);font-size:14px}
+.mfm-costgrid{display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));gap:8px}
+.mfm-field label{margin:0 0 3px}
+.mfm-field input{padding:7px}
+.mfm-weapons{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.mfm-weapon-row{display:grid;grid-template-columns:1fr 100px;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid #1c2635}
+.mfm-weapon-row:last-child{border-bottom:0}
+.mfm-weapon-row .small{line-height:1.35}
+.mfm-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.mfm-badge{display:inline-block;border:1px solid var(--gold);color:var(--gold2);border-radius:999px;padding:1px 7px;font-size:10px;margin-left:6px}
+@media(max-width:700px){
+ .mfm-costgrid{grid-template-columns:repeat(2,1fr)}
+ .mfm-weapon-row{grid-template-columns:1fr 90px}
+}
 
 /* ---------- RESPONSIVE ---------- */
 @media(max-width:1050px){
@@ -224,6 +255,90 @@ table.wt td.hl{outline:2px solid var(--gold)}
 }
 /* Dispositivos táctiles: el hover no existe, así que el término se pulsa */
 @media(hover:none){.gterm{border-bottom-style:dashed}}
+
+/* =====================================================================
+   MOBILE / APP SHELL — inspirado en la jerarquía visual de Warhammer 40,000
+   The App: cabecera compacta, tarjetas claras sobre fondo oscuro, acento dorado
+   y navegación inferior. En escritorio se conserva el layout del builder.
+   ===================================================================== */
+.mobile-nav{display:none}
+.mobile-more{display:none}
+@media(max-width:700px){
+  :root{
+    --bg:#111214;--panel:#f4f3ef;--panel2:#e9e7e2;--line:#c9c6bf;
+    --gold:#d5ad21;--gold2:#e0b72c;--blue:#354e59;--blue2:#2b353b;
+    --ink:#191a1c;--muted:#64686d;--red:#b84444;--green:#287b57;--cyan:#337a8a;--warn:#a87513;
+  }
+  body{background:var(--bg);color:var(--ink);font-size:14px;padding-bottom:70px}
+  header{background:#252627;border-bottom:0;box-shadow:0 2px 12px #0008;padding:9px 0;position:sticky;top:0;z-index:50}
+  header .wrap{padding:0 12px}
+  h1{color:#f0eee8;font-size:14px;letter-spacing:.8px;line-height:1.25;text-transform:uppercase}
+  header .muted{display:block;margin-top:2px;color:#b8b8b5;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wrap{padding:9px}
+  .layout{display:block}
+  aside.panel{position:static;max-height:none;overflow:visible;background:#252627;border:0;border-radius:0;padding:9px;margin:0 -9px 10px;color:#f0eee8}
+  aside.panel h2{font-size:11px;color:#d8d7d2;margin:0 0 6px;letter-spacing:1.1px;text-transform:uppercase}
+  aside.panel label{color:#aaa;font-size:9px}
+  aside.panel select,aside.panel input,aside.panel textarea{background:#161719;color:#f2f1ed;border-color:#45484b}
+  aside.panel .secbar{margin-top:9px}
+  aside.panel #armyList{max-height:170px;overflow:auto}
+  main>.kpis{margin:0 0 8px}
+  main>.pane{background:transparent;border:0;border-radius:0;padding:0}
+  .panel{border-radius:6px}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:5px}
+  .kpi{background:#292a2b;border:1px solid #3b3c3e;border-left:3px solid var(--gold);border-radius:4px;padding:7px 8px;color:#eee}
+  .kpi span{color:#aaa;font-size:8px}.kpi b{color:#f0c94b;font-size:15px}
+  .tabs{display:none}
+  .ds,.quick-card,.strat,.wg,.mfm-unit{background:#f4f3ef;color:#191a1c;border:1px solid #cbc8c1;border-radius:6px;box-shadow:0 1px 3px #0005}
+  .ds{margin-bottom:9px}
+  .ds-head{background:linear-gradient(90deg,#3c5964,#2d3c43);border-bottom:3px solid var(--gold);padding:9px 10px}
+  .ds-head h3{color:#fff;font-size:13px;letter-spacing:.7px}
+  .ds-head .pts{color:#f2ce57;font-size:12px}
+  .ds-sub{color:#d6dcdf;font-size:10px}
+  .ds-body{padding:9px 10px}
+  .ds-body .small,.mfm-unit .small{color:#686b70}
+  .statbox{background:#fff;border-color:#777;min-width:42px}
+  .statbox i{background:#333b3f;color:#fff;font-size:9px}
+  .statbox b{color:#111;font-size:15px}
+  .secbar{background:#d4aa21;color:#18130a;font-size:9px;padding:3px 7px;margin:10px 0 5px}
+  .note{background:#e9f0f2;border-color:#c4d2d6;color:#25282a;border-left-color:#4c8390}
+  .note.ok{background:#e8f1eb;border-left-color:#37805e}.note.warn{background:#f5eddb;border-left-color:#a87513}.note.bad{background:#f4e4e4;border-left-color:#b84444}
+  .chip{border-color:#aaa;color:#303236;background:#fff}
+  .chip.on{border-color:#b18b12;color:#725a00;background:#fff7d5}
+  .ab{border-left-color:#687e88}
+  .ab b,.quick-card b,.quick-phase h3,.mfm-unit-head b{color:#7b5f00}
+  .kwbar{background:#e8e5df;color:#343638;border-radius:4px}
+  .kwbar b{color:#725a00}
+  table.wep th{background:#2f3d42;color:#f5d66b;border-bottom-color:#c9a21d}
+  table.wep td{border-bottom-color:#d7d4ce;color:#252629}
+  .wkw{color:#47727c}
+  .wcount{background:#d7af27}
+  details{border-color:#cbc8c1;background:#f4f3ef}
+  summary{background:#e3e1dc;color:#2d3134;padding:9px 10px}
+  details.ds>summary.ds-head{background:linear-gradient(90deg,#3c5964,#2d3c43)}
+  .quick-phase{background:#e9eef0;border-left-color:#b48b10;color:#24272a}
+  .quick-tag{border-color:#b18b12;color:#765c00;background:#fffaf0}
+  .mfm-unit{padding:9px}
+  .mfm-costgrid{grid-template-columns:repeat(2,1fr);gap:5px}
+  .mfm-field label{color:#6b6d70}
+  .mfm-field input{background:#fff;color:#17191b;border-color:#bdbab3}
+  .mfm-weapon-row{border-bottom-color:#ddd9d2}
+  .mfm-badge{border-color:#b18b12;color:#765c00}
+  button{background:#e8e6e1;color:#232527;border-color:#bdbab3}
+  button.primary{background:#343f43;color:#fff;border-color:#caa21f}
+  .row{gap:5px}
+  .bigans{font-size:25px}
+  .scroll{overflow-x:auto}
+  /* barra inferior tipo app */
+  .mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;height:62px;background:#292a2b;border-top:1px solid #4a4b4d;z-index:100;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 18px #0009}
+  .mobile-nav button{border:0;border-radius:0;background:transparent;color:#b9b9b6;min-height:62px;padding:4px 2px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:9px;text-transform:uppercase;letter-spacing:.2px}
+  .mobile-nav button .mi{font-size:18px;line-height:1}
+  .mobile-nav button.active{color:#f0c94b;background:#303132}
+  .mobile-more{position:fixed;left:8px;right:8px;bottom:68px;background:#f4f3ef;border:1px solid #aaa;border-radius:8px;padding:7px;z-index:99;box-shadow:0 8px 30px #000b}
+  .mobile-more button{width:100%;text-align:left;margin:2px 0;background:#e7e5e0}
+  .mobile-more button.active{border-color:#b28c13;background:#fff4c9}
+}
+
 </style>
 </head>
 <body>
@@ -261,7 +376,9 @@ table.wt td.hl{outline:2px solid var(--gold)}
   <div id="kpis" class="kpis"></div>
   <div class="tabs">
     <button class="tab active" data-t="builder">🛠 Editar unidades</button>
+    <button class="tab" data-t="mfm">⚙ Costes MFM</button>
     <button class="tab" data-t="codex">📖 Codex de mi lista</button>
+    <button class="tab" data-t="quick">⚔ Guía rápida</button>
     <button class="tab" data-t="detachment">⚜ Destacamento</button>
     <button class="tab" data-t="rituals">🔮 Rituales</button>
     <button class="tab" data-t="combos">🧩 Combos</button>
@@ -270,7 +387,9 @@ table.wt td.hl{outline:2px solid var(--gold)}
     <button class="tab" data-t="rules">📕 Glosario</button>
   </div>
   <section id="builder" class="panel pane"></section>
+  <section id="mfm" class="panel pane hidden"></section>
   <section id="codex" class="panel pane hidden"></section>
+  <section id="quick" class="panel pane hidden"></section>
   <section id="detachment" class="panel pane hidden"></section>
   <section id="rituals" class="panel pane hidden"></section>
   <section id="combos" class="panel pane hidden"></section>
@@ -279,6 +398,14 @@ table.wt td.hl{outline:2px solid var(--gold)}
   <section id="rules" class="panel pane hidden"></section>
 </main>
 </div></div>
+<nav class="mobile-nav" id="mobileNav" aria-label="Navegación móvil">
+ <button data-mnav="builder"><span class="mi">⚒</span><span>Ejército</span></button>
+ <button data-mnav="codex"><span class="mi">▣</span><span>Referencia</span></button>
+ <button data-mnav="quick"><span class="mi">⚔</span><span>Guía</span></button>
+ <button data-mnav="detachment"><span class="mi">♜</span><span>Destac.</span></button>
+ <button id="moreNavBtn"><span class="mi">☰</span><span>Más</span></button>
+</nav>
+<div class="mobile-more" id="mobileMore"></div>
 <div id="tip"></div>
 
 <script>
@@ -609,7 +736,7 @@ const DET={
    t:`Suma 1 a las características de Fuerza y Daño de las armas Psychic del portador.`},
   {n:"Lord of Forbidden Lore",p:20,rq:"Solo modelo THOUSAND SONS",req:TSC,
    t:`Cada vez que el portador manifieste un Ritual, mientras resuelves ese Ritual, añade 6" a su alcance.`},
-  {n:"Umbralefic Crystal",p:20,rq:"Solo modelo THOUSAND SONS",req:TSC,
+  {n:"Umbralefic Crystal",p:30,rq:"Solo modelo THOUSAND SONS",req:TSC,
    t:`(Una vez por batalla, por ejército) En tu Command phase, si esta unidad no está trabada, puedes usar esta habilidad. Si lo haces: coloca esta unidad en Strategic Reserves. Esta unidad tiene DEEP STRIKE hasta el inicio de tu siguiente Shooting phase, y debe hacer un movimiento de entrada en tu siguiente Movement phase (incluido en tu primer turno).`},
   {n:"Incandaeum",p:15,rq:"Solo modelo EXALTED SORCERER",req:u=>CH(u)&&kw(u,"EXALTED SORCERER"),
    t:`Una vez por batalla, al seleccionar un Ritual para que lo intente el portador, puedes elegir Doombolt aunque un modelo de tu ejército ya haya intentado manifestar ese Ritual esta fase.`}],
@@ -1138,7 +1265,7 @@ const DS={
 "Sorcerer":{role:"Character",
  profiles:[{n:"Sorcerer",st:['6"','4','3+','4','6+','1'],inv:'5+'}],
  comp:`1 Sorcerer.`,
- sizes:[{m:1,p:85,p2:95}],tier:2,
+ sizes:[{m:1,p:85}],tier:2,
  base:()=>({"Pandaemonic Delusion":1,"Inferno bolt pistol":1,"Force weapon":1}),
  ranged:[
   {n:"Pandaemonic Delusion",r:'24"',a:'6',bs:'3+',s:'5',ap:'-1',d:'1',k:["PSYCHIC","SUSTAINED HITS 3"]},
@@ -1157,7 +1284,7 @@ const DS={
 "Sorcerer in Terminator Armour":{role:"Character / Terminator",
  profiles:[{n:"Sorcerer in Terminator Armour",st:['5"','5','2+','5','6+','1'],inv:'4+'}],
  comp:`1 Sorcerer in Terminator Armour.`,
- sizes:[{m:1,p:95,p2:105}],tier:2,
+ sizes:[{m:1,p:100,p2:110}],tier:2,
  base:()=>({"Gaze of Hate":1,"Inferno combi-bolter":1,"Force weapon":1}),
  ranged:[
   {n:"Gaze of Hate",r:'18"',a:'3',bs:'3+',s:'4',ap:'-3',d:'2',k:["ANTI-MONSTER 4+","ANTI-VEHICLE 4+","DEVASTATING WOUNDS","PSYCHIC"]},
@@ -1212,7 +1339,7 @@ const DS={
 "Tzaangor Shaman":{role:"Character / Mounted",
  profiles:[{n:"Tzaangor Shaman",st:['10"','4','5+','4','7+','2'],inv:'5+'}],
  comp:`1 Tzaangor Shaman.`,
- sizes:[{m:1,p:65}],tier:99,
+ sizes:[{m:1,p:60}],tier:99,
  base:()=>({"Baleful Devolution":1,"Force stave":1}),
  ranged:[{n:"Baleful Devolution",r:'18"',a:'D6',bs:'3+',s:'9',ap:'0',d:'1',k:["DEVASTATING WOUNDS","PSYCHIC"]}],
  melee:[{n:"Force stave",r:"Melee",a:'3',ws:'3+',s:'5',ap:'-1',d:'D3',k:["PSYCHIC"]}],
@@ -1287,7 +1414,7 @@ const DS={
   {n:"Scarab Occult Sorcerer",st:['5"','5','2+','4','6+','1'],inv:'4+'},
   {n:"Scarab Occult Terminator",st:['5"','5','2+','3','6+','1'],inv:'4+'}],
  comp:`1 Scarab Occult Sorcerer y 4-9 Scarab Occult Terminators. Cada Terminator va equipado con inferno combi-bolter y prosperine khopesh; el Sorcerer con inferno combi-bolter, Malefic Curse y force weapon.`,
- sizes:[{m:5,p:180,p2:195},{m:10,p:385,p2:400}],tier:2,
+ sizes:[{m:5,p:180,p2:195},{m:10,p:370,p2:385}],tier:2,
  base:n=>({"Inferno combi-bolter":n,"Malefic Curse":1,"Force weapon":1,"Prosperine khopesh":n-1}),
  ranged:[
   {n:"Inferno combi-bolter",r:'24"',a:'2',bs:'3+',s:'4',ap:'-2',d:'1',k:["RAPID FIRE 2"]},
@@ -1331,7 +1458,7 @@ const DS={
 "Tzaangor Enlightened":{role:"Mounted",
  profiles:[{n:"Aviarch",st:['10"','4','5+','2','7+','2'],inv:'5+'},{n:"Enlightened",st:['10"','4','5+','2','7+','2'],inv:'5+'}],
  comp:`1 Aviarch y 2-5 Enlightened. Todos van equipados con divining spear.`,
- sizes:[{m:3,p:50},{m:6,p:90}],tier:99,
+ sizes:[{m:3,p:45},{m:6,p:90}],tier:99,
  base:n=>({"Divining spear":n}),
  ranged:[{n:"Autopistol",r:'12"',a:'1',bs:'4+',s:'3',ap:'0',d:'1',k:["PISTOL"]}],
  melee:[
@@ -1359,7 +1486,7 @@ const DS={
 "Sekhetar Robots":{role:"Vehicle / Walker",
  profiles:[{n:"Sekhetar Robot",st:['8"','6','3+','4','7+','1'],inv:'5+'}],
  comp:`2-4 Sekhetar Robots. Cada modelo va equipado con heavy warpflamer, hellfyre missile rack, pyreflux meltagun y close combat weapon.`,
- sizes:[{m:2,p:85,p2:100},{m:4,p:175,p2:190}],tier:2,
+ sizes:[{m:2,p:80},{m:4,p:160}],tier:2,
  base:n=>({"Heavy warpflamer":n,"Hellfyre missile rack":n,"Pyreflux meltagun":n,"Close combat weapon":n}),
  ranged:[
   {n:"Heavy warpflamer",r:'12"',a:'D6',bs:'—',s:'5',ap:'-2',d:'1',k:["IGNORES COVER","TORRENT"]},
@@ -1412,7 +1539,7 @@ const DS={
 "Chaos Rhino":{role:"Dedicated Transport",
  profiles:[{n:"Chaos Rhino",st:['12"','9','3+','10','6+','2'],inv:'—'}],
  comp:`1 Chaos Rhino. Va equipado con inferno combi-bolter y armoured tracks.`,
- sizes:[{m:1,p:80,p2:90}],tier:3,
+ sizes:[{m:1,p:90}],tier:3,
  base:()=>({"Inferno combi-bolter":1,"Armoured tracks":1}),
  ranged:[
   {n:"Havoc launcher",r:'48"',a:'D6',bs:'3+',s:'5',ap:'0',d:'1',k:["BLAST"]},
@@ -1455,7 +1582,7 @@ const DS={
 "Chaos Predator Annihilator":{role:"Vehicle",
  profiles:[{n:"Chaos Predator Annihilator",st:['10"','10','3+','11','6+','3'],inv:'—'}],
  comp:`1 Chaos Predator Annihilator. Torreta: predator twin lascannon.`,
- sizes:[{m:1,p:140,p2:150}],tier:2,
+ sizes:[{m:1,p:130,p2:140}],tier:2,
  base:()=>({"Twin lascannon":1,"Armoured tracks":1}),
  ranged:[
   {n:"Twin lascannon",r:'48"',a:'2',bs:'3+',s:'14',ap:'-3',d:'D6+1',k:["TWIN-LINKED"]},
@@ -1480,7 +1607,7 @@ const DS={
 "Chaos Predator Destructor":{role:"Vehicle",
  profiles:[{n:"Chaos Predator Destructor",st:['10"','10','3+','11','6+','3'],inv:'—'}],
  comp:`1 Chaos Predator Destructor. Torreta: predator autocannon.`,
- sizes:[{m:1,p:140,p2:150}],tier:2,
+ sizes:[{m:1,p:130,p2:140}],tier:2,
  base:()=>({"Predator autocannon":1,"Armoured tracks":1}),
  ranged:[
   {n:"Predator autocannon",r:'48"',a:'4',bs:'3+',s:'9',ap:'-1',d:'3',k:["RAPID FIRE 2"]},
@@ -1525,7 +1652,7 @@ const DS={
 "Defiler":{role:"Vehicle / Walker",
  profiles:[{n:"Defiler",st:['12"','11','3+','18','6+','5'],inv:'5+'}],
  comp:`1 Defiler. Va equipado con hades battle cannon, 2 excruciator cannon, heavy baleflamer, heavy missile launcher y shearing claws.`,
- sizes:[{m:1,p:300,p2:340}],tier:1,
+ sizes:[{m:1,p:290,p2:320}],tier:1,
  base:()=>({"Hades battle cannon":1,"Excruciator cannon":2,"Heavy baleflamer":1,"Heavy missile launcher – krak":1,"Heavy missile launcher – frag":1,"Shearing claws – Strike":1,"Shearing claws – Sweep":1}),
  ranged:[
   {n:"Hades battle cannon",r:'48"',a:'D6+3',bs:'3+',s:'10',ap:'-1',d:'3',k:["BLAST"]},
@@ -1733,7 +1860,7 @@ const DS={
 "Kairos Fateweaver":{role:"Epic Hero / Monster (Scintillating Legions)",
  profiles:[{n:"Kairos Fateweaver",st:['12"','10','6+','20','6+','5'],inv:'4+'}],
  comp:`1 Kairos Fateweaver. EPIC HERO.`,
- sizes:[{m:1,p:305}],tier:99,
+ sizes:[{m:1,p:295}],tier:99,
  base:()=>({"Infernal Gateway – standard":1,"Infernal Gateway – focused":1,"Staff of Tomorrow":1}),
  ranged:[
   {n:"Infernal Gateway – standard",r:'24"',a:'D6+3',bs:'2+',s:'9',ap:'-2',d:'2',k:["BLAST","INDIRECT FIRE","PSYCHIC"]},
@@ -1750,7 +1877,7 @@ const DS={
 "Lord of Change":{role:"Monster Character (Scintillating Legions)",
  profiles:[{n:"Lord of Change",st:['12"','10','6+','18','6+','5'],inv:'4+'}],
  comp:`1 Lord of Change. Va equipado con Bolt of Change y Staff of Tzeentch.`,
- sizes:[{m:1,p:320,p2:340}],tier:2,
+ sizes:[{m:1,p:300,p2:315}],tier:2,
  base:()=>({"Bolt of Change – witchfire":1,"Bolt of Change – focused witchfire":1,"Staff of Tzeentch":1}),
  ranged:[
   {n:"Bolt of Change – witchfire",r:'18"',a:'9',bs:'2+',s:'9',ap:'-1',d:'1',k:["PSYCHIC"]},
@@ -1777,15 +1904,138 @@ const ds=n=>DS[n];
    5. ESTADO
    ========================================================================= */
 const EXAMPLE=[
- {u:"Magnus the Red",size:1,sel:{},enh:"",join:""},
- {u:"Ahriman",size:1,sel:{},enh:"",join:"Rubric Marines #2"},
- {u:"Infernal Master",size:1,sel:{},enh:"",join:"Rubric Marines #1"},
+ {u:"Ahriman",size:1,sel:{},enh:"",join:"Rubric Marines #1"},
  {u:"Rubric Marines",size:5,sel:{wflam:3,soul:1,icon:1},enh:"",join:""},
- {u:"Rubric Marines",size:5,sel:{soul:1},enh:"",join:""},
- {u:"Chaos Rhino",size:1,sel:{havoc:1},enh:"",join:""},
+ {u:"Sorcerer in Terminator Armour",size:1,sel:{},enh:"Arcane Thralls",join:"Scarab Occult Terminators #1"},
+ {u:"Scarab Occult Terminators",size:5,sel:{soul:1,hmr:1},enh:"",join:""},
+ {u:"Magnus the Red",size:1,sel:{},enh:"",join:""},
  {u:"Tzaangor Enlightened with Fatecaster Greatbows",size:3,sel:{},enh:"",join:""}
 ];
 
+
+
+/* =========================================================================
+   MFM — costes editables y persistentes
+   Los cuatro campos representan: 1ª unidad, 2ª+, 3ª+ y 4ª+ del mismo
+   datasheet. Los huecos heredan el último valor definido.
+   ========================================================================= */
+const MFM_DEFAULTS={
+ units:{
+  "Ahriman":{sizes:{"1":[100,100,100,100]},weapons:{}},
+  "Magnus the Red":{sizes:{"1":[455,455,455,455]},weapons:{}},
+  "Exalted Sorcerer":{sizes:{"1":[90,90,90,90]},weapons:{}},
+  "Exalted Sorcerer on Disc of Tzeentch":{sizes:{"1":[90,90,90,90]},weapons:{}},
+  "Infernal Master":{sizes:{"1":[95,95,95,95]},weapons:{}},
+  "Sorcerer":{sizes:{"1":[85,85,85,85]},weapons:{}},
+  "Sorcerer in Terminator Armour":{sizes:{"1":[100,100,110,110]},weapons:{}},
+  "Daemon Prince of Tzeentch":{sizes:{"1":[170,170,170,170]},weapons:{}},
+  "Daemon Prince of Tzeentch with Wings":{sizes:{"1":[170,180,180,180]},weapons:{}},
+  "Tzaangor Shaman":{sizes:{"1":[60,60,60,60]},weapons:{}},
+  "Chaos Lord on Disc of Tzeentch":{sizes:{"1":[100,100,100,100]},weapons:{}},
+  "Tzaangors":{sizes:{"10":[75,75,75,75],"20":[145,145,145,145]},weapons:{}},
+  "Tzaangor Enlightened":{sizes:{"3":[45,45,45,45],"6":[90,90,90,90]},weapons:{}},
+  "Tzaangor Enlightened with Fatecaster Greatbows":{sizes:{"3":[55,55,55,55],"6":[110,110,110,110]},weapons:{}},
+  "Sekhetar Robots":{sizes:{"2":[80,80,80,80],"4":[160,160,160,160]},weapons:{}},
+  "Chaos Spawn":{sizes:{"2":[65,65,65,65]},weapons:{}},
+  "Mutalith Vortex Beast":{sizes:{"1":[170,190,190,190]},weapons:{}},
+  "Chaos Rhino":{sizes:{"1":[90,90,90,90]},weapons:{}},
+  "Chaos Land Raider":{sizes:{"1":[220,240,240,240]},weapons:{}},
+  "Chaos Predator Annihilator":{sizes:{"1":[130,140,140,140]},weapons:{}},
+  "Chaos Predator Destructor":{sizes:{"1":[130,140,140,140]},weapons:{}},
+  "Chaos Vindicator":{sizes:{"1":[185,195,195,195]},weapons:{}},
+  "Defiler":{sizes:{"1":[290,320,320,320]},weapons:{balLas:10,balAuto:10,mlLas:10,mlAuto:10}},
+  "Forgefiend":{sizes:{"1":[135,145,145,145]},weapons:{ecto:10}},
+  "Helbrute":{sizes:{"1":[110,110,110,110]},weapons:{}},
+  "Heldrake":{sizes:{"1":[175,175,175,175]},weapons:{}},
+  "Maulerfiend":{sizes:{"1":[120,130,130,130]},weapons:{}},
+  "Rubric Marines":{sizes:{"5":[100,100,100,110],"10":[190,190,190,200]},weapons:{}},
+  "Scarab Occult Terminators":{sizes:{"5":[180,180,195,195],"10":[370,370,385,385]},weapons:{}},
+  "Pink Horrors":{sizes:{"10":[115,115,115,115]},weapons:{}},
+  "Blue Horrors":{sizes:{"10":[90,90,90,90]},weapons:{}},
+  "Flamers":{sizes:{"3":[65,65,65,65],"6":[130,130,130,130]},weapons:{}},
+  "Screamers":{sizes:{"3":[80,80,80,80],"6":[160,160,160,160]},weapons:{}},
+  "Kairos Fateweaver":{sizes:{"1":[295,295,295,295]},weapons:{}},
+  "Lord of Change":{sizes:{"1":[300,300,315,315]},weapons:{}},
+  "Terrax-pattern Termite":{sizes:{"1":[200,200,200,200]},weapons:{}}
+ },
+ enhancements:{
+  "Diabolic Savant":20,"Duplicitous Malediction":15,"Nethershriek Mind-Eater":10,"Tome of True Names":20,
+  "Eldritch Vortex of E'taph":35,"Incandaeum":15,"Lord of Forbidden Lore":20,"Umbralefic Crystal":20,
+  "Arcane Might":20,"Empowered Manifestation":20,"Empyric Onslaught":25,"Noctilith Mantle":15,
+  "Curse of Life":20,"Eruption of Vitality":35,
+  "Arcane Thralls":5,"Lord of the Rubricae":15,"Risen Rubricae":30,"Stave Abominus":20,
+  "Occulus Infernum":20,"Walking Rampart":30,
+  "Thicket of Bladed Bone (Upgrade)":10,"Unravelled Fates":15,
+  "Biomechanical Mutation":15,"Perplexing Cloak":20,"Warp-Cursed Runemaster":10,"Warp Syphon":5,
+  "Bray Lord":15,"Diamond of Distortion":20,"Flowing Flesh":10,"Warpmeld Dagger":10
+ }
+};
+function cloneMfmDefaults(){return JSON.parse(JSON.stringify(MFM_DEFAULTS))}
+function deriveMfmCosts(name,size){
+ const d=DS[name],sizes=d&&d.sizes||[];
+ const key=String(size||sizes[0]?.m||1);
+ const s=sizes.find(z=>String(z.m)===key)||sizes[0];
+ if(!s)return [0,0,0,0];
+ const tier=d.tier||99,p=s.p,p2=s.p2==null?s.p:s.p2;
+ if(tier<=1)return [p,p2,p2,p2];
+ if(tier<=2)return [p,p,p2,p2];
+ if(tier<=3)return [p,p,p,p2];
+ return [p,p,p,p];
+}
+function normalizeMfmConfig(c){
+ const out=c&&typeof c==="object"?c:{};
+ out.units=out.units&&typeof out.units==="object"?out.units:{};
+ out.enhancements=out.enhancements&&typeof out.enhancements==="object"?out.enhancements:{};
+ return out;
+}
+let mfmCosts=normalizeMfmConfig(cloneMfmDefaults());
+try{
+ const saved=JSON.parse(localStorage.getItem("ts11mfm_v2")||"null");
+ if(saved)mfmCosts=normalizeMfmConfig(saved);
+}catch(e){}
+function saveMfm(){try{localStorage.setItem("ts11mfm_v2",JSON.stringify(mfmCosts))}catch(e){}}
+function mfmUnitConfig(name,size){
+ const d=DS[name],def=deriveMfmCosts(name,size),o=mfmCosts.units[name]||{};
+ let raw=null;
+ if(o.sizes&&typeof o.sizes==="object")raw=o.sizes[String(size||d?.sizes?.[0]?.m||1)];
+ else if(Array.isArray(o.costs))raw=o.costs; // backwards compatibility with v1 exports
+ const costs=[];
+ for(let i=0;i<4;i++){
+  const v=raw&&raw[i];
+  costs[i]=(v===null||v===undefined||v==="")?(i?costs[i-1]:def[i]):Math.max(0,+v||0);
+ }
+ return {costs:costs,weapons:(o.weapons&&typeof o.weapons==="object")?o.weapons:{}};
+}
+function mfmWeaponCost(name,opt){
+ const cfg=mfmUnitConfig(name);
+ if(Object.prototype.hasOwnProperty.call(cfg.weapons,opt.id))return Math.max(0,+cfg.weapons[opt.id]||0);
+ if(Object.prototype.hasOwnProperty.call(cfg.weapons,opt.n))return Math.max(0,+cfg.weapons[opt.n]||0);
+ if(Object.prototype.hasOwnProperty.call(opt,"pts")&&opt.pts!=null)return Math.max(0,+opt.pts||0);
+ return 0;
+}
+function mfmEnhancementCost(name,fallback){
+ return Object.prototype.hasOwnProperty.call(mfmCosts.enhancements,name)
+  ? Math.max(0,+mfmCosts.enhancements[name]||0) : fallback;
+}
+function mfmOrdinalCost(name,ordinal,size){
+ const c=mfmUnitConfig(name,size).costs;
+ return c[Math.min(Math.max(1,ordinal),4)-1];
+}
+function mfmHasTiers(name){
+ const d=DS[name],u=MFM_DEFAULTS.units[name];
+ // Los CHARACTER no muestran tramos: en el MFM vigente solo se puede
+ // incluir una unidad de estos datasheets en una lista normal.
+ if(d&&kw(d,"CHARACTER"))return false;
+ if(!u||!u.sizes)return false;
+ return Object.values(u.sizes).some(c=>Array.isArray(c)&&c.some((v,i)=>i>0&&v!==c[0]));
+}
+function mfmEnhancementTotal(){
+ return army.reduce((sum,x,i)=>sum+enhPts(x),0);
+}
+function resetMfmDefaults(){
+ if(!confirm("¿Restablecer todos los costes MFM a los valores actuales del MFM mostrados en la tabla?"))return;
+ mfmCosts=cloneMfmDefaults();saveMfm();renderAll();
+}
 function migrate(a){
  return (a||[]).map(x=>{
   if(!x||!x.u)return null;
@@ -1807,8 +2057,8 @@ function migrate(a){
 let army,detName;
 try{army=migrate(JSON.parse(localStorage.getItem("ts11army_v7")||"null"))}catch(e){army=null}
 if(!army||!army.length)army=JSON.parse(JSON.stringify(EXAMPLE));
-detName=localStorage.getItem("ts11det_v7")||"Grand Coven";
-if(!DET[detName])detName="Grand Coven";
+detName=localStorage.getItem("ts11det_v7")||"Rubricae Phalanx";
+if(!DET[detName])detName="Rubricae Phalanx";
 let target={t:4,sv:3,inv:0,kw:["INFANTRY"],half:false,cover:false};
 let simAttacker=0,simBuffs={};
 /* Las fichas nacen plegadas. Guardamos qué has abierto para que un cambio en un
@@ -1871,7 +2121,10 @@ function loadout(x){
 
 function wargearPts(x){
  const d=ds(x.u);let p=0;
- (d.opts||[]).forEach(o=>{if(o.pts)p+=o.pts*(x.sel[o.id]||0)});
+ (d.opts||[]).forEach(o=>{
+  const op=mfmWeaponCost(x.u,o);
+  if(op)p+=op*(x.sel[o.id]||0);
+ });
  return p;
 }
 
@@ -1885,14 +2138,12 @@ function sizeEntry(x){
  return d.sizes.find(s=>s.m===sizeOf(x))||d.sizes[0];
 }
 function basePts(x,i){
- const d=ds(x.u),se=sizeEntry(x);
- const ord=ordinalOf(i),tier=d.tier||99;
- return (ord>tier&&se.p2)?se.p2:se.p;
+ return mfmOrdinalCost(x.u,ordinalOf(i),sizeOf(x));
 }
 function enhPts(x){
  if(!x.enh)return 0;
  const e=(DET[detName].enh||[]).find(z=>z.n===x.enh);
- return e?e.p:0;
+ return e?mfmEnhancementCost(e.n,e.p):0;
 }
 function unitCost(x,i){return basePts(x,i)+wargearPts(x)+enhPts(x)}
 function total(){return army.reduce((s,x,i)=>s+unitCost(x,i),0)}
@@ -2290,6 +2541,67 @@ function renderArmyList(){
 function loadoutShort(x){
  const d=ds(x.u);
  return (d.opts||[]).filter(o=>x.sel[o.id]).map(o=>`${x.sel[o.id]}× ${o.n}`).join(", ");
+}
+
+/* =========================================================================
+   9. EDITOR DE UNIDADES (pestaña «Editar unidades»)
+   ========================================================================= */
+/* =========================================================================
+   9.0 EDITOR DE COSTES MFM
+   ========================================================================= */
+function renderMfm(){
+ const names=[...new Set(army.map(x=>x.u))];
+ if(!names.length){
+  $("mfm").innerHTML=`<h2>⚙ Costes MFM</h2><div class="note">No hay unidades configuradas. Añade primero una unidad a tu ejército.</div>`;
+  return;
+ }
+ const unitBlocks=names.map(name=>{
+  const d=DS[name],opts=d.opts||[],usedSizes=[...new Set(army.filter(x=>x.u===name).map(x=>sizeOf(x)))];
+  const sizeBlocks=usedSizes.map(size=>{
+   const cfg=mfmUnitConfig(name,size);
+   const showTiers=mfmHasTiers(name);
+   const labels=showTiers?["1ª unidad","2ª o más","3ª o más","4ª o más"]:["Coste de la unidad"];
+   const fields=showTiers
+    ?labels.map((lbl,j)=>`<div class="mfm-field"><label>${lbl}</label><input type="number" min="0" step="1" value="${cfg.costs[j]}" onchange="setMfmUnitCost('${esc(name)}',${j},this.value,${size})"></div>`).join("")
+    :`<div class="mfm-field"><label>Coste</label><input type="number" min="0" step="1" value="${cfg.costs[0]}" onchange="setMfmUnitCost('${esc(name)}',0,this.value,${size})"></div>`;
+   return `<div class="mfm-size"><div class="mfm-size-head"><b>${size} modelo${size==1?"":"s"}</b>${showTiers?" · tramos por número de unidades":" · una sola unidad permitida"}</div><div class="mfm-costgrid">${fields}</div></div>`;
+  }).join("");
+  const weaponRows=opts.length
+   ? `<div class="mfm-weapons"><b>Coste de armamento / wargear</b>
+      ${opts.map(o=>{
+        const v=mfmWeaponCost(name,o);
+        const source=(mfmCosts.units[name]&&mfmCosts.units[name].weapons&&Object.prototype.hasOwnProperty.call(mfmCosts.units[name].weapons,o.id))
+          ?"personalizado":(o.pts!=null?"datasheet":"0 por defecto");
+        return `<div class="mfm-weapon-row"><div><b>${esc(o.n)}</b><br><span class="small">${esc(o.d)} · +${v} pts por opción${source?" · "+source:""}</span></div><input type="number" min="0" step="1" value="${v}" onchange="setMfmWeapon('${esc(name)}','${esc(o.id)}',this.value)"></div>`;
+      }).join("")}</div>`
+   : `<div class="mfm-weapons"><span class="small">Este datasheet no tiene opciones de armamento con coste configurable.</span></div>`;
+  const orphan=Object.keys(mfmUnitConfig(name).weapons).filter(id=>!opts.some(o=>o.id===id||o.n===id));
+  const orphanBlock=orphan.length?`<div class="note warn"><b>Costes guardados sin opción actual:</b> ${orphan.map(id=>`${esc(id)} = ${mfmUnitConfig(name).weapons[id]} pts`).join(", ")}. Se conservan para futuras actualizaciones del datasheet.</div>`:"";
+  return `<div class="mfm-unit"><div class="mfm-unit-head"><b>${esc(name)}</b><span class="mfm-badge">${army.filter(x=>x.u===name).length} unidad${army.filter(x=>x.u===name).length!==1?"es":""}</span></div>${sizeBlocks}${weaponRows}${orphanBlock}</div>`;
+ }).join("");
+ const enhNames=[...new Set([...army.filter(x=>x.enh).map(x=>x.enh),...(DET[detName].enh||[]).map(e=>e.n)])];
+ const enhBlock=enhNames.length?`<div class="mfm-unit"><div class="mfm-unit-head"><b>Enhancements</b><span class="small">${esc(detName)}</span></div>${enhNames.map(name=>{const e=(DET[detName].enh||[]).find(z=>z.n===name),fallback=e?e.p:0,v=mfmEnhancementCost(name,fallback);return `<div class="mfm-weapon-row"><div><b>⚜ ${esc(name)}</b><br><span class="small">${e?esc(e.rq):"Enhancement guardado anteriormente"} · ${e?"coste actual MFM: "+fallback+" pts":"sin entrada en el destacamento actual"}</span></div><input type="number" min="0" step="1" value="${v}" onchange="setMfmEnhancement('${esc(name)}',this.value)"></div>`}).join("")}</div>`:"";
+ $("mfm").innerHTML=`<h2>⚙ Costes MFM</h2><div class="note mfm-note"><b>Munitorum Field Manual vigente.</b> Los valores actuales se aplican automáticamente al cálculo de la lista. Los personajes o datasheets con una sola entrada de coste muestran solo un campo; los datasheets con tramos muestran 1ª / 2ª+ / 3ª+ / 4ª+ y los tamaños de unidad disponibles se separan por tamaño.<br><span class="small">Los costes de armamento son incrementos de puntos de la opción seleccionada. Puedes sobrescribirlos manualmente y la personalización se guarda.</span></div><div class="note"><b>Enhancements de la lista:</b> ${mfmEnhancementTotal()} pts en total.</div>${unitBlocks}${enhBlock}<div class="mfm-actions"><button class="primary" onclick="resetMfmDefaults()">Restablecer valores MFM actuales</button></div><div class="small" style="margin-top:8px">Los cambios se guardan en este navegador y viajan en las listas exportadas/guardadas.</div>`;
+ applyGlossary($("mfm"));
+}
+function setMfmUnitCost(name,index,value,size){
+ const n=Math.max(0,Math.floor(+value||0)),key=String(size||DS[name]?.sizes?.[0]?.m||1);
+ if(!mfmCosts.units[name])mfmCosts.units[name]={sizes:{},weapons:{}};
+ if(!mfmCosts.units[name].sizes||typeof mfmCosts.units[name].sizes!=="object")mfmCosts.units[name].sizes={};
+ if(!Array.isArray(mfmCosts.units[name].sizes[key]))mfmCosts.units[name].sizes[key]=deriveMfmCosts(name,size);
+ mfmCosts.units[name].sizes[key][index]=n;
+ saveMfm();save();renderAll();
+}
+function setMfmWeapon(name,id,value){
+ const n=Math.max(0,Math.floor(+value||0));
+ if(!mfmCosts.units[name])mfmCosts.units[name]={sizes:{},weapons:{}};
+ if(!mfmCosts.units[name].weapons)mfmCosts.units[name].weapons={};
+ mfmCosts.units[name].weapons[id]=n;
+ saveMfm();save();renderAll();
+}
+function setMfmEnhancement(name,value){
+ const n=Math.max(0,Math.floor(+value||0));
+ mfmCosts.enhancements[name]=n;saveMfm();save();renderAll();
 }
 
 /* =========================================================================
@@ -2775,6 +3087,182 @@ function renderDatasheet(name,x,i,key){
   ${d.tip?`<div class="note"><b>Cómo usarla</b><br>${d.tip}</div>`:""}
   <div class="kwbar"><b>PALABRAS CLAVE:</b> ${d.kw.join(", ")}</div>
  </div></details>`;
+}
+
+
+/* =========================================================================
+   10b. GUÍA RÁPIDA — referencia dinámica de la lista actual
+   -------------------------------------------------------------------------
+   No añade reglas nuevas: reutiliza datasheets, armas, habilidades, rituales,
+   mejoras y stratagemas ya definidos arriba. Solo muestra lo que puede afectar
+   a la composición y al destacamento actualmente configurados.
+   ========================================================================= */
+const QUICK_PHASES=[
+ {id:"pregame",n:"0 · PREPARACIÓN / DESPLIEGUE",tests:[/\bantes de la partida\b/i,/\bdespliegue\b/i,/\bdeploy\b/i,/\bdeclare battle formations\b/i,/\bantes del primer turno\b/i,/\binfiltrators\b/i,/\bscouts?\b/i,/\bstrategic reserves\b/i,/\bwarlord\b/i,/\bleader\b/i]},
+ {id:"command",n:"1 · COMMAND PHASE",tests:[/\bcommand phase\b/i,/\bin your command phase\b/i,/\bal inicio de tu command phase\b/i]},
+ {id:"movement",n:"2 · MOVEMENT PHASE",tests:[/\bmovement phase\b/i,/\bmovement\b/i,/\bnormal move\b/i,/\bfall back\b/i,/\bdeep strike\b/i,/\bscouts?\b/i,/\bmove\b/i]},
+ {id:"shooting",n:"3 · SHOOTING PHASE",tests:[/\bshooting phase\b/i,/\bshooting\b/i,/\bpsychic test\b/i,/\britual\b/i,/\bdispar\b/i,/\bshoot\b/i]},
+ {id:"charge",n:"4 · CHARGE PHASE",tests:[/\bcharge phase\b/i,/\bdeclare charge\b/i,/\bcharge\b/i]},
+ {id:"fight",n:"5 · FIGHT PHASE",tests:[/\bfight phase\b/i,/\bfight\b/i,/\bcombat\b/i,/\blucha\b/i]},
+ {id:"react",n:"6 · TURNO DEL OPONENTE / REACCIONES",tests:[/\bopponent\b/i,/\boponente\b/i,/\brival\b/i,/\benemy\b/i,/\bheroic intervention\b/i,/\boverwach\b/i,/\bselection of targets\b/i]}
+];
+function quickUnique(arr,key){const seen=new Set(),out=[];arr.forEach(v=>{const k=key(v);if(!seen.has(k)){seen.add(k);out.push(v)}});return out}
+function quickAllUnitKeywords(){
+ const ks=[];army.forEach(x=>{(ds(x.u).kw||[]).forEach(k=>{if(ks.indexOf(k)<0)ks.push(k)})});
+ return ks.sort((a,b)=>a.localeCompare(b));
+}
+function quickRelevantKeywords(){
+ const all=quickAllUnitKeywords();
+ const important=/^(CHARACTER|EPIC HERO|MONSTER|VEHICLE|INFANTRY|MOUNTED|TERMINATOR|PSYKER|FLY|RUBRICAE|MUTANT|DAEMON|THOUSAND SONS|TZEENTCH|SEKHETAR ROBOTS|SCINTILLATING LEGIONS|GRENADES|CHAOS|BATTLELINE|DEDICATED TRANSPORT)$/i;
+ return all.filter(k=>important.test(k));
+}
+function quickUnitEntries(){
+ const entries=[];
+ army.forEach((x,i)=>{
+  const d=ds(x.u),A=d.ab||{};
+  (A.core||[]).forEach(n=>{entries.push({phase:quickPhaseForText(CORE_AB[n]||n),unit:x.u,n:n,t:CORE_AB[n]||"Habilidad Core." ,kind:"CORE",idx:i})});
+  (A.faction||[]).forEach(n=>{const t=n;entries.push({phase:quickPhaseForText(t),unit:x.u,n:n,t:"Regla de facción asociada a esta unidad.",kind:"Facción",idx:i})});
+  (A.unit||[]).forEach(a=>entries.push({phase:quickPhaseForText(a.t+" "+a.n),unit:x.u,n:a.n,t:a.t,kind:"Unidad",idx:i}));
+  (A.wg||[]).forEach(a=>entries.push({phase:quickPhaseForText(a.t+" "+a.n),unit:x.u,n:a.n,t:a.t,kind:"Wargear",idx:i}));
+ });
+ return entries;
+}
+function quickPhaseForText(t){
+ t=plain(t||"");
+ for(const p of QUICK_PHASES){if(p.tests.some(re=>re.test(t)))return p.id}
+ return "reference";
+}
+function quickRenderPhaseItems(items){
+ const grouped={};
+ items.forEach(z=>{(grouped[z.phase]||(grouped[z.phase]=[])).push(z)});
+ return QUICK_PHASES.map(p=>{
+  const a=quickUnique(grouped[p.id]||[],z=>z.unit+"|"+z.n);
+  if(!a.length)return "";
+  return `<div class="quick-phase"><h3>${p.n}</h3>${a.map(z=>`<div class="quick-item"><span class="quick-tag">${esc(z.kind)}</span><b>${esc(z.unit)} · ${esc(z.n)}</b><br>${z.t}</div>`).join("")}</div>`;
+ }).join("");
+}
+function quickWeaponRows(){
+ const rows=[];
+ const addRows=(unitLabel,count,d,load)=>{
+  [...(d.ranged||[]),...(d.melee||[])].forEach(w=>{
+   const c=load[w.n]||0;if(c)rows.push({unit:unitLabel,count:c,w,melee:(d.melee||[]).includes(w)});
+  });
+ };
+ army.forEach((x,i)=>{
+  const d=ds(x.u),L=loadout(x),n=sizeOf(x);
+  // Explicit model allocation for multi-profile infantry.
+  if(x.u==="Rubric Marines"){
+   const sorc={};["Inferno bolt pistol","Warpflame pistol","Malefic Curse","Force weapon"].forEach(k=>{if(L[k])sorc[k]=1});
+   addRows("Rubric Marines #"+(i+1)+" · Aspiring Sorcerer",1,d,sorc);
+   const soul=L["Soulreaper cannon"]||0,fl=L["Warpflamer"]||0,bolts=Math.max(0,n-1-soul-fl);
+   const mar={}; if(bolts>0)mar["Inferno boltgun"]=bolts;if(soul)mar["Soulreaper cannon"]=soul;if(fl)mar["Warpflamer"]=fl; if(L["Close combat weapon"])mar["Close combat weapon"]=Math.max(0,n-1);
+   addRows("Rubric Marines #"+(i+1)+" · Rubric Marines",n-1,d,mar);
+   if(L["Icon of flame"])rows.push({unit:"Rubric Marines #"+(i+1)+" · Rubric Marine con Icon",count:L["Icon of flame"],w:{n:"Icon of flame",r:"—",a:"—",bs:"—",s:"—",ap:"—",d:"—",k:["ICON"]},melee:false});
+   return;
+  }
+  if(x.u==="Scarab Occult Terminators"){
+   const sorc={}; if(L["Inferno combi-bolter"])sorc["Inferno combi-bolter"]=1; if(L["Malefic Curse"])sorc["Malefic Curse"]=1; if(L["Force weapon"])sorc["Force weapon"]=1;
+   addRows("Scarab Occult Terminators #"+(i+1)+" · Scarab Occult Sorcerer",1,d,sorc);
+   const body=n-1,extraKho=L["Prosperine khopesh"]||0,hwf=L["Heavy warpflamer"]||0,soul=L["Soulreaper cannon"]||0,bolts=Math.max(0,body-extraKho-hwf-soul);
+   const mar={};if(bolts)mar["Inferno combi-bolter"]=bolts;if(extraKho)mar["Prosperine khopesh"]=extraKho;if(hwf)mar["Heavy warpflamer"]=hwf;if(soul)mar["Soulreaper cannon"]=soul;
+   addRows("Scarab Occult Terminators #"+(i+1)+" · Terminators",body,d,mar);
+   if(L["Hellfyre missile rack"])rows.push({unit:"Scarab Occult Terminators #"+(i+1)+" · Hellfyre carrier",count:L["Hellfyre missile rack"],w:{n:"Hellfyre missile rack",r:'36"',a:"2",bs:"3+",s:"10",ap:"-2",d:"3",k:[]},melee:false});
+   return;
+  }
+  if(d.profiles&&d.profiles.length>1){
+   // Generic fallback: show each weapon once under the datasheet, without pretending an allocation we cannot derive.
+   addRows(x.u+" · modelos",n,d,L);return;
+  }
+  addRows(x.u,n,d,L);
+ });
+ return rows.map(z=>`<tr><td><b>${esc(z.unit)}</b><br><span class="small">${z.count}× ${esc(z.w.n)}</span></td><td>${esc(z.w.r)}</td><td>${esc(z.w.a)}</td><td>${esc(z.melee?z.w.ws:z.w.bs)}</td><td>${esc(z.w.s)}</td><td>${esc(z.w.ap)}</td><td>${esc(z.w.d)}</td><td>${(z.w.k||[]).map(k=>`<span class="chip">${esc(k)}</span>`).join(" ")||"—"}</td></tr>`).join("");
+}
+function quickStrengths(){
+ const vals=[];
+ army.forEach(x=>{const d=ds(x.u);[...(d.ranged||[]),...(d.melee||[])].forEach(w=>{const n=parseInt(String(w.s),10);if(!isNaN(n)&&vals.indexOf(n)<0)vals.push(n)})});
+ return vals.sort((a,b)=>a-b);
+}
+function quickAbilityBuckets(){
+ const items=[];
+ army.forEach(x=>{
+  const d=ds(x.u),A=d.ab||{};
+  (A.unit||[]).forEach(a=>items.push({unit:x.u,n:a.n,t:a.t}));
+  (A.wg||[]).forEach(a=>items.push({unit:x.u,n:a.n,t:a.t}));
+ });
+ return quickUnique(items,z=>z.unit+"|"+z.n);
+}
+function quickRelevantStrats(){
+ const det=DET[detName], out=[];
+ (det.strats||[]).forEach(s=>{
+  const usable=army.some(x=>!s.can||s.can(ds(x.u)));
+  if(usable)out.push({...s,src:detName});
+ });
+ CORE_STRATS.forEach(s=>out.push({...s,src:"Core"}));
+ return out;
+}
+function quickStratPhase(s){
+ const t=plain((s.when||"")+" "+(s.eff||""));
+ return quickPhaseForText(t);
+}
+function quickRitualBlock(){
+ const casters=army.filter(x=>(ds(x.u).ab?.faction||[]).some(f=>/Cabal of Sorcerers/i.test(f)));
+ if(!casters.length)return `<div class="note warn"><b>Sin Cabal of Sorcerers en la lista actual.</b> La sección de Rituales no es relevante hasta añadir un lanzador.</div>`;
+ return RITUALS.map(r=>`<div class="quick-item"><span class="quick-tag">WC ${r.wc}</span><b>${esc(r.n)}</b><br>${r.easy}<br><span class="small">Orden: intenta este Ritual al inicio de Shooting phase, antes de disparar ninguna unidad.</span></div>`).join("");
+}
+function quickStratBlock(){
+ const groups={pregame:[],command:[],movement:[],shooting:[],charge:[],fight:[],react:[],reference:[]};
+ quickRelevantStrats().forEach(s=>{(groups[quickStratPhase(s)]||groups.reference).push(s)});
+ const order=["pregame","command","movement","shooting","charge","fight","react","reference"];
+ const names={pregame:"Antes / despliegue",command:"Command",movement:"Movement",shooting:"Shooting",charge:"Charge",fight:"Fight",react:"Reacciones",reference:"Otros"};
+ return order.map(ph=>{
+  const a=quickUnique(groups[ph],s=>s.n+"|"+s.src);if(!a.length)return "";
+  return `<div class="quick-phase"><h3>${names[ph]}</h3>${a.map(s=>`<div class="quick-item"><span class="quick-tag">${s.cp} CP · ${esc(s.src)}</span><b>${esc(s.n)}</b><br><span class="small">${s.when}</span><br>${s.easy||s.eff}</div>`).join("")}</div>`;
+ }).join("");
+}
+function quickRitualOrder(){
+ const lines=[];
+ const hasMagnus=army.some(x=>x.u==="Magnus the Red"),hasAhriman=army.some(x=>x.u==="Ahriman"),hasMut=army.some(x=>x.u==="Mutalith Vortex Beast");
+ if(hasMagnus)lines.push(`<div class="quick-item"><b>Magnus: Unearthly Power primero.</b> Al inicio del battle round elige 1 de sus tres opciones de Crimson King; solo una queda activa.</div>`);
+ if(hasAhriman)lines.push(`<div class="quick-item"><b>Ahriman:</b> suma +1 a sus Psychic tests al manifestar Rituales.</div>`);
+ if(hasMut)lines.push(`<div class="quick-item"><b>Mutalith:</b> un PSYKER a 6" puede recibir +1 al Psychic test al Channel the Warp.</div>`);
+ return lines.join("");
+}
+function renderQuick(){
+ const units=quickUnique(army.map(x=>x.u),x=>x), kws=quickRelevantKeywords(), strengths=quickStrengths();
+ const allKw=quickAllUnitKeywords();
+ const ab=quickAbilityBuckets();
+ const strat=quickRelevantStrats();
+ const weaponRows=quickWeaponRows();
+ const det=DET[detName];
+ const uniqueStats=quickUnique(army.flatMap(x=>ds(x.u).profiles||[]),p=>p.n);
+ const profileRows=uniqueStats.map(p=>`<tr><td><b>${esc(p.n)}</b></td><td>${p.st.map((v,j)=>`<span class="chip">${["M","T","Sv","W","Ld","OC"][j]} ${esc(v)}</span>`).join(" ")}${p.inv?` <span class="chip">Inv ${esc(p.inv)}</span>`:""}</td></tr>`).join("");
+ const woundVals=strengths.length?strengths:[4];
+ const targetCells=[1,2,3,4,5,6,7,8,9,10,11,12,13];
+ const woundHead=`<tr><th class="cnr rh">S \\ T</th>${targetCells.map(t=>`<th>${t}</th>`).join("")}</tr>`;
+ const woundBody=woundVals.map(sv=>`<tr><th class="rh">S${sv}</th>${targetCells.map(tv=>`<td class="${woundNeed(sv,tv)<=3?"w4":""}">${woundNeed(sv,tv)}+</td>`).join("")}</tr>`).join("");
+ const phaseItems=quickUnitEntries();
+ const reference=phaseItems.filter(z=>z.phase==="reference");
+ const unitReference=reference.length?`<details><summary>Habilidades sin fase concreta / referencia</summary>${reference.map(z=>`<div class="ab"><span class="quick-tag">${esc(z.kind)}</span><b>${esc(z.unit)} · ${esc(z.n)}</b><br>${z.t}</div>`).join("")}</details>`:"";
+ const keyText=kws.length?kws.map(k=>`<span class="chip on">${esc(k)}</span>`).join(" "):"<span class='muted'>Ninguna palabra clave especial de la lista.</span>";
+ const allKwText=allKw.length?allKw.map(k=>`<span class="chip">${esc(k)}</span>`).join(" "):"—";
+ const iconic=COMBOS.map(c=>({c,s:comboState(c)})).filter(z=>z.s.active).map(z=>`<div class="quick-item"><span class="quick-tag">COMBO</span><b>${esc(z.c.n)}</b><br>${z.c.how.join(" → ")}</div>`);
+ const near=COMBOS.map(c=>({c,s:comboState(c)})).filter(z=>!z.s.active&&z.s.fails.length===1).slice(0,6).map(z=>`<div class="quick-item"><span class="quick-tag">CASI</span><b>${esc(z.c.n)}</b><br>${z.s.fails[0].t}</div>`);
+ const summary=`<div class="quick-summary"><div class="quick-card"><span class="small">UNIDADES</span><br><b>${army.length}</b></div><div class="quick-card"><span class="small">DATASHEETS</span><br><b>${units.length}</b></div><div class="quick-card"><span class="small">ARMAS CONFIGURADAS</span><br><b>${weaponRows?weaponRows.split('<tr>').length-1:0}</b></div><div class="quick-card"><span class="small">DETACHMENT</span><br><b>${esc(detName)}</b></div><div class="quick-card"><span class="small">PALABRAS CLAVE CLAVE</span><br><b>${kws.length}</b></div></div>`;
+ $("quick").innerHTML=`<h2>⚔ Guía rápida — ${esc(detName)}</h2>
+ ${army.length?`<div class="note ok"><b>Generada solo para tu ejército actual.</b> Si cambias una unidad, líder, enhancement, arma o destacamento, esta guía se recalcula. No necesitas memorizar lo que no está en la lista.</div>${summary}`:`<div class="note warn"><b>Aún no hay unidades configuradas.</b> Añade unidades y esta pestaña se convertirá automáticamente en la chuleta de tu ejército.</div>`}
+ ${army.length?`<div class="secbar">Acrónimos que vas a leer todo el rato</div>
+ <div class="two"><div class="ds"><div class="ds-body"><h3>Perfil de unidad</h3><div class="ab"><span class="acronym">M</span> Movement · Movimiento</div><div class="ab"><span class="acronym">T</span> Toughness · Resistencia</div><div class="ab"><span class="acronym">Sv</span> Save · Salvación</div><div class="ab"><span class="acronym">W</span> Wounds · Heridas</div><div class="ab"><span class="acronym">Ld</span> Leadership · Liderazgo</div><div class="ab"><span class="acronym">OC</span> Objective Control · Control de objetivo</div><div class="ab"><span class="acronym">Inv</span> Invulnerable Save · Salvación invulnerable</div><h3 style="margin-top:10px">Arma</h3><div class="ab"><span class="acronym">R</span> Range · Alcance</div><div class="ab"><span class="acronym">A</span> Attacks · Ataques</div><div class="ab"><span class="acronym">BS</span> Ballistic Skill · Habilidad de Proyectiles</div><div class="ab"><span class="acronym">WS</span> Weapon Skill · Habilidad de Combate</div><div class="ab"><span class="acronym">S</span> Strength · Fuerza</div><div class="ab"><span class="acronym">AP</span> Armour Penetration · Penetración</div><div class="ab"><span class="acronym">D</span> Damage · Daño</div></div></div><div class="ds"><div class="ds-body"><h3>Palabras clave de TU lista</h3><p><b>Especialmente relevantes:</b><br>${keyText}</p><p><span class="small">Todas las keywords presentes en tus datasheets:</span><br>${allKwText}</p></div></div></div>
+ <div class="secbar">Tus perfiles actuales</div><div class="scroll"><table class="wep"><thead><tr><th>Unidad</th><th>Perfil</th></tr></thead><tbody>${profileRows||'<tr><td colspan="2">—</td></tr>'}</tbody></table></div>
+ <div class="secbar">Tus armas actuales por modelo — R / A / BS-WS / S / AP / D</div><div class="scroll"><table class="wep"><thead><tr><th>Arma</th><th>R</th><th>A</th><th>BS/WS</th><th>S</th><th>AP</th><th>D</th><th>Keywords</th></tr></thead><tbody>${weaponRows||'<tr><td colspan="8">No hay armas configuradas.</td></tr>'}</tbody></table></div>
+ <div class="secbar">Tabla S vs T — usa las Fuerzas que realmente tienes</div><p class="small">Filas = <b>S</b> de tus armas. Columnas = <b>T</b> del objetivo. El número indica la tirada de D6 necesaria para herir. <b>2+</b> si S ≥ 2×T · <b>3+</b> si S &gt; T · <b>4+</b> si S = T · <b>5+</b> si S &lt; T · <b>6+</b> si S ≤ T/2.</p><div class="scroll"><table class="wt">${woundHead}${woundBody}</table></div>
+ <details open><summary>1 · ORDEN DE JUGADA — checklist por fases</summary>
+ <div class="note"><b>Orden práctico:</b> resuelve primero las habilidades que dicen «al inicio» de la fase; después las que preparan el siguiente paso; luego ejecuta ataques/movimientos; y deja las reacciones/Stratagems para el momento exacto que indique su <b>CUÁNDO</b>. Las reglas específicas de cada unidad aparecen debajo y se han filtrado a tu lista actual.</div>
+ ${quickRenderPhaseItems(phaseItems)}${unitReference}</details>
+ <details open><summary>2 · RITUALES — siempre antes de disparar</summary>${quickRitualOrder()}<div class="quick-phase"><h3>Orden obligatorio y decisión de dados</h3><div class="quick-item"><b>① Elige el Ritual ANTES de tirar.</b> No puedes ver el resultado y después cambiar Doombolt por Twist of Fate. <b>② Tira 2D6.</b> <b>③ Después de ver esos 2D6 puedes decidir si haces Channel the Warp</b> (D6 adicional). <b>④ Comprueba dobles/triples y el Psychic test total.</b> <b>⑤ Si alcanza el Warp Charge, resuelve el Ritual.</b> <b>⑥ Después dispara.</b></div>${quickRitualBlock()}</div></details>
+ <details><summary>3 · STRATAGEMS Y REACCIONES QUE PUEDES USAR</summary>${quickStratBlock()}</details>
+ <details><summary>4 · COMBOS ICÓNICOS QUE YA ESTÁN ACTIVOS</summary>${iconic.length?iconic.join(""):`<div class="muted">No hay un combo marcado como completamente activo con la configuración actual.</div>`}${near.length?`<div class="secbar">Combos a un requisito de activarse</div>${near.join("")}`:""}</details>
+ <details><summary>5 · HABILIDADES DE UNIDAD — referencia completa de tu lista</summary>${ab.map(z=>`<div class="ab"><span class="quick-tag">HABILIDAD</span><b>${esc(z.unit)} · ${esc(z.n)}</b><br>${z.t}</div>`).join("")||'<div class="muted">Sin habilidades de unidad.</div>'}</details>`:""}`;
+ applyGlossary($("quick"));
 }
 
 function renderCodex(){
@@ -3591,7 +4079,7 @@ function saveSlot(){
  if(!n)n=detName+" "+total()+"pts";
  const s=readSlots();
  if(s[n]&&!confirm("Ya existe una lista guardada llamada «"+n+"». ¿Sobrescribirla?"))return;
- s[n]={detachment:detName,limit:lim(),army:JSON.parse(JSON.stringify(army)),saved:new Date().toISOString()};
+ s[n]={detachment:detName,limit:lim(),army:JSON.parse(JSON.stringify(army)),mfm:JSON.parse(JSON.stringify(mfmCosts)),saved:new Date().toISOString()};
  writeSlots(s);el.value="";renderSlots();
 }
 function loadSlot(n){
@@ -3601,7 +4089,8 @@ function loadSlot(n){
  army=migrate(s.army);
  if(s.detachment&&DET[s.detachment])detName=s.detachment;
  if(s.limit)$("limit").value=s.limit;
- simAttacker=0;save();renderAll();
+ if(s.mfm)mfmCosts=normalizeMfmConfig(JSON.parse(JSON.stringify(s.mfm)));
+ simAttacker=0;saveMfm();save();renderAll();
 }
 function delSlot(n){
  if(!confirm("¿Borrar la lista guardada «"+n+"»? Esto no se puede deshacer."))return;
@@ -3622,7 +4111,7 @@ function renderSlots(){
    15. IMPORT / EXPORT
    ========================================================================= */
 function exportArmy(){
- const blob=new Blob([JSON.stringify({edition:"11th",faction:"Thousand Sons",detachment:detName,limit:lim(),army:army},null,2)],{type:"application/json"});
+ const blob=new Blob([JSON.stringify({edition:"11th",faction:"Thousand Sons",detachment:detName,limit:lim(),mfm:JSON.parse(JSON.stringify(mfmCosts)),army:army},null,2)],{type:"application/json"});
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="thousand-sons-11e-army.json";a.click();
 }
 function importJSON(ev){
@@ -3633,7 +4122,8 @@ function importJSON(ev){
   army=migrate(z.army||z);
   if(z.detachment&&DET[z.detachment])detName=z.detachment;
   if(z.limit)$("limit").value=z.limit;
-  save();renderAll();
+  if(z.mfm)mfmCosts=normalizeMfmConfig(JSON.parse(JSON.stringify(z.mfm)));
+  saveMfm();save();renderAll();
  }catch(e){alert("JSON no válido")}};
  r.readAsText(f);
 }
@@ -3680,7 +4170,7 @@ function importArmy(){
    ========================================================================= */
 /* Las pestañas secundarias se dibujan solo al abrirlas: así los contadores de
    armamento responden al instante aunque el catálogo tenga 35 datasheets. */
-const RENDERERS={builder:renderBuilder,codex:renderCodex,detachment:renderDetachment,
+const RENDERERS={builder:renderBuilder,mfm:renderMfm,codex:renderCodex,quick:renderQuick,detachment:renderDetachment,
  rituals:renderRituals,combos:renderCombos,catalog:renderCatalog,coach:renderCoach,rules:renderRules};
 let dirty={},activeTab="builder";
 function renderTab(t){if(RENDERERS[t]){RENDERERS[t]();dirty[t]=false}}
@@ -3705,15 +4195,30 @@ $("det").onchange=()=>{
  save();renderAll();
 };
 $("limit").onchange=()=>{save();renderAll()};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
- document.querySelectorAll(".tab").forEach(z=>z.classList.remove("active"));
- b.classList.add("active");
+function activateTab(t){
+ document.querySelectorAll(".tab").forEach(z=>z.classList.toggle("active",z.dataset.t===t));
  document.querySelectorAll(".pane").forEach(z=>z.classList.add("hidden"));
- activeTab=b.dataset.t;
+ activeTab=t;
  $(activeTab).classList.remove("hidden");
  if(dirty[activeTab]!==false)renderTab(activeTab);
+ document.querySelectorAll("[data-mnav]").forEach(z=>z.classList.toggle("active",z.dataset.mnav===t));
+ document.querySelectorAll("#mobileMore button[data-mtab]").forEach(z=>z.classList.toggle("active",z.dataset.mtab===t));
+ if(window.innerWidth<=700 && t!=="builder" && t!=="codex" && t!=="quick" && t!=="detachment"){
+   $("mobileMore").style.display="block";
+ } else if(window.innerWidth<=700){
+   $("mobileMore").style.display="none";
+ }
  hideTip();
-});
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
+document.querySelectorAll("[data-mnav]").forEach(b=>b.onclick=()=>activateTab(b.dataset.mnav));
+const mobileMoreItems=[...document.querySelectorAll(".tab")].filter(b=>!["builder","codex","quick","detachment"].includes(b.dataset.t));
+$("mobileMore").innerHTML=mobileMoreItems.map(b=>`<button data-mtab="${b.dataset.t}">${b.textContent}</button>`).join("");
+$("mobileMore").style.display="none";
+$("moreNavBtn").onclick=()=>{
+ const el=$("mobileMore");el.style.display=el.style.display==="block"?"none":"block";
+};
+document.querySelectorAll("#mobileMore button[data-mtab]").forEach(b=>b.onclick=()=>activateTab(b.dataset.mtab));
 autoGlossary();
 buildGlossaryIndex();
 renderAll();
