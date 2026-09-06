@@ -175,6 +175,43 @@ table.wt td.hl{outline:2px solid var(--gold)}
  .mfm-weapon-row{grid-template-columns:1fr 90px}
 }
 
+
+/* ---------- BATTLE FLOW / PLAY MODE ---------- */
+.battle-top{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:7px;margin:8px 0}
+.battle-kpi{background:#0b1220;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:7px;padding:7px 9px}
+.battle-kpi span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px}.battle-kpi b{color:var(--gold2);font-size:16px}
+.battle-phases{display:flex;gap:5px;overflow:auto;padding:4px 0 7px;position:sticky;top:0;background:var(--panel);z-index:4}
+.battle-phase-btn{flex:0 0 auto;border-radius:999px;padding:7px 10px;font-size:11px}.battle-phase-btn.active{background:var(--gold);color:#17120a;border-color:var(--gold);font-weight:700}
+.battle-check{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.battle-check input{width:auto;margin-top:4px}.battle-check.done{opacity:.58}.battle-check b{color:var(--gold2)}
+.battle-unit{border:1px solid var(--line);border-radius:8px;margin:8px 0;overflow:hidden;background:var(--panel2)}
+.battle-unit>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--blue2);color:var(--gold2);padding:9px 11px}
+.battle-unit .bu-body{padding:9px 11px}.battle-unit .bu-role{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.battle-unit .bu-used{border:1px solid var(--green);color:var(--green);border-radius:999px;padding:2px 7px;font-size:10px}
+.battle-unit .bu-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.battle-unit .bu-section{border:1px solid var(--line);border-radius:6px;padding:7px}
+.battle-unit .bu-section h4{margin:0 0 5px;color:var(--gold2);font-size:11px;text-transform:uppercase;letter-spacing:.8px}
+.battle-unit .bu-stats{display:flex;gap:4px;flex-wrap:wrap}.battle-unit .bu-stat{min-width:36px;text-align:center;border:1px solid var(--gold);border-radius:4px;overflow:hidden}.battle-unit .bu-stat i{display:block;background:var(--gold);color:#17120a;font-size:8px;font-style:normal;font-weight:700}.battle-unit .bu-stat b{display:block;padding:2px 4px}
+.battle-actions{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}.battle-actions button.used{opacity:.5;text-decoration:line-through}
+.battle-rule{border-left:3px solid var(--gold);background:#0d1622;padding:8px 10px;border-radius:0 6px 6px 0;margin:7px 0}.battle-rule.always{border-left-color:var(--cyan)}
+.battle-strats{display:grid;grid-template-columns:1fr 1fr;gap:7px}.battle-strats .strat{margin:0}
+.battle-ritual{border:1px solid var(--line);border-radius:7px;padding:8px;margin:6px 0;background:var(--panel2)}.battle-ritual.selected{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}.battle-ritual.done{opacity:.55}
+.battle-dice{font-size:12px;color:var(--muted)}.battle-dice b{color:var(--gold2)}
+@media(max-width:700px){
+ .battle-top{grid-template-columns:repeat(2,1fr);gap:5px}.battle-kpi{background:#292a2b;border-color:#45474a}.battle-kpi span{color:#b8b8b5}.battle-kpi b{color:#f0c94b}
+ .battle-phases{background:#f4f3ef;border-bottom:1px solid #c9c6bf;top:0;padding:5px 0;box-shadow:0 2px 6px #0002}
+ .battle-phase-btn{background:#e8e6e1;color:#242629;border-color:#bdbab3}.battle-phase-btn.active{background:#d5ad21;color:#17120a}
+ .battle-unit{background:#fff;color:#191a1c;border-color:#c8c5be}.battle-unit>summary{background:#354e59;color:#fff}.battle-unit .bu-body{color:#191a1c}.battle-unit .bu-role{color:#666b70}.battle-unit .bu-section{border-color:#d0cdc6}.battle-unit .bu-section h4{color:#765c00}.battle-unit .bu-stat{border-color:#a78315}.battle-unit .bu-stat i{background:#343b3f;color:#fff}.battle-unit .bu-stat b{color:#111}
+ .battle-rule{background:#eef2f3;color:#24272a;border-left-color:#b18b12}.battle-rule.always{border-left-color:#337a8a}.battle-strats{grid-template-columns:1fr}.battle-ritual{background:#f7f5f0;border-color:#cbc8c1}.battle-ritual.selected{border-color:#b18b12}.battle-dice{color:#666b70}.battle-dice b{color:#765c00}
+ /* explicit high-contrast overrides for every light mobile tab */
+ .quick-card,.quick-phase,.strat,.wg,.mfm-unit,.note,.ab,.kwbar,details,.listrow{color:#191a1c}
+ .quick-phase h3,.quick-card b,.quick-item b,.mfm-unit-head b,.ab b,.strat-h b{color:#765c00}
+ .quick-item,.mfm-weapon-row,.listrow{border-color:#d7d4ce}
+ .small,.muted,.mfm-unit .small,.quick-card .small{color:#64686d}
+ .strat-b .lbl{color:#765c00}.strat-h{background:#2f3d42}.strat-h b{color:#f5d66b}.cp{background:#d5ad21;color:#17120a}
+ .kwbar{background:#e8e5df}.kwbar b{color:#725a00}.wkw{color:#47727c}.chip{color:#303236}
+ .mobile-more{color:#191a1c}
+}
+
 /* ---------- RESPONSIVE ---------- */
 @media(max-width:1050px){
  .layout{grid-template-columns:1fr}
@@ -379,6 +416,7 @@ table.wt td.hl{outline:2px solid var(--gold)}
     <button class="tab" data-t="mfm">⚙ Costes MFM</button>
     <button class="tab" data-t="codex">📖 Codex de mi lista</button>
     <button class="tab" data-t="quick">⚔ Guía rápida</button>
+    <button class="tab" data-t="battle">🎮 Partida</button>
     <button class="tab" data-t="detachment">⚜ Destacamento</button>
     <button class="tab" data-t="rituals">🔮 Rituales</button>
     <button class="tab" data-t="combos">🧩 Combos</button>
@@ -390,6 +428,7 @@ table.wt td.hl{outline:2px solid var(--gold)}
   <section id="mfm" class="panel pane hidden"></section>
   <section id="codex" class="panel pane hidden"></section>
   <section id="quick" class="panel pane hidden"></section>
+  <section id="battle" class="panel pane hidden"></section>
   <section id="detachment" class="panel pane hidden"></section>
   <section id="rituals" class="panel pane hidden"></section>
   <section id="combos" class="panel pane hidden"></section>
@@ -401,7 +440,7 @@ table.wt td.hl{outline:2px solid var(--gold)}
 <nav class="mobile-nav" id="mobileNav" aria-label="Navegación móvil">
  <button data-mnav="builder"><span class="mi">⚒</span><span>Ejército</span></button>
  <button data-mnav="codex"><span class="mi">▣</span><span>Referencia</span></button>
- <button data-mnav="quick"><span class="mi">⚔</span><span>Guía</span></button>
+ <button data-mnav="battle"><span class="mi">⚔</span><span>Partida</span></button>
  <button data-mnav="detachment"><span class="mi">♜</span><span>Destac.</span></button>
  <button id="moreNavBtn"><span class="mi">☰</span><span>Más</span></button>
 </nav>
@@ -684,10 +723,21 @@ function showTip(el){
   tipEl.style.left=x+"px";tipEl.style.top=Math.max(8,y)+"px";
 }
 function hideTip(){tipEl.style.display="none"}
-document.addEventListener("mouseover",e=>{const t=e.target.closest&&e.target.closest(".gterm");if(t)showTip(t)});
-document.addEventListener("mouseout",e=>{if(e.target.closest&&e.target.closest(".gterm"))hideTip()});
-document.addEventListener("click",e=>{const t=e.target.closest&&e.target.closest(".gterm");if(t){showTip(t);setTimeout(hideTip,4000)}else hideTip()});
-window.addEventListener("scroll",hideTip,true);
+let openGlossaryTerm=null;
+const canHover=window.matchMedia&&window.matchMedia("(hover:hover)").matches;
+if(canHover){
+ document.addEventListener("mouseover",e=>{const t=e.target.closest&&e.target.closest(".gterm");if(t)showTip(t)});
+ document.addEventListener("mouseout",e=>{if(e.target.closest&&e.target.closest(".gterm"))hideTip()});
+}
+document.addEventListener("click",e=>{
+ const t=e.target.closest&&e.target.closest(".gterm");
+ if(t){
+   if(openGlossaryTerm===t && tipEl.style.display==="block"){hideTip();openGlossaryTerm=null}
+   else{showTip(t);openGlossaryTerm=t}
+   e.stopPropagation();
+ }else{hideTip();openGlossaryTerm=null}
+});
+window.addEventListener("scroll",()=>{if(canHover){hideTip();openGlossaryTerm=null}},true);
 
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 /* =========================================================================
@@ -3227,6 +3277,114 @@ function quickRitualOrder(){
  if(hasMut)lines.push(`<div class="quick-item"><b>Mutalith:</b> un PSYKER a 6" puede recibir +1 al Psychic test al Channel the Warp.</div>`);
  return lines.join("");
 }
+
+/* =========================================================================
+   10c. MODO PARTIDA — checklist interactivo específico del ejército actual
+   ========================================================================= */
+let battleState={side:"me",phase:"command",round:1,cpMe:0,cpOpp:0,mission:false,used:{},rituals:[],channel:{}};
+const BATTLE_PHASES=[
+ {id:"command",n:"Command",icon:"◆"},{id:"movement",n:"Movement",icon:"➜"},{id:"shooting",n:"Shooting / Rituales",icon:"◉"},{id:"charge",n:"Charge",icon:"↗"},{id:"fight",n:"Fight",icon:"⚔"}
+];
+function battleKey(i){return String(i)+"|"+battleState.round+"|"+battleState.side}
+function battleResetTurn(){battleState.used={};battleState.rituals=[];battleState.channel={};battleState.phase="command";battleState.side="me";saveBattleState()}
+function saveBattleState(){try{sessionStorage.setItem("ts11battle_v1",JSON.stringify(battleState))}catch(e){}}
+try{const bs=JSON.parse(sessionStorage.getItem("ts11battle_v1")||"null");if(bs)battleState=Object.assign(battleState,bs)}catch(e){}
+function battleSetSide(side){battleState.side=side;battleState.phase="command";battleState.used={};battleState.rituals=[];battleState.channel={};saveBattleState();renderBattle()}
+function battleSetPhase(ph){battleState.phase=ph;saveBattleState();renderBattle()}
+function battleToggleMission(){battleState.mission=!battleState.mission;saveBattleState();renderBattle()}
+function battleCp(which,delta){const k=which==="me"?"cpMe":"cpOpp";battleState[k]=Math.max(0,(battleState[k]||0)+delta);saveBattleState();renderBattle()}
+function battleNextRound(){battleState.round++;battleState.side="me";battleState.phase="command";battleState.used={};battleState.rituals=[];battleState.channel={};saveBattleState();renderBattle()}
+function battleMarkUnit(i){const k=battleKey(i);battleState.used[k]=!battleState.used[k];saveBattleState();renderBattle()}
+function battleMarkRitual(n){if(battleState.rituals.indexOf(n)<0)battleState.rituals.push(n);else battleState.rituals=battleState.rituals.filter(x=>x!==n);saveBattleState();renderBattle()}
+function battleMarkChannel(i){battleState.channel[i]=!battleState.channel[i];saveBattleState();renderBattle()}
+function battleGroupUnits(){
+ const groups=[],used=new Set();
+ army.forEach((x,i)=>{
+  if(used.has(i))return;
+  if(x.join){const j=army.findIndex((y,k)=>k!==i&&labelOf(k)===x.join);if(j>=0){
+    const leaderIsOther=!!army[j].join;
+    if(leaderIsOther){used.add(i);return;}
+    groups.push({indices:[i,j],body:i,leader:j});used.add(i);used.add(j);return;
+  }}
+  groups.push({indices:[i],body:i,leader:null});used.add(i);
+ });
+ return groups;
+}
+function battleRelevantUnitText(i,phase){
+ const x=army[i],d=ds(x.u),A=d.ab||{},out=[];
+ (A.core||[]).forEach(n=>{const t=CORE_AB[n]||n;if(phase==="movement"||phase==="charge"||phase==="fight"||/Deep Strike|Scouts|Fly|Leader|Hover|Smoke|Firing Deck/i.test(n))out.push({n:n,t:t,kind:"CORE"})});
+ (A.unit||[]).forEach(a=>{const ph=quickPhaseForText(a.n+" "+a.t);if(ph===phase||phase==="reference")out.push({n:a.n,t:a.t,kind:"HABILIDAD"})});
+ (A.wg||[]).forEach(a=>{if(!x.sel||!x.sel[a.opt])return;const ph=quickPhaseForText(a.n+" "+a.t);if(ph===phase||phase==="reference")out.push({n:a.n,t:a.t,kind:"WARGEAR"})});
+ return quickUnique(out,z=>z.n);
+}
+function battleAllAbilities(indices){
+ const out=[];indices.forEach(i=>{const d=ds(army[i].u),A=d.ab||{};(A.core||[]).forEach(n=>out.push({n:n,t:CORE_AB[n]||n,kind:"CORE",u:army[i].u}));(A.unit||[]).forEach(a=>out.push({n:a.n,t:a.t,kind:"HABILIDAD",u:army[i].u}));(A.wg||[]).forEach(a=>{if(army[i].sel&&army[i].sel[a.opt])out.push({n:a.n,t:a.t,kind:"WARGEAR",u:army[i].u})})});return quickUnique(out,z=>z.u+"|"+z.n)}
+function battleStats(indices){
+ const out=[];indices.forEach(i=>{(ds(army[i].u).profiles||[]).forEach(p=>out.push({u:army[i].u,p:p}))});return out}
+function battlePotentialAuras(indices){
+ const names=[];army.forEach((x,i)=>{if(indices.indexOf(i)>=0)return;const A=ds(x.u).ab||{};(A.unit||[]).forEach(a=>{if(/\bAura\b/i.test(a.n)||/\bAura\b/i.test(a.t))names.push({src:x.u,n:a.n,t:a.t})})});return quickUnique(names,z=>z.src+"|"+z.n)}
+function battleUnitCard(g,phase){
+ const inds=g.indices,lead=g.leader!==null?army[g.leader]:null,body=army[g.body],label=lead?`${body.u} + ${lead.u}`:body.u;
+ const used=inds.every(i=>battleState.used[battleKey(i)]);const stats=battleStats(inds);const abs=battleAllAbilities(inds);const auras=battlePotentialAuras(inds);
+ const phaseAbs=inds.flatMap(i=>battleRelevantUnitText(i,phase));
+ const allW=inds.flatMap(i=>{const d=ds(army[i].u),L=loadout(army[i]);return [...(d.ranged||[]),...(d.melee||[])].filter(w=>L[w.n]).map(w=>({u:army[i].u,w:w,c:L[w.n]}))});
+ return `<details class="battle-unit"><summary><span><b>${esc(label)}</b><span class="bu-role">${lead?"Unidad adjunta":"Unidad"} · ${sizeOf(body)} modelos${lead?" + líder":""}</span></span><span class="bu-used">${used?"✓ UTILIZADA":"NO UTILIZADA"}</span></summary><div class="bu-body">
+ <div class="battle-actions"><button class="${used?"used":""}" onclick="battleMarkUnit(${g.body})">${used?"↩ Marcar no utilizada":"✓ Marcar como utilizada"}</button></div>
+ ${stats.length?`<div class="bu-section"><h4>Stats</h4>${stats.map(z=>`<div style="margin:5px 0"><b>${esc(z.u)}</b><div class="bu-stats">${STAT_LABELS.map((n,j)=>`<span class="bu-stat"><i>${n}</i><b>${esc(z.p.st[j])}</b></span>`).join("")}${z.p.inv?`<span class="bu-stat"><i>INV</i><b>${esc(z.p.inv)}</b></span>`:""}</div></div>`).join("")}</div>`:""}
+ ${phaseAbs.length?`<div class="secbar">Importante en ${esc(BATTLE_PHASES.find(p=>p.id===phase)?.n||phase)}</div>${phaseAbs.map(a=>`<div class="ab"><span class="quick-tag">${esc(a.kind)}</span><b>${esc(a.n)}</b><br>${a.t}</div>`).join("")}`:""}
+ ${allW.length?`<div class="secbar">Armas de esta unidad</div><div class="scroll"><table class="wep"><thead><tr><th>Modelo / arma</th><th>R</th><th>A</th><th>BS/WS</th><th>S</th><th>AP</th><th>D</th><th>KW</th></tr></thead><tbody>${allW.map(z=>`<tr><td>${esc(z.u)}<br><b>${z.c}× ${esc(z.w.n)}</b></td><td>${esc(z.w.r)}</td><td>${esc(z.w.a)}</td><td>${esc(z.w.ws||z.w.bs)}</td><td>${esc(z.w.s)}</td><td>${esc(z.w.ap)}</td><td>${esc(z.w.d)}</td><td>${(z.w.k||[]).join(", ")||"—"}</td></tr>`).join("")}</tbody></table></div>`:""}
+ ${abs.length?`<details><summary>Habilidades completas de la unidad</summary>${abs.map(a=>`<div class="ab"><span class="quick-tag">${esc(a.kind)}</span><b>${esc(a.n)}</b><br>${a.t}</div>`).join("")}</details>`:""}
+ ${auras.length?`<details><summary>Auras potenciales de personajes cercanos</summary><div class="note">Estas auras solo se aplican si el modelo está dentro de su rango en mesa. La app no conoce distancias reales.</div>${auras.map(a=>`<div class="ab"><b>${esc(a.src)} · ${esc(a.n)}</b><br>${a.t}</div>`).join("")}</details>`:""}
+ ${body.enh?`<div class="note ok"><b>⚜ Mejora: ${esc(body.enh)}</b> — ${(DET[detName].enh||[]).find(e=>e.n===body.enh)?.t||""}</div>`:""}
+ ${lead&&lead.enh?`<div class="note ok"><b>⚜ Mejora del líder: ${esc(lead.enh)}</b> — ${(DET[detName].enh||[]).find(e=>e.n===lead.enh)?.t||""}</div>`:""}
+ </div></details>`;
+}
+function battleAlwaysRules(){
+ const d=DET[detName],out=[];if(d.rule?.applies&&army.some(x=>d.rule.applies(ds(x.u))))out.push(`<div class="battle-rule always"><b>SIEMPRE ACTIVA · ${esc(d.rule.n)}</b><br>${String(d.rule.t).split("\\n").join("<br>")}</div>`);return out.join("");
+}
+function battlePhaseStrats(side,phase){
+ const out=[];const det=DET[detName];
+ const arr=(det.strats||[]).concat(CORE_STRATS.map(s=>Object.assign({},s,{src:"Core"})));
+ arr.forEach(s=>{const usable=army.some(x=>!s.can||s.can(ds(x.u)));if(!usable)return;const ph=quickStratPhase(s);const matches=side==="me"?(ph===phase):(ph===phase||((phase==="movement"||phase==="charge")&&/Fire Overwatch/i.test(s.n)));if(matches)out.push(s)});
+ return quickUnique(out,s=>s.n+"|"+s.src);
+}
+function battleOppReactions(phase){
+ const s=battlePhaseStrats("opp",phase);return s.length?s:`${phase==="movement"?"<div class='battle-rule'><b>OVERWATCH</b> · Fire Overwatch puede usarse durante Movement o Charge del rival, después de que una unidad enemiga termine su movimiento. Tus unidades con TORRENT (como los Warpflamers) impactan automáticamente al usarlo.</div>":""}`;
+}
+function battleCommand(){
+ const side=battleState.side, own=side==="me"?"tuya":"rival";
+ return `<div class="battle-check ${battleState.mission?"done":""}"><input type="checkbox" ${battleState.mission?"checked":""} onchange="battleToggleMission()"><div><b>${side==="me"?"Roba / revela la carta de misión y resuelve sus instrucciones.":"Revisa la carta de misión y cualquier efecto de Command phase del rival."}</b><br><span class="small">Marca este paso cuando esté resuelto.</span></div></div>
+ <div class="battle-check"><div>◆</div><div><b>CP: +1 para ambos jugadores</b><br><span class="small">Tú: ${battleState.cpMe} CP · Rival: ${battleState.cpOpp} CP</span><div class="battle-actions"><button onclick="battleCp('me',1)">+1 tú</button><button onclick="battleCp('opp',1)">+1 rival</button><button onclick="battleCp('me',-1)">−1 tú</button><button onclick="battleCp('opp',-1)">−1 rival</button></div></div></div>
+ ${battleState.side==="me"?`<div class="battle-rule"><b>Magnus · Crimson King</b><br>Si lo tienes, al inicio del Battle Round elige <b>una</b> de: <b>Impossible Form</b>, <b>Treason of Tzeentch</b> o <b>Time Flux</b>. Solo una está activa hasta el siguiente Battle Round.</div>`:""}
+ ${battleState.side==="me"?`<div class="battle-rule"><b>Battle-shock</b><br>Comprueba las unidades que deban hacer test. Si tienes <b>Arcane Thralls</b>, recuerda que permite repetir pruebas de Battle-shock de RUBRICAE a 9" o menos del portador.</div>`:""}
+ ${battleState.side==="me"?battlePhaseStrats("me","command").map(stratCard).join(""):battlePhaseStrats("opp","command").map(stratCard).join("")}`;
+}
+function battleShooting(){
+ const casters=army.filter(x=>(ds(x.u).ab?.faction||[]).some(f=>/Cabal of Sorcerers/i.test(f)));
+ const ritualHtml=casters.length&&battleState.side==="me"?`<div class="secbar">Rituales — selecciona antes de tirar</div>${RITUALS.map(r=>{const done=battleState.rituals.includes(r.n);return `<div class="battle-ritual ${done?"done":""}"><b>${esc(r.n)}</b> · WC ${r.wc}<div class="battle-dice">${done?"✓ Ya intentado este turno":"Aún disponible"} · Debes elegirlo <b>antes</b> de tirar 2D6. Después de ver los 2D6 puedes decidir si añades Channel the Warp.</div><div class="battle-actions"><button onclick="battleMarkRitual('${esc(r.n)}')">${done?"↩ Marcar disponible":"✓ Marcar como intentado"}</button></div></div>`}).join("")}<div class="battle-rule"><b>Secuencia:</b> ① elige Ritual → ② tira 2D6 → ③ decide Channel the Warp → ④ comprueba dobles/triples → ⑤ resuelve si alcanzas WC → ⑥ continúa con el disparo.</div>`:"";
+ return `${battleAlwaysRules()}${ritualHtml}<div class="secbar">Unidades de disparo — abre cada una en el orden que quieras</div>${battleGroupUnits().map(g=>battleUnitCard(g,"shooting")).join("")}<div class="secbar">Stratagems disponibles en Shooting</div><div class="battle-strats">${battlePhaseStrats(battleState.side,"shooting").map(stratCard).join("")||"<div class='muted'>No hay Stratagems específicas detectadas.</div>"}</div>`;
+}
+function battlePhaseBody(){
+ const ph=battleState.phase;
+ if(ph==="command")return battleCommand();
+ if(ph==="shooting")return battleShooting();
+ const strats=battlePhaseStrats(battleState.side,ph);
+ const unitHtml=`<div class="secbar">Unidades — abre cada bloque cuando vayas a activarlo</div>${battleGroupUnits().map(g=>battleUnitCard(g,ph)).join("")}`;
+ const reminders={movement:`<div class="battle-rule"><b>Movement:</b> resuelve primero las habilidades «al inicio de la Movement phase». Comprueba M, Deep Strike/Reservas, Fall Back y cualquier movimiento adicional antes de mover tus unidades.</div>`,charge:`<div class="battle-rule"><b>Charge:</b> tira 2D6 para cada carga declarada y comprueba si el resultado alcanza la distancia necesaria. Recuerda medir antes: si necesitas N", la pregunta práctica es «¿puedo sacar N+ con 2D6?». No muevas hasta confirmar que la carga es posible.</div>`,fight:`<div class="battle-rule"><b>Fight:</b> activa las unidades en el orden que más te beneficie; conserva Counteroffensive para después de que el rival haya luchado si un intercambio puede cambiar la fase.</div>`};
+ return `${battleAlwaysRules()}${reminders[ph]||""}${battleState.side==="opp"&&ph==="movement"?battleOppReactions(ph):""}${unitHtml}<div class="secbar">Stratagems de ${battleState.side==="me"?"tu turno":"reacción al rival"} · ${esc(BATTLE_PHASES.find(p=>p.id===ph)?.n||ph)}</div><div class="battle-strats">${strats.map(stratCard).join("")||"<div class='muted'>No hay Stratagems detectadas para esta fase.</div>"}</div>`;
+}
+function renderBattle(){
+ const sideName=battleState.side==="me"?"TU TURNO":"TURNO DEL OPONENTE";
+ const p=BATTLE_PHASES.find(x=>x.id===battleState.phase)||BATTLE_PHASES[0];
+ $("battle").innerHTML=`<h2>🎮 Modo Partida — ${esc(detName)}</h2>
+ <div class="note ok"><b>Esta pantalla es una chuleta de ejecución, no otro Codex.</b> Solo muestra reglas, unidades, habilidades, mejoras y Stratagems relevantes para tu ejército configurado. Las unidades están cerradas para que las abras tú en el momento de activarlas.</div>
+ <div class="battle-top"><div class="battle-kpi"><span>Battle round</span><b>${battleState.round}</b></div><div class="battle-kpi"><span>Estado</span><b>${sideName}</b></div><div class="battle-kpi"><span>Tus CP</span><b>${battleState.cpMe}</b></div><div class="battle-kpi"><span>CP rival</span><b>${battleState.cpOpp}</b></div></div>
+ <div class="battle-actions"><button onclick="battleSetSide('me')">Mi turno</button><button onclick="battleSetSide('opp')">Turno rival</button><button onclick="battleNextRound()">Siguiente Battle Round</button><button onclick="battleResetTurn()">Reiniciar checklist</button></div>
+ <div class="battle-phases">${BATTLE_PHASES.map(z=>`<button class="battle-phase-btn ${z.id===battleState.phase?"active":""}" onclick="battleSetPhase('${z.id}')">${z.icon} ${z.n}</button>`).join("")}</div>
+ <div class="secbar">${esc(sideName)} · ${esc(p.n)}</div>${battlePhaseBody()}`;
+ applyGlossary($("battle"));
+}
+
 function renderQuick(){
  const units=quickUnique(army.map(x=>x.u),x=>x), kws=quickRelevantKeywords(), strengths=quickStrengths();
  const allKw=quickAllUnitKeywords();
@@ -4170,7 +4328,7 @@ function importArmy(){
    ========================================================================= */
 /* Las pestañas secundarias se dibujan solo al abrirlas: así los contadores de
    armamento responden al instante aunque el catálogo tenga 35 datasheets. */
-const RENDERERS={builder:renderBuilder,mfm:renderMfm,codex:renderCodex,quick:renderQuick,detachment:renderDetachment,
+const RENDERERS={builder:renderBuilder,mfm:renderMfm,codex:renderCodex,quick:renderQuick,battle:renderBattle,detachment:renderDetachment,
  rituals:renderRituals,combos:renderCombos,catalog:renderCatalog,coach:renderCoach,rules:renderRules};
 let dirty={},activeTab="builder";
 function renderTab(t){if(RENDERERS[t]){RENDERERS[t]();dirty[t]=false}}
@@ -4203,7 +4361,7 @@ function activateTab(t){
  if(dirty[activeTab]!==false)renderTab(activeTab);
  document.querySelectorAll("[data-mnav]").forEach(z=>z.classList.toggle("active",z.dataset.mnav===t));
  document.querySelectorAll("#mobileMore button[data-mtab]").forEach(z=>z.classList.toggle("active",z.dataset.mtab===t));
- if(window.innerWidth<=700 && t!=="builder" && t!=="codex" && t!=="quick" && t!=="detachment"){
+ if(window.innerWidth<=700 && t!=="builder" && t!=="codex" && t!=="battle" && t!=="detachment"){
    $("mobileMore").style.display="block";
  } else if(window.innerWidth<=700){
    $("mobileMore").style.display="none";
@@ -4212,7 +4370,7 @@ function activateTab(t){
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 document.querySelectorAll("[data-mnav]").forEach(b=>b.onclick=()=>activateTab(b.dataset.mnav));
-const mobileMoreItems=[...document.querySelectorAll(".tab")].filter(b=>!["builder","codex","quick","detachment"].includes(b.dataset.t));
+const mobileMoreItems=[...document.querySelectorAll(".tab")].filter(b=>!["builder","codex","battle","detachment"].includes(b.dataset.t));
 $("mobileMore").innerHTML=mobileMoreItems.map(b=>`<button data-mtab="${b.dataset.t}">${b.textContent}</button>`).join("");
 $("mobileMore").style.display="none";
 $("moreNavBtn").onclick=()=>{
