@@ -439,26 +439,19 @@ button:active,.tab:active,.battle-phase-btn:active{filter:brightness(.94)}
 
 /* ---------- CONTRASTE GLOBAL: SUPERFICIES OSCURAS ---------- */
 @media(max-width:700px){
-  .app-header,.mobile-drawer,.mobile-nav,.side,.side-nav,.sidebar,
-  .strat,.strat-h,.cp,.battle-unit>summary,.battle-phase,
-  .battle-top,.battle-controls,.quick-dark,.dark-card{
-    color:var(--text)!important;
-  }
-  .app-header *, .mobile-drawer *, .mobile-nav *, .side *, .side-nav *, .sidebar *,
-  .strat *, .strat-h *, .cp *, .battle-unit>summary *, .battle-phase *,
-  .battle-top *, .battle-controls *, .quick-dark *, .dark-card *{
-    color:inherit;
-  }
-  .app-header .muted,.mobile-drawer .muted,.mobile-nav .muted,.side .muted,
-  .sidebar .muted,.strat .muted,.battle-unit>summary .muted,.battle-top .muted,
-  .battle-controls .muted,.quick-dark .muted,.dark-card .muted{
-    color:var(--muted)!important;
-  }
-  .app-header button,.mobile-drawer button,.mobile-nav button,.side button,.sidebar button,
-  .strat button,.battle-unit>summary button,.battle-top button,.battle-controls button,
-  .quick-dark button,.dark-card button{
-    color:inherit;
-  }
+  .mobile-nav{background:#080b12!important;color:#d7dbe3!important}
+  .mobile-nav button{color:#d7dbe3!important}
+  .mobile-nav button.active{color:#e8cf8b!important}
+  .mobile-drawer{background:#f5f3ed!important;color:#171717!important}
+  .mobile-drawer *{color:inherit}
+  .mobile-drawer .muted{color:#687386!important}
+  .side,.side-nav,.sidebar{color:#e9e6dc!important}
+  .strat,.strat-h,.battle-unit>summary,.battle-phase,.battle-top,.battle-controls,.quick-dark,.dark-card{color:#e9e6dc!important}
+  .strat *, .strat-h *, .battle-unit>summary *, .battle-phase *, .battle-top *, .battle-controls *, .quick-dark *, .dark-card *{color:inherit}
+  .strat .muted,.battle-unit>summary .muted,.battle-top .muted,.battle-controls .muted,.quick-dark .muted,.dark-card .muted{color:#93a0b5!important}
+  .strat button,.battle-unit>summary button,.battle-top button,.battle-controls button,.quick-dark button,.dark-card button{color:#e9e6dc!important}
+  select,input,textarea{background:#080d16!important;color:#e9e6dc!important}
+  option{background:#fff!important;color:#111!important}
 }
 </style>
 </head>
