@@ -814,6 +814,374 @@ button:active,.tab:active,.battle-phase-btn:active{filter:brightness(.94)}
 }
 
 </style>
+<style>
+
+/* ================================================================
+   ADAPTIVE THEME — MOBILE + SYSTEM DARK/LIGHT MODE
+   The app follows the device/browser preference.
+   ================================================================ */
+
+/* Base light theme: explicit colors, independent of inherited vars. */
+:root{
+  color-scheme: light dark;
+}
+
+/* Make native controls follow the selected system theme. */
+html{
+  color-scheme: light dark;
+}
+
+/* ---------- LIGHT SYSTEM MODE ---------- */
+@media (prefers-color-scheme: light){
+  html,body{
+    background:#f2f0eb!important;
+    color:#202326!important;
+  }
+
+  .app-header{
+    background:#25282a!important;
+    color:#f5f3ed!important;
+  }
+
+  .mobile-nav{
+    background:#25282a!important;
+    color:#d7dbe3!important;
+    border-top-color:#45484b!important;
+  }
+
+  .mobile-more{
+    background:#f4f3ef!important;
+    color:#202326!important;
+  }
+
+  .mobile-more button{
+    background:#e7e5e0!important;
+    color:#25282a!important;
+    border-color:#c2bfb8!important;
+  }
+
+  /* Light cards */
+  .ds,.quick-card,.quick-phase,.strat,.wg,.mfm-unit,.note,.ab,
+  .kwbar,details,.listrow,.battle-unit,.battle-rule,.battle-ritual{
+    background:#f7f6f2!important;
+    color:#202326!important;
+    border-color:#cbc8c1!important;
+  }
+
+  .ds *, .quick-card *, .quick-phase *, .strat-b *, .wg *,
+  .mfm-unit *, .note *, .ab *, .kwbar *,
+  details>*:not(summary), .listrow *,
+  .battle-unit .bu-body *, .battle-rule *, .battle-ritual *{
+    color:inherit;
+  }
+
+  .ds .small,.ds .muted,.quick-card .small,.quick-card .muted,
+  .quick-phase .small,.quick-phase .muted,.strat-b .small,.strat-b .muted,
+  .wg .small,.wg .muted,.mfm-unit .small,.mfm-unit .muted,
+  .note .small,.note .muted,details .small,details .muted,
+  .listrow .small,.listrow .muted,.battle-unit .bu-role,
+  .battle-unit .small,.battle-unit .muted,
+  .battle-rule .small,.battle-rule .muted,
+  .battle-ritual .small,.battle-ritual .muted{
+    color:#62676c!important;
+  }
+
+  .ds-head, details.ds>summary.ds-head{
+    background:linear-gradient(90deg,#3c5964,#2d3c43)!important;
+    color:#fff!important;
+  }
+  .ds-head *, details.ds>summary.ds-head *{color:#fff!important}
+  .ds-head .pts{color:#f2ce57!important}
+
+  .strat .strat-h{
+    background:#2f3d42!important;
+    color:#fff!important;
+  }
+  .strat .strat-h *{color:#f5d66b!important}
+  .strat .strat-h .cp{
+    background:#d5ad21!important;
+    color:#17120a!important;
+  }
+
+  .battle-phases{
+    background:#f4f3ef!important;
+    color:#242629!important;
+  }
+  .battle-phase-btn{
+    background:#e8e6e1!important;
+    color:#242629!important;
+  }
+
+  aside.panel{
+    background:#252627!important;
+    color:#f0eee8!important;
+  }
+  aside.panel select,aside.panel input,aside.panel textarea{
+    background:#161719!important;
+    color:#f2f1ed!important;
+    color-scheme:dark;
+  }
+}
+
+/* ---------- DARK SYSTEM MODE ---------- */
+@media (prefers-color-scheme: dark){
+  html,body{
+    background:#0e0f10!important;
+    color:#f1f0eb!important;
+  }
+
+  /* Header/nav remain genuinely dark, so their text is always light. */
+  .app-header{
+    background:#17191b!important;
+    color:#f4f2ec!important;
+    border-bottom-color:#393c3f!important;
+  }
+  .app-header *{color:inherit}
+  .mobile-nav{
+    background:#17191b!important;
+    color:#e0e3e7!important;
+    border-top-color:#393c3f!important;
+  }
+  .mobile-nav button{
+    background:transparent!important;
+    color:#d7dbe3!important;
+  }
+  .mobile-nav button.active{
+    background:#303234!important;
+    color:#f0cf69!important;
+  }
+
+  /* Drawer is a dark surface in dark mode. */
+  .mobile-more{
+    background:#202224!important;
+    color:#f0eee8!important;
+    border-color:#44474a!important;
+  }
+  .mobile-more button{
+    background:#2c2e30!important;
+    color:#eceae4!important;
+    border-color:#505358!important;
+  }
+  .mobile-more button.active{
+    background:#554812!important;
+    color:#ffe07a!important;
+    border-color:#a88923!important;
+  }
+
+  /* Main application surfaces are DARK in system dark mode. */
+  .ds,.quick-card,.quick-phase,.strat,.wg,.mfm-unit,.note,.ab,
+  .kwbar,details,.listrow,.battle-unit,.battle-rule,.battle-ritual{
+    background:#202224!important;
+    color:#eeeDE8!important;
+    border-color:#414448!important;
+  }
+
+  /* Force inherited text to the light palette on dark cards. */
+  .ds *, .quick-card *, .quick-phase *, .strat-b *, .wg *,
+  .mfm-unit *, .note *, .ab *, .kwbar *,
+  details>*:not(summary), .listrow *,
+  .battle-unit .bu-body *, .battle-rule *, .battle-ritual *{
+    color:inherit;
+  }
+
+  .ds .small,.ds .muted,.quick-card .small,.quick-card .muted,
+  .quick-phase .small,.quick-phase .muted,.strat-b .small,.strat-b .muted,
+  .wg .small,.wg .muted,.mfm-unit .small,.mfm-unit .muted,
+  .note .small,.note .muted,details .small,details .muted,
+  .listrow .small,.listrow .muted,.battle-unit .bu-role,
+  .battle-unit .small,.battle-unit .muted,
+  .battle-rule .small,.battle-rule .muted,
+  .battle-ritual .small,.battle-ritual .muted{
+    color:#b8babd!important;
+  }
+
+  /* Headers/cards with their own dark-blue surface. */
+  .ds-head,details.ds>summary.ds-head{
+    background:linear-gradient(90deg,#314a55,#202d33)!important;
+    color:#fff!important;
+  }
+  .ds-head *,details.ds>summary.ds-head *{color:#fff!important}
+  .ds-head .pts{color:#f4d05b!important}
+  .ds-sub{color:#cbd2d6!important}
+
+  .strat .strat-h{
+    background:#303d42!important;
+    color:#fff!important;
+  }
+  .strat .strat-h *{color:#f5d66b!important}
+  .strat .strat-h .cp{
+    background:#d5ad21!important;
+    color:#17120a!important;
+  }
+
+  /* Dark-mode tables. */
+  table.wep td,table.gl td{
+    color:#eeeDE8!important;
+    border-bottom-color:#3e4145!important;
+  }
+  table.wep th{
+    background:#303d42!important;
+    color:#f5d66b!important;
+  }
+  .wkw{color:#8ec4cf!important}
+  .wcount{
+    color:#17120a!important;
+    background:#d7af27!important;
+  }
+
+  /* Dark-mode controls on dark surfaces. */
+  select,input,textarea{
+    background:#151719!important;
+    color:#f0efea!important;
+    border-color:#55595d!important;
+    color-scheme:dark;
+  }
+  select option{
+    background:#151719!important;
+    color:#f0efea!important;
+  }
+
+  /* Battle mode. */
+  .battle-kpi{
+    background:#292b2d!important;
+    color:#f0eee8!important;
+    border-color:#484b4f!important;
+  }
+  .battle-kpi span{color:#bfc2c5!important}
+  .battle-kpi b{color:#f0ca50!important}
+  .battle-actions button{
+    background:#292b2d!important;
+    color:#eeeDE8!important;
+    border-color:#55595d!important;
+  }
+  .battle-phases{
+    background:#202224!important;
+    color:#eeeDE8!important;
+    border-color:#414448!important;
+  }
+  .battle-phase-btn{
+    background:#2c2e30!important;
+    color:#eeeDE8!important;
+    border-color:#55585c!important;
+  }
+  .battle-phase-btn.active{
+    background:#d5ad21!important;
+    color:#17120a!important;
+  }
+
+  /* Dark mode does NOT create white cards. */
+  .battle-unit{
+    background:#202224!important;
+    color:#eeeDE8!important;
+  }
+  .battle-unit>summary{
+    background:#354e59!important;
+    color:#fff!important;
+  }
+  .battle-unit>summary *{color:#fff!important}
+  .battle-unit .bu-section h4{color:#f0ca50!important}
+  .battle-unit .bu-stat i{
+    background:#343b3f!important;
+    color:#fff!important;
+  }
+  .battle-unit .bu-stat b{color:#fff!important}
+
+  .battle-rule{
+    background:#25292b!important;
+    color:#eeeDE8!important;
+  }
+  .battle-ritual{
+    background:#25292b!important;
+    color:#eeeDE8!important;
+  }
+  .battle-dice{color:#bfc2c5!important}
+
+  /* Dark sidebar. */
+  aside.panel{
+    background:#1c1e20!important;
+    color:#f0eee8!important;
+    border-color:#414448!important;
+  }
+  aside.panel *{color:inherit}
+  aside.panel label{color:#b9bdc1!important}
+  aside.panel .secbar{
+    background:#d4aa21!important;
+    color:#18130a!important;
+  }
+
+  /* Dark tabs. */
+  .tab{
+    background:#25282a!important;
+    color:#dfe2e5!important;
+    border-color:#4b4f53!important;
+  }
+  .tab.active{
+    background:#d5ad21!important;
+    color:#17120a!important;
+    border-color:#d5ad21!important;
+  }
+
+  .secbar{
+    background:#d4aa21!important;
+    color:#18130a!important;
+  }
+
+  /* Glosario. */
+  .gterm{color:#f0ca50!important}
+  #tip{
+    background:#171d25!important;
+    color:#f0eee8!important;
+    border-color:#d9b42c!important;
+  }
+  #tip b{color:#f3d36a!important}
+  #tip i{color:#c4ccd4!important}
+
+  /* Chips on dark cards. */
+  .chip{
+    background:#2d3033!important;
+    color:#eceae5!important;
+    border-color:#55595d!important;
+  }
+  .chip.on{
+    background:#514612!important;
+    color:#ffe07a!important;
+    border-color:#a88923!important;
+  }
+
+  details>summary{
+    background:#303235!important;
+    color:#eeeDE8!important;
+  }
+  details>summary *{color:inherit!important}
+
+  button{
+    background:#2d3033!important;
+    color:#eeeDE8!important;
+    border-color:#55595d!important;
+  }
+  button.primary{
+    background:#354047!important;
+    color:#fff!important;
+    border-color:#caa21f!important;
+  }
+
+  /* Inputs explicitly override browser forced darkening. */
+  input::placeholder,textarea::placeholder{
+    color:#92979c!important;
+    opacity:1!important;
+  }
+}
+
+/* ---------- UNIVERSAL READABILITY SAFETY NET ---------- */
+@media(max-width:700px){
+  a{color:#d5ad21}
+  @media(prefers-color-scheme:dark){
+    a{color:#f0ca50!important}
+    .muted,.small{opacity:1!important}
+  }
+}
+
+</style>
 </head>
 <body>
 <header><div class="wrap" style="padding:0 16px">
