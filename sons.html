@@ -376,6 +376,90 @@ table.wt td.hl{outline:2px solid var(--gold)}
   .mobile-more button.active{border-color:#b28c13;background:#fff4c9}
 }
 
+
+/* ---------- CONTRASTE / ESTADOS INTERACTIVOS ---------- */
+/* Overrides finales: evita texto negro sobre superficies oscuras en controles,
+   elementos seleccionables y tooltips, especialmente en WebView móvil. */
+.gterm{color:inherit;background:transparent;text-decoration:none;-webkit-tap-highlight-color:rgba(213,173,33,.22)}
+#tip{color:#f0eee8;background:#17202b;border:1px solid #d5ad21;box-shadow:0 8px 28px rgba(0,0,0,.65);}
+#tip b{color:#f3d36a}
+#tip i{color:#bfc8d2}
+button,select,input,textarea,summary,.tab,.chip,.battle-phase-btn,.battle-unit>summary{
+  -webkit-tap-highlight-color:rgba(213,173,33,.18);
+}
+select option{background:#17202b;color:#f0eee8}
+select option:checked,select option[selected]{background:#d5ad21;color:#17120a}
+select:focus,input:focus,textarea:focus,button:focus,.tab:focus,summary:focus{
+  outline:2px solid #d5ad21;outline-offset:1px;
+}
+button:active,.tab:active,.battle-phase-btn:active{filter:brightness(.94)}
+@media(max-width:700px){
+  /* Controles del panel oscuro */
+  aside.panel select,aside.panel input,aside.panel textarea{
+    background:#161719!important;color:#f2f1ed!important;border-color:#565a5e!important;
+    color-scheme:dark;
+  }
+  aside.panel select option{background:#161719!important;color:#f2f1ed!important}
+  aside.panel select option:checked{background:#d5ad21!important;color:#17120a!important}
+  /* Controles dentro de tarjetas claras */
+  .ds select,.ds input,.ds textarea,.quick-card select,.quick-card input,
+  .quick-phase select,.quick-phase input,.battle-unit select,.battle-unit input,
+  .battle-ritual select,.battle-ritual input,.mfm-unit select,.mfm-unit input,
+  .listrow select,.listrow input,details select,details input{
+    background:#fff!important;color:#191a1c!important;border-color:#9da0a3!important;
+    color-scheme:light;
+  }
+  .ds select option,.quick-card select option,.quick-phase select option,
+  .battle-unit select option,.battle-ritual select option,.mfm-unit select option,
+  .listrow select option,details select option{background:#fff!important;color:#191a1c!important}
+  .ds select option:checked,.quick-card select option:checked,.quick-phase select option:checked,
+  .battle-unit select option:checked,.battle-ritual select option:checked,.mfm-unit select option:checked,
+  .listrow select option:checked,details select option:checked{background:#d5ad21!important;color:#17120a!important}
+  /* Elementos seleccionables / activos */
+  .chip.on,.battle-ritual.selected,.mobile-more button.active{
+    color:#5e4900!important;background:#fff2b8!important;border-color:#a78315!important;
+  }
+  .battle-actions button.used{color:#555!important;background:#e0ded9!important}
+  .battle-phase-btn.active{color:#17120a!important;background:#d5ad21!important}
+  /* Tooltip legible y por encima de todos los paneles */
+  #tip{
+    max-width:calc(100vw - 20px)!important;
+    background:#17202b!important;color:#f0eee8!important;
+    border:1px solid #e0b72c!important;
+    box-shadow:0 10px 32px rgba(0,0,0,.72)!important;
+    font-size:13px!important;line-height:1.48!important;
+    padding:11px 12px!important;z-index:10000!important;
+  }
+  #tip b{color:#f3d36a!important}
+  #tip i{color:#bfc8d2!important}
+  /* Términos pulsados quedan claramente marcados mientras su explicación está abierta */
+  .gterm:active,.gterm:focus{color:#765c00;background:#fff2b8;border-radius:3px}
+}
+
+
+/* ---------- CONTRASTE GLOBAL: SUPERFICIES OSCURAS ---------- */
+@media(max-width:700px){
+  .app-header,.mobile-drawer,.mobile-nav,.side,.side-nav,.sidebar,
+  .strat,.strat-h,.cp,.battle-unit>summary,.battle-phase,
+  .battle-top,.battle-controls,.quick-dark,.dark-card{
+    color:var(--text)!important;
+  }
+  .app-header *, .mobile-drawer *, .mobile-nav *, .side *, .side-nav *, .sidebar *,
+  .strat *, .strat-h *, .cp *, .battle-unit>summary *, .battle-phase *,
+  .battle-top *, .battle-controls *, .quick-dark *, .dark-card *{
+    color:inherit;
+  }
+  .app-header .muted,.mobile-drawer .muted,.mobile-nav .muted,.side .muted,
+  .sidebar .muted,.strat .muted,.battle-unit>summary .muted,.battle-top .muted,
+  .battle-controls .muted,.quick-dark .muted,.dark-card .muted{
+    color:var(--muted)!important;
+  }
+  .app-header button,.mobile-drawer button,.mobile-nav button,.side button,.sidebar button,
+  .strat button,.battle-unit>summary button,.battle-top button,.battle-controls button,
+  .quick-dark button,.dark-card button{
+    color:inherit;
+  }
+}
 </style>
 </head>
 <body>
