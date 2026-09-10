@@ -1182,6 +1182,139 @@ html{
 }
 
 </style>
+
+<style id="force-dark-always">
+/* =========================================================
+   FORCED DARK THEME — independent of OS light/dark setting
+   Final cascade override to guarantee readable text everywhere.
+   ========================================================= */
+:root{
+  color-scheme:dark!important;
+  --bg:#080b12!important;
+  --panel:#0e1420!important;
+  --panel2:#131b2a!important;
+  --line:#27344a!important;
+  --gold:#c9a24a!important;
+  --gold2:#e8cf8b!important;
+  --blue:#1d3557!important;
+  --blue2:#122238!important;
+  --ink:#f1f0eb!important;
+  --muted:#aab4c5!important;
+}
+html,body{background:#080b12!important;color:#f1f0eb!important;color-scheme:dark!important}
+body *{border-color:#27344a}
+
+/* Main surfaces */
+.app,.app-main,main,.content,.pane,.section,.panel,.card,.ds,.quick-card,.quick-phase,
+.strat,.wg,.mfm-unit,.note,.ab,.kwbar,.battle-unit,.battle-phase,.battle-top,
+.battle-controls,.quick-dark,.dark-card,.listrow,details,.codex-card,.rule-card,
+.rules-card,.glossary-card,.reference-card,.tactics-card{
+  background:#0e1420!important;color:#f1f0eb!important;
+}
+
+/* Text inside every normal content surface */
+.ds *, .quick-card *, .quick-phase *, .strat-b *, .wg *, .mfm-unit *, .note *,
+.ab *, .kwbar *, .battle-unit *, .battle-phase *, .battle-top *, .battle-controls *,
+.quick-dark *, .dark-card *, .listrow *, details *, .codex-card *, .rule-card *,
+.rules-card *, .glossary-card *, .reference-card *, .tactics-card *{
+  color:#f1f0eb!important;
+}
+
+/* Secondary text */
+.small,.muted,.sub,.hint,.help,.desc,.meta,.caption,
+.strat-b .small,.strat-b .muted,.quick-phase .small,.quick-phase .muted{
+  color:#aab4c5!important;
+}
+
+/* Headers / stratagem headers */
+.strat-h,.ds-head,.mfm-unit-head,.battle-top,.battle-phase-head{
+  background:#122238!important;color:#f1f0eb!important;
+}
+.strat-h *, .ds-head *, .mfm-unit-head *, .battle-top *, .battle-phase-head *{
+  color:#f1f0eb!important;
+}
+.strat-h b,.ds-head b,.mfm-unit-head b,.battle-phase-head b,
+.strat-b .lbl,.quick-phase h3,.quick-card b,.quick-item b{
+  color:#e8cf8b!important;
+}
+
+/* CP pills and tags */
+.cp{background:#c9a24a!important;color:#14100a!important}
+.cp *{color:#14100a!important}
+.quick-tag,.chip,.tag,.badge,.pill{background:#1d3557!important;color:#f1f0eb!important;border-color:#38577e!important}
+
+/* Navigation / sidebar / drawer */
+.app-header,.mobile-nav,.mobile-drawer,.side,.side-nav,.sidebar,.tabs,.tabbar{
+  background:#0b1019!important;color:#f1f0eb!important;
+}
+.app-header *, .mobile-nav *, .mobile-drawer *, .side *, .side-nav *, .sidebar *,
+.tabs *, .tabbar *{color:#f1f0eb!important}
+.tab.active,.tab.selected{color:#e8cf8b!important;border-color:#c9a24a!important}
+
+/* Form controls */
+button,input,select,textarea{
+  background:#151d2b!important;
+  color:#f1f0eb!important;
+  border-color:#34445c!important;
+  color-scheme:dark!important;
+}
+button:hover,button:focus,input:focus,select:focus,textarea:focus{
+  background:#1c2940!important;color:#ffffff!important;border-color:#c9a24a!important;
+}
+option{background:#151d2b!important;color:#f1f0eb!important}
+
+/* Glossary terms and floating tooltip */
+.gterm{color:#f0ca50!important;background:transparent!important;border-color:#c9a24a!important}
+#tip,.tip,.tooltip{background:#151d2b!important;color:#f1f0eb!important;border-color:#c9a24a!important}
+#tip *, .tip *, .tooltip *{color:#f1f0eb!important}
+.gterm:active,.gterm:focus{color:#ffffff!important;background:#26344c!important}
+
+/* Tables */
+table,thead,tbody,tr,th,td{background:#0e1420!important;color:#f1f0eb!important;border-color:#27344a!important}
+th{background:#122238!important;color:#e8cf8b!important}
+
+/* Links */
+a{color:#e8cf8b!important}
+a:hover{color:#ffffff!important}
+
+/* Details / summaries */
+summary{background:#122238!important;color:#f1f0eb!important}
+summary *{color:#f1f0eb!important}
+
+/* Battle mode */
+.battle-check,.battle-kpi,.battle-actions,.battle-unit>summary{
+  background:#131b2a!important;color:#f1f0eb!important;
+}
+.battle-check *, .battle-kpi *, .battle-actions *, .battle-unit>summary *{color:#f1f0eb!important}
+
+/* Kill any inherited light-theme text rules that specifically caused
+   black-on-dark rendering in stratagem/reference content. */
+.strat,.strat-b,.strat-b p,.strat-b div,.strat-b span,.strat-b li,
+.quick-card,.quick-card p,.quick-card div,.quick-card span,
+.quick-phase,.quick-phase p,.quick-phase div,.quick-phase span,
+.ab,.ab p,.ab div,.ab span,.note,.note p,.note div,.note span{
+  color:#f1f0eb!important;
+}
+.strat-b .lbl{color:#e8cf8b!important}
+
+/* Mobile: same dark palette, no OS-dependent overrides */
+@media(max-width:700px){
+  html,body{background:#080b12!important;color:#f1f0eb!important}
+  .ds,.quick-card,.quick-phase,.strat,.wg,.mfm-unit,.note,.ab,
+  .battle-unit,.battle-phase,.battle-top,.battle-controls,.quick-dark,.dark-card,
+  .listrow,details,.codex-card,.rule-card,.rules-card,.glossary-card{
+    background:#0e1420!important;color:#f1f0eb!important;
+  }
+  .strat-b{background:#0e1420!important;color:#f1f0eb!important}
+  .strat-h{background:#122238!important;color:#f1f0eb!important}
+  .strat-b *,.strat-h *,.ds *,.quick-card *,.quick-phase *,.wg *,.mfm-unit *,
+  .note *,.ab *,.battle-unit *,.battle-phase *,.battle-top *,.battle-controls *,
+  .quick-dark *,.dark-card *,.listrow *,details *{color:#f1f0eb!important}
+  .strat-h b,.strat-b .lbl,.quick-phase h3{color:#e8cf8b!important}
+  .cp{background:#c9a24a!important;color:#14100a!important}
+  .cp *{color:#14100a!important}
+}
+</style>
 </head>
 <body>
 <header><div class="wrap" style="padding:0 16px">
