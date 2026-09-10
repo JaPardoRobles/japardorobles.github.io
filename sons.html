@@ -454,6 +454,366 @@ button:active,.tab:active,.battle-phase-btn:active{filter:brightness(.94)}
   option{background:#fff!important;color:#111!important}
 }
 </style>
+<style>
+
+/* ================================================================
+   MOBILE CONTRAST FINAL FIX
+   Regla: fondo oscuro -> texto claro; fondo claro -> texto oscuro.
+   No usamos --ink para decidir el contraste porque su valor cambia
+   según la superficie.
+   ================================================================ */
+@media(max-width:700px){
+
+  /* Fondo general y texto libre */
+  body{
+    background:#111214!important;
+    color:#e9e6dc!important;
+  }
+  main,main>section,#quick,#battle,#codex,#ds,#mfm,#rules,#combos,#rituals,#tactics{
+    color:#e9e6dc;
+  }
+  main h2,main h3{color:#e0b72c}
+  main p{color:inherit}
+
+  /* ===================== SUPERFICIES CLARAS ===================== */
+  .ds,
+  .quick-card,
+  .quick-phase,
+  .strat,
+  .wg,
+  .mfm-unit,
+  .note,
+  .ab,
+  .kwbar,
+  details,
+  .listrow,
+  .battle-unit,
+  .battle-rule,
+  .battle-ritual{
+    color:#191a1c!important;
+  }
+
+  .ds *,
+  .quick-card *,
+  .quick-phase *,
+  .strat-b *,
+  .wg *,
+  .mfm-unit *,
+  .note *,
+  .ab *,
+  .kwbar *,
+  details>*:not(summary),
+  .listrow *,
+  .battle-unit .bu-body *,
+  .battle-rule *,
+  .battle-ritual *{
+    color:inherit;
+  }
+
+  .ds,
+  .quick-card,
+  .quick-phase,
+  .strat,
+  .wg,
+  .mfm-unit,
+  .note,
+  .kwbar,
+  details,
+  .listrow,
+  .battle-unit,
+  .battle-rule,
+  .battle-ritual{
+    background:#f4f3ef!important;
+    border-color:#c9c6bf!important;
+  }
+
+  /* Texto secundario sobre superficies claras */
+  .ds .small,.ds .muted,
+  .quick-card .small,.quick-card .muted,
+  .quick-phase .small,.quick-phase .muted,
+  .strat-b .small,.strat-b .muted,
+  .wg .small,.wg .muted,
+  .mfm-unit .small,.mfm-unit .muted,
+  .note .small,.note .muted,
+  details .small,details .muted,
+  .listrow .small,.listrow .muted,
+  .battle-unit .bu-role,
+  .battle-unit .small,.battle-unit .muted,
+  .battle-rule .small,.battle-rule .muted,
+  .battle-ritual .small,.battle-ritual .muted{
+    color:#64686d!important;
+  }
+
+  /* Títulos/acento sobre superficies claras */
+  .quick-phase h3,
+  .quick-card b,
+  .quick-item b,
+  .mfm-unit-head b,
+  .ab b,
+  .strat-b .lbl,
+  .kwbar b,
+  .battle-unit .bu-section h4{
+    color:#765c00!important;
+  }
+
+  .quick-tag{
+    color:#765c00!important;
+    background:#fffaf0!important;
+    border-color:#b18b12!important;
+  }
+
+  .chip{
+    color:#303236!important;
+    background:#fff!important;
+    border-color:#aaa!important;
+  }
+  .chip.on{
+    color:#5e4900!important;
+    background:#fff2b8!important;
+    border-color:#a78315!important;
+  }
+
+  /* Details: summary también es claro */
+  details>summary{
+    background:#e3e1dc!important;
+    color:#2d3134!important;
+  }
+  details>summary *{color:inherit!important}
+
+  /* ===================== STRATAGEM: CABECERA OSCURA / CUERPO CLARO ===================== */
+  .strat{
+    background:#f4f3ef!important;
+    color:#191a1c!important;
+  }
+  .strat .strat-h{
+    background:#2f3d42!important;
+    color:#f5f5f2!important;
+    border-bottom-color:#d5ad21!important;
+  }
+  .strat .strat-h *,
+  .strat .strat-h b{
+    color:#f5d66b!important;
+  }
+  .strat .strat-h .cp{
+    color:#17120a!important;
+    background:#d5ad21!important;
+  }
+  .strat .strat-b,
+  .strat .strat-b p{
+    color:#191a1c!important;
+  }
+  .strat .strat-b .lbl{color:#765c00!important}
+
+  /* ===================== DATASHEET: CABECERA OSCURA / CUERPO CLARO ===================== */
+  .ds{
+    background:#f4f3ef!important;
+    color:#191a1c!important;
+  }
+  .ds-head,
+  details.ds>summary.ds-head{
+    background:linear-gradient(90deg,#3c5964,#2d3c43)!important;
+    color:#fff!important;
+  }
+  .ds-head *,
+  details.ds>summary.ds-head *{color:#fff!important}
+  .ds-head .pts{color:#f2ce57!important}
+  .ds-sub{color:#d6dcdf!important}
+
+  /* ===================== TABLAS SOBRE SUPERFICIE CLARA ===================== */
+  table.wep td,
+  table.gl td{
+    color:#252629!important;
+    border-bottom-color:#d7d4ce!important;
+  }
+  table.wep th{
+    background:#2f3d42!important;
+    color:#f5d66b!important;
+  }
+  .wkw{color:#47727c!important}
+  .wcount{color:#17120a!important;background:#d7af27!important}
+
+  /* ===================== BATTLE MODE ===================== */
+  .battle-top{
+    color:#e9e6dc!important;
+    background:transparent!important;
+  }
+  .battle-kpi{
+    background:#292a2b!important;
+    color:#e9e6dc!important;
+    border-color:#45474a!important;
+  }
+  .battle-kpi span{color:#b8b8b5!important}
+  .battle-kpi b{color:#f0c94b!important}
+
+  .battle-actions{
+    color:#e9e6dc!important;
+  }
+  .battle-actions button{
+    background:#292a2b!important;
+    color:#e9e6dc!important;
+    border-color:#55585c!important;
+  }
+  .battle-actions button.used{
+    background:#e0ded9!important;
+    color:#555!important;
+  }
+
+  .battle-phases{
+    background:#f4f3ef!important;
+    color:#242629!important;
+    border-bottom-color:#c9c6bf!important;
+  }
+  .battle-phase-btn{
+    background:#e8e6e1!important;
+    color:#242629!important;
+    border-color:#bdbab3!important;
+  }
+  .battle-phase-btn.active{
+    background:#d5ad21!important;
+    color:#17120a!important;
+  }
+
+  .battle-unit{
+    background:#fff!important;
+    color:#191a1c!important;
+  }
+  .battle-unit>summary{
+    background:#354e59!important;
+    color:#fff!important;
+  }
+  .battle-unit>summary *{color:#fff!important}
+  .battle-unit>summary .bu-used{color:#7fd6a2!important}
+  .battle-unit .bu-body{color:#191a1c!important}
+  .battle-unit .bu-section h4{color:#765c00!important}
+  .battle-unit .bu-stat i{background:#343b3f!important;color:#fff!important}
+  .battle-unit .bu-stat b{color:#111!important}
+
+  .battle-rule{
+    background:#eef2f3!important;
+    color:#24272a!important;
+  }
+  .battle-ritual{
+    background:#f7f5f0!important;
+    color:#24272a!important;
+  }
+  .battle-ritual .muted,
+  .battle-dice{color:#666b70!important}
+  .battle-dice b{color:#765c00!important}
+
+  /* ===================== SIDEBAR OSCURO ===================== */
+  aside.panel{
+    background:#252627!important;
+    color:#f0eee8!important;
+  }
+  aside.panel *{color:inherit}
+  aside.panel h2{color:#d8d7d2!important}
+  aside.panel label{color:#aaa!important}
+  aside.panel .secbar{color:#18130a!important;background:#d4aa21!important}
+
+  /* ===================== CONTROLES: EL FONDO DETERMINA EL TEXTO ===================== */
+  aside.panel select,
+  aside.panel input,
+  aside.panel textarea{
+    background:#161719!important;
+    color:#f2f1ed!important;
+    border-color:#565a5e!important;
+    color-scheme:dark;
+  }
+  aside.panel select option{
+    background:#161719!important;
+    color:#f2f1ed!important;
+  }
+
+  .ds select,.ds input,.ds textarea,
+  .quick-card select,.quick-card input,.quick-card textarea,
+  .quick-phase select,.quick-phase input,.quick-phase textarea,
+  .battle-unit select,.battle-unit input,.battle-unit textarea,
+  .battle-ritual select,.battle-ritual input,.battle-ritual textarea,
+  .mfm-unit select,.mfm-unit input,.mfm-unit textarea,
+  .listrow select,.listrow input,.listrow textarea,
+  details select,details input,details textarea{
+    background:#fff!important;
+    color:#191a1c!important;
+    border-color:#9da0a3!important;
+    color-scheme:light;
+  }
+
+  button{
+    background:#e8e6e1!important;
+    color:#232527!important;
+    border-color:#bdbab3!important;
+  }
+  button.primary{
+    background:#343f43!important;
+    color:#fff!important;
+    border-color:#caa21f!important;
+  }
+  .mobile-nav button{
+    background:transparent!important;
+    color:#d7dbe3!important;
+  }
+  .mobile-nav button.active{
+    background:#303132!important;
+    color:#e8cf8b!important;
+  }
+  .mobile-more{
+    background:#f4f3ef!important;
+    color:#191a1c!important;
+  }
+  .mobile-more button{
+    background:#e7e5e0!important;
+    color:#232527!important;
+  }
+  .mobile-more button.active{
+    background:#fff4c9!important;
+    color:#5e4900!important;
+  }
+
+  /* ===================== GLOSARIO / TOOLTIP ===================== */
+  .gterm{
+    color:#765c00!important;
+    background:transparent!important;
+  }
+  .gterm:active,.gterm:focus{
+    color:#765c00!important;
+    background:#fff2b8!important;
+  }
+  #tip{
+    background:#17202b!important;
+    color:#f0eee8!important;
+    border-color:#e0b72c!important;
+  }
+  #tip *{color:inherit}
+  #tip b{color:#f3d36a!important}
+  #tip i{color:#bfc8d2!important}
+
+  /* ===================== NAVEGACIÓN / TABS ===================== */
+  .tabs{color:#e9e6dc!important}
+  .tab{
+    background:#292a2b!important;
+    color:#d7dbe3!important;
+    border-color:#4b4e52!important;
+  }
+  .tab.active{
+    background:#d5ad21!important;
+    color:#17120a!important;
+    border-color:#d5ad21!important;
+  }
+
+  /* Secbars doradas: texto oscuro */
+  .secbar{
+    background:#d4aa21!important;
+    color:#18130a!important;
+  }
+
+  /* Foco visible sin invertir colores */
+  select:focus,input:focus,textarea:focus,button:focus,.tab:focus,summary:focus{
+    outline:2px solid #d5ad21!important;
+    outline-offset:1px;
+  }
+}
+
+</style>
 </head>
 <body>
 <header><div class="wrap" style="padding:0 16px">
