@@ -1336,6 +1336,125 @@ body .strat .strat-b .small {
   color:#aab4c5 !important;
 }
 </style>
+<style>
+/* TACTICS UI — intentionally self-contained; does not modify the app theme. */
+.tactic-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.tactic-card{background:#202224;border:1px solid #3a4147;border-radius:10px;padding:13px 14px;color:#f1f0eb}
+.tactic-card h3{margin:0 0 8px;color:#e8cf8b;font-size:15px;letter-spacing:.3px}
+.tactic-card p{margin:6px 0;color:#f1f0eb;line-height:1.48}
+.tactic-card b{color:#ffd35a}
+.tactic-card .tag{display:inline-block;padding:2px 7px;border-radius:999px;border:1px solid #5d6872;background:#293038;color:#e8cf8b;font-size:11px;margin:0 4px 5px 0}
+.tactic-head{background:#27353b;border:1px solid #46545b;border-radius:10px;padding:14px;margin-bottom:12px;color:#f1f0eb}
+.tactic-head h2{margin:0 0 5px;color:#ffd35a}
+@media(max-width:700px){.tactic-grid{grid-template-columns:1fr;gap:10px}.tactic-card{padding:12px}.tactic-card p{line-height:1.45}}
+</style>
+
+<style id="final-layout-fixes">
+/* =========================================================
+   FINAL LAYOUT FIXES — do not alter the established dark theme.
+   1) Quick Guide: current weapons stay as a real horizontal table on mobile.
+   2) Catalog datasheet stat boxes use the same dark/high-contrast palette.
+   ========================================================= */
+
+/* --- 1. GUÍA RÁPIDA: armas por modelo --- */
+@media(max-width:700px){
+  .quick-weapons-table{
+    display:table!important;
+    width:max-content!important;
+    min-width:100%!important;
+    border-collapse:collapse!important;
+  }
+  .quick-weapons-table thead{
+    display:table-header-group!important;
+  }
+  .quick-weapons-table tbody{
+    display:table-row-group!important;
+  }
+  .quick-weapons-table tr{
+    display:table-row!important;
+    padding:0!important;
+    border-bottom:1px solid #27344a!important;
+  }
+  .quick-weapons-table th,
+  .quick-weapons-table td{
+    display:table-cell!important;
+    white-space:nowrap!important;
+    vertical-align:middle!important;
+    text-align:center!important;
+    padding:6px 8px!important;
+  }
+  .quick-weapons-table th:first-child,
+  .quick-weapons-table td:first-child{
+    text-align:left!important;
+    min-width:185px;
+    white-space:normal!important;
+  }
+  .quick-weapons-table td:first-child .small{
+    display:inline!important;
+  }
+  .quick-weapons-table td[data-l]:before{
+    content:none!important;
+    display:none!important;
+  }
+  .quick-weapons-table .chip{
+    display:inline-block!important;
+    white-space:nowrap!important;
+  }
+  /* This table is intentionally scrollable horizontally; the rest of the
+     mobile app remains vertical as before. */
+  .quick-weapons-table + *{ }
+  #quick .scroll:has(.quick-weapons-table){
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch;
+  }
+}
+
+/* --- 2. CATÁLOGO: perfiles M/T/Sv/W/Ld/OC --- */
+/* The old mobile shell made .statbox white. The catalog must remain dark,
+   and its values must be light, regardless of OS/browser colour preference. */
+#catalog .statline{
+  display:flex!important;
+  flex-direction:row!important;
+  flex-wrap:wrap!important;
+  gap:6px!important;
+}
+#catalog .statbox{
+  background:#0a1220!important;
+  color:#f1f0eb!important;
+  border:1px solid #c9a24a!important;
+  min-width:48px!important;
+}
+#catalog .statbox i{
+  display:block!important;
+  background:#c9a24a!important;
+  color:#14100a!important;
+  font-style:normal!important;
+}
+#catalog .statbox i *{
+  color:#14100a!important;
+}
+#catalog .statbox b{
+  display:block!important;
+  background:#0a1220!important;
+  color:#f1f0eb!important;
+  font-size:16px!important;
+  padding:3px 6px!important;
+}
+@media(max-width:700px){
+  #catalog .statbox{
+    min-width:42px!important;
+    background:#0a1220!important;
+  }
+  #catalog .statbox b{
+    color:#f1f0eb!important;
+    background:#0a1220!important;
+    font-size:15px!important;
+    padding:3px 5px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header><div class="wrap" style="padding:0 16px">
@@ -1381,6 +1500,7 @@ body .strat .strat-b .small {
     <button class="tab" data-t="combos">🧩 Combos</button>
     <button class="tab" data-t="catalog">📚 Catálogo completo</button>
     <button class="tab" data-t="coach">🎯 Battle Coach</button>
+    <button class="tab" data-t="tactics">🧠 Tácticas</button>
     <button class="tab" data-t="rules">📕 Glosario</button>
   </div>
   <section id="builder" class="panel pane"></section>
@@ -1393,6 +1513,7 @@ body .strat .strat-b .small {
   <section id="combos" class="panel pane hidden"></section>
   <section id="catalog" class="panel pane hidden"></section>
   <section id="coach" class="panel pane hidden"></section>
+  <section id="tactics" class="panel pane hidden"></section>
   <section id="rules" class="panel pane hidden"></section>
 </main>
 </div></div>
@@ -4370,7 +4491,7 @@ function renderQuick(){
  ${army.length?`<div class="secbar">Acrónimos que vas a leer todo el rato</div>
  <div class="two"><div class="ds"><div class="ds-body"><h3>Perfil de unidad</h3><div class="ab"><span class="acronym">M</span> Movement · Movimiento</div><div class="ab"><span class="acronym">T</span> Toughness · Resistencia</div><div class="ab"><span class="acronym">Sv</span> Save · Salvación</div><div class="ab"><span class="acronym">W</span> Wounds · Heridas</div><div class="ab"><span class="acronym">Ld</span> Leadership · Liderazgo</div><div class="ab"><span class="acronym">OC</span> Objective Control · Control de objetivo</div><div class="ab"><span class="acronym">Inv</span> Invulnerable Save · Salvación invulnerable</div><h3 style="margin-top:10px">Arma</h3><div class="ab"><span class="acronym">R</span> Range · Alcance</div><div class="ab"><span class="acronym">A</span> Attacks · Ataques</div><div class="ab"><span class="acronym">BS</span> Ballistic Skill · Habilidad de Proyectiles</div><div class="ab"><span class="acronym">WS</span> Weapon Skill · Habilidad de Combate</div><div class="ab"><span class="acronym">S</span> Strength · Fuerza</div><div class="ab"><span class="acronym">AP</span> Armour Penetration · Penetración</div><div class="ab"><span class="acronym">D</span> Damage · Daño</div></div></div><div class="ds"><div class="ds-body"><h3>Palabras clave de TU lista</h3><p><b>Especialmente relevantes:</b><br>${keyText}</p><p><span class="small">Todas las keywords presentes en tus datasheets:</span><br>${allKwText}</p></div></div></div>
  <div class="secbar">Tus perfiles actuales</div><div class="scroll"><table class="wep"><thead><tr><th>Unidad</th><th>Perfil</th></tr></thead><tbody>${profileRows||'<tr><td colspan="2">—</td></tr>'}</tbody></table></div>
- <div class="secbar">Tus armas actuales por modelo — R / A / BS-WS / S / AP / D</div><div class="scroll"><table class="wep"><thead><tr><th>Arma</th><th>R</th><th>A</th><th>BS/WS</th><th>S</th><th>AP</th><th>D</th><th>Keywords</th></tr></thead><tbody>${weaponRows||'<tr><td colspan="8">No hay armas configuradas.</td></tr>'}</tbody></table></div>
+ <div class="secbar">Tus armas actuales por modelo — R / A / BS-WS / S / AP / D</div><div class="scroll"><table class="wep quick-weapons-table"><thead><tr><th>Arma</th><th>R</th><th>A</th><th>BS/WS</th><th>S</th><th>AP</th><th>D</th><th>Keywords</th></tr></thead><tbody>${weaponRows||'<tr><td colspan="8">No hay armas configuradas.</td></tr>'}</tbody></table></div>
  <div class="secbar">Tabla S vs T — usa las Fuerzas que realmente tienes</div><p class="small">Filas = <b>S</b> de tus armas. Columnas = <b>T</b> del objetivo. El número indica la tirada de D6 necesaria para herir. <b>2+</b> si S ≥ 2×T · <b>3+</b> si S &gt; T · <b>4+</b> si S = T · <b>5+</b> si S &lt; T · <b>6+</b> si S ≤ T/2.</p><div class="scroll"><table class="wt">${woundHead}${woundBody}</table></div>
  <details open><summary>1 · ORDEN DE JUGADA — checklist por fases</summary>
  <div class="note"><b>Orden práctico:</b> resuelve primero las habilidades que dicen «al inicio» de la fase; después las que preparan el siguiente paso; luego ejecuta ataques/movimientos; y deja las reacciones/Stratagems para el momento exacto que indique su <b>CUÁNDO</b>. Las reglas específicas de cada unidad aparecen debajo y se han filtrado a tu lista actual.</div>
@@ -5287,8 +5408,175 @@ function importArmy(){
    ========================================================================= */
 /* Las pestañas secundarias se dibujan solo al abrirlas: así los contadores de
    armamento responden al instante aunque el catálogo tenga 35 datasheets. */
+/* =========================================================================
+   TÁCTICAS — tips & tricks investigados y adaptados a la lista actual
+   ========================================================================= */
+const TACTICS_GENERAL=[
+ {title:"No juegues la fase: juega el objetivo",tags:["11E","fundamental"],body:[
+  "Antes de cada movimiento decide qué VP necesitas ahora, qué VP puedes negar y qué unidades pueden puntuar en el siguiente turno.",
+  "Una unidad que sobrevive sin matar nada pero mantiene el objetivo puede haber hecho más que una unidad que mata mucho y luego queda expuesta.",
+  "En Take and Hold, piensa en quién controla el tablero y qué negación puedes conseguir, no solo en quién está haciendo más bajas."
+ ]},
+ {title:"Mide antes de mover: rango + amenaza + retirada",tags:["11E","posicionamiento"],body:[
+  "Antes de mover una unidad, comprueba tres distancias: hasta el objetivo, hasta la amenaza enemiga y hasta la posición segura que tendrá después.",
+  "No midas solo para tu acción inmediata: mide también la respuesta enemiga. Una unidad puede estar a salvo de disparos pero entrar accidentalmente en una carga fácil.",
+  "Cuando no necesitas avanzar, un movimiento más corto puede conservar opciones para el siguiente turno."
+ ]},
+ {title:"El movimiento es un recurso defensivo",tags:["11E","micro-tech"],body:[
+  "Mover una unidad fuera de la línea de visión puede valer más que conseguir una línea de tiro mediocre.",
+  "Deja modelos en posiciones que hagan incómodo al rival declarar una carga o atravesar el tablero hasta ti.",
+  "Entre dos posiciones equivalentes, prefiere la que obligue al rival a gastar más movimiento para interactuar contigo."
+ ]},
+ {title:"Declara cargas pensando en el resultado, no a ciegas",tags:["11E","charge"],body:[
+  "En 11ª puedes hacer la tirada de carga y después seleccionar los objetivos que sean legales para ese resultado. Esto abre decisiones tácticas que no existían cuando tenías que comprometer todos los objetivos de antemano.",
+  "Coloca una unidad para tener varias cargas posibles. Un resultado alto puede abrirte una segunda opción que no existía con una tirada baja.",
+  "La carga sigue teniendo que terminar legalmente contra todos los objetivos seleccionados."
+ ]},
+ {title:"No regales Overwatch",tags:["11E","reacción"],body:[
+  "Antes de exponer una unidad a una reacción enemiga, pregunta: qué gano si la reacción falla y qué pierdo si sale perfecta.",
+  "Una unidad barata o poco importante puede forzar una reacción antes de comprometer tu unidad realmente valiosa, si el matchup lo permite.",
+  "Si el rival tiene una reacción peligrosa, a veces el mejor movimiento es no darle todavía un objetivo válido."
+ ]},
+ {title:"El Fight phase se gana antes del Fight phase",tags:["11E","melee"],body:[
+  "La colocación durante la carga determina cuántos modelos podrán pegar, qué unidades quedan trabadas y qué opciones tendrá el rival para la siguiente activación.",
+  "No maximices automáticamente el contacto: deja modelos en posiciones que protejan el objetivo o creen una pantalla cuando eso sea más importante que hacer daño.",
+  "Antes de cargar, identifica qué unidad enemiga quieres que no pueda elegir libremente como siguiente objetivo."
+ ]},
+ {title:"Reevalúa después de cada unidad",tags:["11E","consistencia"],body:[
+  "Cuando una unidad dispara o combate, vuelve a mirar el tablero. Si el objetivo ya ha muerto o ha cambiado de importancia, no sigas el plan automático.",
+  "Cuando varias unidades pueden matar el mismo objetivo, empieza por la que tenga mejor relación entre daño esperado y recursos gastados.",
+  "Conserva las unidades que todavía pueden cambiar de objetivo: son más valiosas mientras el tablero siga siendo incierto."
+ ]},
+ {title:"No gastes el último CP sin mirar el turno rival",tags:["11E","CP"],body:[
+  "Antes de gastar tu último CP, identifica qué estratagemas defensivas o de reacción puede necesitar tu ejército hasta tu próximo turno.",
+  "El mejor uso de un CP no siempre aumenta daño: puede evitar perder una unidad, una carga o un objetivo.",
+  "Acostúmbrate a anunciar mentalmente: CP que gasto ahora / CP que quiero conservar."
+ ]},
+ {title:"Juega por intercambios favorables",tags:["11E","trade"],body:[
+  "Una unidad no tiene que sobrevivir para ser rentable. Pregunta qué objetivo mata, qué VP consigue y qué espacio niega antes de morir.",
+  "Haz que tus unidades pequeñas hagan tareas que no requieren una unidad cara: pantallas, objetivos, bloqueos y cebos.",
+  "Evita intercambiar una pieza de utilidad que necesitabas conservar por una muerte enemiga de poco valor."
+ ]},
+ {title:"Los últimos turnos son un problema de matemáticas",tags:["11E","final turns"],body:[
+  "En los últimos turnos deja de pensar en daño total y cuenta VP reales: objetivos, negaciones y supervivencia que importe para puntuar.",
+  "Una unidad que solo puede hacer unas pocas heridas pero puede tocar un objetivo puede ser la pieza más importante de la partida.",
+  "Antes de disparar en un turno decisivo, comprueba si una muerte abre una línea de visión o una ruta de carga que cambie tu propia fase posterior."
+ ]}
+];
+
+const TACTICS_TS=[
+ {title:"Cuenta tus Cabal Points antes del Shooting",tags:["THOUSAND SONS","Cabal"],body:[
+  "Mira qué modelos con Cabal siguen vivos y calcula qué secuencia de Rituales necesitas para el plan del turno.",
+  "Cada modelo solo puede intentar un Ritual por turno y cada Ritual solo puede manifestarse una vez por turno: el orden importa.",
+  "Si un Ritual tiene un requisito de alcance o línea de visión especialmente difícil, coloca primero al PSYKER que vaya a usarlo."
+ ]},
+ {title:"Channel se decide después de la tirada",tags:["THOUSAND SONS","Rituales"],body:[
+  "No anuncies Channel antes de tirar. Haz el Psychic test y, después de ver el resultado, decide si Channel merece la pena.",
+  "Trátalo como una herramienta de consistencia: úsalo cuando el resultado que necesitas justifique el riesgo.",
+  "Los dobles/triples solo generan las mortales asociadas a Channel si finalmente elegiste Channel."
+ ]},
+ {title:"Ritual of Regeneration: piensa en modelos, no solo en heridas",tags:["THOUSAND SONS","healing"],body:[
+  "Recuperar un modelo destruido puede valer más que las heridas recuperadas: recuperas ataques, OC y presencia física.",
+  "En Rubrics o Terminators, planifica qué modelo vuelve y dónde debe colocarse para seguir proyectando amenaza o proteger al personaje.",
+  "No cures por inercia: si la unidad no va a aportar nada relevante este turno, otro Ritual puede tener mayor valor."
+ ]},
+ {title:"Buff de Ritual: prepara el objetivo antes de gastar el recurso",tags:["THOUSAND SONS","shooting"],body:[
+  "Los Rituales que mejoran ataques ganan valor cuando varias unidades pueden aprovechar el mismo objetivo.",
+  "No gastes el buff sobre un objetivo que una sola unidad mediocre puede rematar. Intenta convertirlo en un turno de concentración de fuego.",
+  "Compara siempre el coste del Ritual con la cantidad real de ataques que van a beneficiarse."
+ ]},
+ {title:"Temporal Surge: reposicionar significa renunciar a cargar",tags:["THOUSAND SONS","Ritual"],body:[
+  "Úsalo para llegar a un objetivo, ajustar líneas de visión o preparar el siguiente turno, no como una pseudo-carga.",
+  "La unidad afectada no podrá declarar carga ese turno, así que decide antes si el posicionamiento vale más que la amenaza de combate.",
+  "Una unidad que ya ha disparado puede usarlo para convertirse en una mejor pieza de puntuación para el siguiente turno."
+ ]},
+ {title:"Protege a tus PSYKERS: son también tu economía de Cabal",tags:["THOUSAND SONS","Cabal"],body:[
+  "Perder un PSYKER no es solo perder una miniatura: pierdes una fuente de Cabal y una opción táctica de Ritual.",
+  "No expongas un personaje por una línea de visión mediocre si otro PSYKER puede resolver la misma función.",
+  "Al desplegar personajes, piensa qué Rituales podrán intentar desde su posición y cómo mantendrán acceso en turnos posteriores."
+ ]},
+ {title:"Magnus: amenaza de tablero, no solo cañón",tags:["THOUSAND SONS","Magnus"],body:[
+  "Magnus puede obligar al rival a respetar una zona enorme del tablero. No tienes que usarlo siempre para matar el objetivo más caro.",
+  "Si el rival está jugando alrededor de Magnus, ya estás obteniendo valor: usa el resto del ejército para tomar el espacio que está cediendo.",
+  "Evita lanzarlo por una línea de tiro mediocre. Pregunta qué amenazas enemigas pueden responderle después de tu activación."
+ ]},
+ {title:"Rubricae Phalanx: crea una red de amenazas",tags:["RUBRICAE PHALANX","posicionamiento"],body:[
+  "La fuerza del destacamento no está solo en una unidad: intenta que Rubrics y Scarabs se cubran y se apoyen mutuamente.",
+  "Una unidad puede ocupar espacio mientras otra castiga el intento de desalojarla. Así el rival no resuelve todo con una sola activación.",
+  "Risen Rubricae vale especialmente cuando cambia el mapa de despliegue y las rutas de puntuación, no solo cuando te acerca al enemigo."
+ ]},
+ {title:"Ahriman: decide si su unidad es presión o utilidad",tags:["THOUSAND SONS","Ahriman"],body:[
+  "No midas Ahriman solo por heridas. Su valor también está en los Rituales, la unidad que lidera y la presión que genera.",
+  "Si va con Rubrics, mueve la unidad para conservar líneas de visión útiles sin regalarla.",
+  "Antes del turno decide si esa unidad es ofensiva o de control/objetivo; mezclar ambos planes sin necesidad suele exponerla."
+ ]},
+ {title:"Scarab Occult + Sorcerer: amenaza de contraataque",tags:["THOUSAND SONS","Terminators"],body:[
+  "No los adelantes por inercia. Si el rival debe entrar en tu zona para puntuar, esperar puede ser mucho mejor.",
+  "Su presencia puede controlar un corredor: el rival debe pagar movimiento, recursos o una unidad para quitártelos.",
+  "Si el Sorcerer in Terminator Armour está unido a ellos, prepara su línea de visión antes del Shooting para aprovechar Marked by Fate."
+ ]},
+ {title:"Tzaangor / Greatbows: puntuar primero, matar después",tags:["THOUSAND SONS","utility"],body:[
+  "Las unidades pequeñas y móviles son candidatas naturales para puntuación, pantallas, bloqueos y tareas que no deberían hacer tus Rubrics o Terminators.",
+  "No sacrifiques una unidad de utilidad por un disparo marginal.",
+  "Si puede puntuar y disparar después desde una posición segura, perfecto; si no, prioriza la misión."
+ ]},
+ {title:"Arcane Thralls: piensa en el valor acumulado",tags:["RUBRICAE PHALANX","enhancement"],body:[
+  "La mejora gana valor cuando el personaje lidera una unidad que realiza varias pruebas relevantes durante la partida.",
+  "No pienses solo en la primera prueba: valora cuántas veces puede convertir un fallo crítico en una acción repetible.",
+  "En tu checklist, identifica qué unidad está bajo el aura antes de empezar el turno para no olvidar la interacción."
+ ]}
+];
+
+function tacticCard(t){return `<article class="tactic-card"><h3>${t.title}</h3><div>${t.tags.map(x=>`<span class="tag">${x}</span>`).join("")}</div>${t.body.map(x=>`<p>• ${x}</p>`).join("")}</article>`;}
+function currentArmyTactics(){
+ const names=army.map(x=>x.u); const has=n=>names.some(x=>x.toLowerCase()===n.toLowerCase()); const out=[];
+ if(has("Magnus the Red")||has("Magnus The Red")) out.push({title:"Tu Magnus: comprime el tablero",tags:["TU LISTA","Magnus"],body:[
+  "Tu Magnus debe obligar al rival a esconder amenazas, ceder mesa o exponerse.",
+  "Antes de moverlo, mira qué unidades enemigas pueden castigarlo después. Si la respuesta rival es fuerte, su mera presencia puede ser mejor que una carga agresiva.",
+  "Coordínalo con tus Rituales: Magnus no tiene que hacerlo todo; debe abrir huecos para que Rubrics y Terminators puntúen."
+ ]});
+ if(has("Ahriman")) out.push({title:"Tu Ahriman + Rubrics: presión sin kamikaze",tags:["TU LISTA","Ahriman"],body:[
+  "Mantén la unidad en una posición desde la que pueda aprovechar Rituales y disparos sin exponerse completamente.",
+  "Si el rival puede borrar tus Rubrics de una activación, no necesitas competir por ese objetivo todavía: usa movimiento, cobertura y amenazas cruzadas.",
+  "Antes de disparar, decide qué objetivo justifica concentrar el fuego de toda la unidad."
+ ]});
+ if(has("Scarab Occult Terminators")) out.push({title:"Tus Scarabs: amenaza de contraataque",tags:["TU LISTA","Scarab Occult"],body:[
+  "No los adelantes por inercia. Si el rival tiene que entrar en tu zona para puntuar, muchas veces es mejor esperar.",
+  "Si llevan Sorcerer in Terminator Armour, prepara su línea de visión antes del Shooting para aprovechar Marked by Fate.",
+  "Úsalos también para controlar rutas hacia Magnus y Rubrics: son una pieza de control de espacio."
+ ]});
+ if(has("Tzaangor Shaman")||has("Tzaangor Enlightened with Fatecaster Greatbows")||has("Tzaangor Enlightened")) out.push({title:"Tus Tzaangor: utilidad antes que daño",tags:["TU LISTA","Tzaangor"],body:[
+  "Son candidatos naturales para puntuación, pantalla, ocupar zonas y obligar al rival a reaccionar.",
+  "Evita convertir una unidad barata de utilidad en un intercambio caro solo porque tiene un objetivo al alcance.",
+  "Si puede puntuar ahora y disparar después desde una posición segura, la puntuación suele ser la prioridad."
+ ]});
+ if(has("Infernal Master")) out.push({title:"Tu Infernal Master: juega alrededor de su unidad",tags:["TU LISTA","Infernal Master"],body:[
+  "Planifica qué unidad quiere liderar y qué beneficio quieres obtener de esa unión; no lo dejes aislado por accidente.",
+  "Con Warpflamers, revisa qué parte de su kit realmente estás aprovechando antes de gastar recursos pensando que todo se beneficia igual.",
+  "Conserva acceso a sus objetivos sin convertirlo en el primer personaje que el rival puede aislar."
+ ]});
+ if(has("Sorcerer in Terminator Armour")) out.push({title:"Tu Sorcerer in Terminator Armour: marca antes de disparar",tags:["TU LISTA","Sorcerer"],body:[
+  "Al comienzo del Shooting selecciona el objetivo visible que realmente quieras priorizar con la unidad.",
+  "Después de marcarlo, dispara con la unidad cuando eso maximice el beneficio; si el tablero cambia, reevalúa los objetivos de las demás unidades.",
+  "Si está unido a Scarabs, su supervivencia mantiene tanto la amenaza de combate como una fuente de Rituales/Cabal."
+ ]});
+ if(!out.length) out.push({title:"Tu lista actual",tags:["DINÁMICO"],body:[
+  "Esta sección se adapta automáticamente a las unidades que tengas en el Army Builder.",
+  "Mientras tanto, usa las secciones de 11ª edición y Thousand Sons como checklist general."
+ ]});
+ return out;
+}
+function renderTactics(){
+ const current=currentArmyTactics();
+ $("tactics").innerHTML=`<div class="tactic-head"><h2>🧠 Tácticas &amp; Tips and Tricks</h2><div>Consejos prácticos para 11ª edición, Thousand Sons y <b>tu lista actual</b>. Pensados para tomar decisiones durante la partida, no para memorizar páginas de reglas.</div><div class="small" style="margin-top:7px">Revisado con el estado de reglas consultado el 10/09/2026. Las reglas oficiales son la autoridad si hay discrepancias.</div></div>
+ <h2 style="margin:16px 0 7px">⚔ 11ª edición — trucos generales</h2><div class="tactic-grid">${TACTICS_GENERAL.map(tacticCard).join("")}</div>
+ <h2 style="margin:20px 0 7px">🔮 Thousand Sons — trucos específicos</h2><div class="tactic-grid">${TACTICS_TS.map(tacticCard).join("")}</div>
+ <h2 style="margin:20px 0 7px">🛡️ Tu ejército actual</h2><div class="tactic-grid">${current.map(tacticCard).join("")}</div>
+ <div class="tactic-head" style="margin-top:14px"><b>💡 Regla de oro:</b> antes de cada activación pregunta <b>qué quiero conseguir, qué puede hacer el rival después y qué recurso necesito conservar</b>. En Thousand Sons añade: <b>¿qué Ritual/PSYKER quiero reservar para después?</b></div>`;
+}
+
 const RENDERERS={builder:renderBuilder,mfm:renderMfm,codex:renderCodex,quick:renderQuick,battle:renderBattle,detachment:renderDetachment,
- rituals:renderRituals,combos:renderCombos,catalog:renderCatalog,coach:renderCoach,rules:renderRules};
+ rituals:renderRituals,combos:renderCombos,catalog:renderCatalog,coach:renderCoach,tactics:renderTactics,rules:renderRules};
 let dirty={},activeTab="builder";
 function renderTab(t){if(RENDERERS[t]){RENDERERS[t]();dirty[t]=false}}
 function renderAll(){
