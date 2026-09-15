@@ -453,6 +453,32 @@ button:active,.tab:active,.battle-phase-btn:active{filter:brightness(.94)}
   select,input,textarea{background:#080d16!important;color:#e9e6dc!important}
   option{background:#fff!important;color:#111!important}
 }
+
+/* ---------- ARMY EDITOR SHELL ---------- */
+.layout{grid-template-columns:1fr!important}
+.army-editor-grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:16px;align-items:start}
+#armyEditor{padding:14px}
+#armyEditor aside.panel{position:sticky;top:88px;max-height:calc(100vh - 104px);overflow:auto;margin:0}
+#armyEditor #builder{min-width:0}
+@media(max-width:1050px){
+  .army-editor-grid{grid-template-columns:1fr}
+  #armyEditor aside.panel{position:static;max-height:none;overflow:visible}
+}
+/* ---------- COMPACT WEAPON PROFILES ---------- */
+.weapon-profile{border:1px solid var(--line);border-radius:7px;background:#0a1220;padding:7px 9px;margin:6px 0}
+.weapon-profile-name{font-weight:700;color:var(--gold2);margin-bottom:5px;font-size:13px}
+.weapon-profile-name .wcount{vertical-align:1px}
+.weapon-statline{display:flex;gap:4px;flex-wrap:wrap}
+.weapon-statbox{min-width:40px;text-align:center;border:1px solid var(--gold);border-radius:5px;background:#0a1220;overflow:hidden}
+.weapon-statbox i{display:block;font-style:normal;font-size:9px;letter-spacing:.7px;background:var(--gold);color:#14100a;font-weight:700;padding:1px 4px}
+.weapon-statbox b{display:block;font-size:13px;padding:2px 5px;color:#f1f0eb}
+.weapon-keywords{margin-top:4px;color:var(--cyan);font-size:10px}
+@media(max-width:700px){
+  #armyEditor{padding:10px}
+  .weapon-profile{padding:6px 7px}
+  .weapon-statbox{min-width:37px}
+  .weapon-statbox b{font-size:12px}
+}
 </style>
 <style>
 
@@ -1459,10 +1485,30 @@ body .strat .strat-b .small {
 <body>
 <header><div class="wrap" style="padding:0 16px">
 <h1>♾ THOUSAND SONS · 11ª EDICIÓN — Codex interactivo &amp; Army Builder</h1>
-<div class="muted">Datos: Faction Pack Thousand Sons 22/07/2026 (v1.1) + MFM vigente · Perfiles contrastados con Wahapedia 11E · Pasa el ratón por cualquier término subrayado para ver qué significa.</div>
+<div class="muted">Datos: Faction Pack Thousand Sons v1.2 + MFM actualizado 02/09/2026 · Perfiles contrastados con Wahapedia 11E · Pasa el ratón por cualquier término subrayado para ver qué significa.</div>
 </div></header>
 
 <div class="wrap"><div class="layout">
+
+
+<main>
+  <div id="kpis" class="kpis"></div>
+  <div class="tabs">
+    <button class="tab active" data-t="armyEditor">🛠 Tu ejército</button>
+    <button class="tab" data-t="mfm">⚙ Costes MFM</button>
+    <button class="tab" data-t="codex">📖 Referencia</button>
+    <button class="tab" data-t="quick">⚔ Guía rápida</button>
+    <button class="tab" data-t="battle">🎮 Partida</button>
+    <button class="tab" data-t="detachment">⚜ Destacamento</button>
+    <button class="tab" data-t="rituals">🔮 Rituales</button>
+    <button class="tab" data-t="combos">🧩 Combos</button>
+    <button class="tab" data-t="catalog">📚 Catálogo completo</button>
+    <button class="tab" data-t="coach">🎯 Battle Coach</button>
+    <button class="tab" data-t="tactics">🧠 Tácticas</button>
+    <button class="tab" data-t="rules">📕 Glosario</button>
+  </div>
+  <section id="armyEditor" class="panel pane">
+    <div class="army-editor-grid">
 <aside class="panel">
   <h2>Tu ejército</h2>
   <label>Destacamento</label><select id="det"></select>
@@ -1486,24 +1532,9 @@ body .strat .strat-b .small {
     <button onclick="document.getElementById('file').click()">Importar JSON</button>
   </details>
 </aside>
-
-<main>
-  <div id="kpis" class="kpis"></div>
-  <div class="tabs">
-    <button class="tab active" data-t="builder">🛠 Editar unidades</button>
-    <button class="tab" data-t="mfm">⚙ Costes MFM</button>
-    <button class="tab" data-t="codex">📖 Codex de mi lista</button>
-    <button class="tab" data-t="quick">⚔ Guía rápida</button>
-    <button class="tab" data-t="battle">🎮 Partida</button>
-    <button class="tab" data-t="detachment">⚜ Destacamento</button>
-    <button class="tab" data-t="rituals">🔮 Rituales</button>
-    <button class="tab" data-t="combos">🧩 Combos</button>
-    <button class="tab" data-t="catalog">📚 Catálogo completo</button>
-    <button class="tab" data-t="coach">🎯 Battle Coach</button>
-    <button class="tab" data-t="tactics">🧠 Tácticas</button>
-    <button class="tab" data-t="rules">📕 Glosario</button>
-  </div>
-  <section id="builder" class="panel pane"></section>
+      <div id="builder"></div>
+    </div>
+  </section>
   <section id="mfm" class="panel pane hidden"></section>
   <section id="codex" class="panel pane hidden"></section>
   <section id="quick" class="panel pane hidden"></section>
@@ -1518,7 +1549,7 @@ body .strat .strat-b .small {
 </main>
 </div></div>
 <nav class="mobile-nav" id="mobileNav" aria-label="Navegación móvil">
- <button data-mnav="builder"><span class="mi">⚒</span><span>Ejército</span></button>
+ <button data-mnav="armyEditor"><span class="mi">⚒</span><span>Ejército</span></button>
  <button data-mnav="codex"><span class="mi">▣</span><span>Referencia</span></button>
  <button data-mnav="battle"><span class="mi">⚔</span><span>Partida</span></button>
  <button data-mnav="detachment"><span class="mi">♜</span><span>Destac.</span></button>
@@ -3059,8 +3090,8 @@ const MFM_DEFAULTS={
   "Sorcerer":{sizes:{"1":[95,95,105,105]},weapons:{}},
   "Sorcerer in Terminator Armour":{sizes:{"1":[100,100,110,110]},weapons:{}},
   "Daemon Prince of Tzeentch":{sizes:{"1":[170,170,170,170]},weapons:{}},
-  "Daemon Prince of Tzeentch with Wings":{sizes:{"1":[170,180,180,180]},weapons:{}},
-  "Tzaangor Shaman":{sizes:{"1":[60,60,60,60]},weapons:{}},
+  "Daemon Prince of Tzeentch with Wings":{sizes:{"1":[200,210,210,210]},weapons:{}},
+  "Tzaangor Shaman":{sizes:{"1":[65,65,65,65]},weapons:{}},
   "Chaos Lord on Disc of Tzeentch":{sizes:{"1":[100,100,100,100]},weapons:{}},
   "Tzaangors":{sizes:{"10":[75,75,75,75],"20":[145,145,145,145]},weapons:{}},
   "Tzaangor Enlightened":{sizes:{"3":[45,45,45,45],"6":[90,90,90,90]},weapons:{}},
@@ -3093,7 +3124,7 @@ const MFM_DEFAULTS={
   "Eldritch Vortex of E'taph":35,"Incandaeum":15,"Lord of Forbidden Lore":20,"Umbralefic Crystal":30,
   "Arcane Might":20,"Empowered Manifestation":20,"Empyric Onslaught":25,"Noctilith Mantle":15,
   "Curse of Life":20,"Eruption of Vitality":35,
-  "Arcane Thralls":5,"Lord of the Rubricae":15,"Risen Rubricae":30,"Stave Abominus":20,
+  "Arcane Thralls":5,"Lord of the Rubricae":15,"Risen Rubricae":30,"The Stave Abominus":20,
   "Occulus Infernum":20,"Walking Rampart":30,
   "Thicket of Bladed Bone (Upgrade)":10,"Unravelled Fates":15,
   "Biomechanical Mutation":15,"Perplexing Cloak":20,"Warp-Cursed Runemaster":10,"Warp Syphon":5,
@@ -3738,7 +3769,7 @@ function setMfmEnhancement(name,value){
    9. EDITOR DE UNIDADES (pestaña «Editar unidades»)
    ========================================================================= */
 function renderBuilder(){
- $("builder").innerHTML=`<h2>Editar unidades</h2>
+ $("builder").innerHTML=`<h2>🛠 Tu ejército</h2><h3>Editar unidades</h3>
  <div class="note">Aquí eliges <b>exactamente cuántos</b> warpflamers, soulreaper cannons, etc. lleva cada unidad. Los contadores respetan los máximos legales del datasheet, y todo lo que elijas se refleja en el loadout, en los puntos y en el daño estimado.
  <br><span class="small">Las fichas empiezan plegadas: <b>pulsa el nombre de la unidad</b> para abrirla. La que abras se queda abierta aunque cambies contadores.</span></div>
  ${simPanel()}
@@ -4122,17 +4153,23 @@ function statline(p){
 }
 
 function weaponTables(d,L){
- const filt=arr=>L?arr.filter(w=>L[w.n]):arr;
- const R=filt(d.ranged||[]),M=filt(d.melee||[]);
- let h="";
- if(R.length){
-  h+=`<div class="secbar">Armas a distancia</div><div class="scroll"><table class="wep"><thead><tr><th>Arma</th><th data-noglossary>RANGE</th><th><span class="gterm" data-g="A">A</span></th><th><span class="gterm" data-g="BS">BS</span></th><th><span class="gterm" data-g="S">S</span></th><th><span class="gterm" data-g="AP">AP</span></th><th><span class="gterm" data-g="D">D</span></th></tr></thead><tbody>${R.map(w=>weaponRow(w,L?L[w.n]:0,false)).join("")}</tbody></table></div>`;
- }
- if(M.length){
-  h+=`<div class="secbar">Armas de combate</div><div class="scroll"><table class="wep"><thead><tr><th>Arma</th><th data-noglossary>RANGE</th><th><span class="gterm" data-g="A">A</span></th><th><span class="gterm" data-g="WS">WS</span></th><th><span class="gterm" data-g="S">S</span></th><th><span class="gterm" data-g="AP">AP</span></th><th><span class="gterm" data-g="D">D</span></th></tr></thead><tbody>${M.map(w=>weaponRow(w,L?L[w.n]:0,true)).join("")}</tbody></table></div>`;
- }
- h+=profileNote(R.concat(M));
- return h;
+  const filt=arr=>L?arr.filter(w=>L[w.n]):arr;
+  const R=filt(d.ranged||[]),M=filt(d.melee||[]);
+  const weaponProfile=(w,count,isMelee)=>{
+    const skill=isMelee?w.ws:w.bs;
+    const labels=isMelee?["ALC","A","WS","S","AP","D"]:["ALC","A","BS","S","AP","D"];
+    const vals=[w.r,w.a,skill,w.s,w.ap,w.d];
+    return `<div class="weapon-profile">
+      <div class="weapon-profile-name">${count?`<span class="wcount">${count}×</span>`:""}${esc(w.n)}</div>
+      <div class="weapon-statline">${labels.map((lab,i)=>`<div class="weapon-statbox"><i>${lab}</i><b>${esc(vals[i])}</b></div>`).join("")}</div>
+      ${(w.k&&w.k.length)?`<div class="weapon-keywords">[${w.k.join(", ")}]</div>`:""}
+    </div>`;
+  };
+  let h="";
+  if(R.length)h+=`<div class="secbar">Armas a distancia</div>${R.map(w=>weaponProfile(w,L?L[w.n]:0,false)).join("")}`;
+  if(M.length)h+=`<div class="secbar">Armas de combate</div>${M.map(w=>weaponProfile(w,L?L[w.n]:0,true)).join("")}`;
+  h+=profileNote(R.concat(M));
+  return h;
 }
 
 /* Explica los perfiles alternativos que comparten una misma arma */
@@ -5279,8 +5316,8 @@ function renderRules(){
   "Thousand Sons":["CABAL OF SORCERERS","RITUAL","PSYCHIC TEST","CHANNEL THE WARP","WARP CHARGE","WC","FLOW OF MAGIC","RUBRICAE","PSYKER","SCINTILLATING LEGIONS","MUTANT","EPIC HERO","DEDICATED TRANSPORT"]
  };
  $("rules").innerHTML=`<h2>📕 Glosario y reglas rápidas</h2>
- <div class="note"><b>Capa oficial de actualización — Faction Pack 22/07/2026 (v1.1).</b> Estas correcciones tienen prioridad sobre versiones anteriores.</div>
- <details open><summary>Cambios de julio incorporados</summary>${JULY.map(z=>`<div class="ab"><b>${z[0]}</b> — ${z[1]}</div>`).join("")}</details>
+ <div class="note"><b>Capa oficial de actualización — Faction Pack Thousand Sons v1.2 + MFM 02/09/2026.</b> Estas correcciones tienen prioridad sobre versiones anteriores.</div>
+ <details open><summary>Cambios y actualizaciones vigentes</summary>${JULY.map(z=>`<div class="ab"><b>${z[0]}</b> — ${z[1]}</div>`).join("")}</details>
  ${Object.keys(groups).map(g=>`<div class="secbar">${g}</div><div class="scroll"><table class="wep gl"><tbody>${groups[g].map(k=>{
    const e=GLOSSARY[k];if(!e)return "";
    return `<tr><td style="min-width:150px"><b>${k}</b><br><span class="small">${e.n}</span></td><td style="text-align:left">${e.t}</td></tr>`;
@@ -5568,16 +5605,17 @@ function currentArmyTactics(){
 }
 function renderTactics(){
  const current=currentArmyTactics();
- $("tactics").innerHTML=`<div class="tactic-head"><h2>🧠 Tácticas &amp; Tips and Tricks</h2><div>Consejos prácticos para 11ª edición, Thousand Sons y <b>tu lista actual</b>. Pensados para tomar decisiones durante la partida, no para memorizar páginas de reglas.</div><div class="small" style="margin-top:7px">Revisado con el estado de reglas consultado el 10/09/2026. Las reglas oficiales son la autoridad si hay discrepancias.</div></div>
+ $("tactics").innerHTML=`<div class="tactic-head"><h2>🧠 Tácticas &amp; Tips and Tricks</h2><div>Consejos prácticos para 11ª edición, Thousand Sons y <b>tu lista actual</b>. Pensados para tomar decisiones durante la partida, no para memorizar páginas de reglas.</div><div class="small" style="margin-top:7px">Revisado con el estado de reglas consultado el 15/09/2026. Las reglas oficiales son la autoridad si hay discrepancias.</div></div>
  <h2 style="margin:16px 0 7px">⚔ 11ª edición — trucos generales</h2><div class="tactic-grid">${TACTICS_GENERAL.map(tacticCard).join("")}</div>
  <h2 style="margin:20px 0 7px">🔮 Thousand Sons — trucos específicos</h2><div class="tactic-grid">${TACTICS_TS.map(tacticCard).join("")}</div>
  <h2 style="margin:20px 0 7px">🛡️ Tu ejército actual</h2><div class="tactic-grid">${current.map(tacticCard).join("")}</div>
  <div class="tactic-head" style="margin-top:14px"><b>💡 Regla de oro:</b> antes de cada activación pregunta <b>qué quiero conseguir, qué puede hacer el rival después y qué recurso necesito conservar</b>. En Thousand Sons añade: <b>¿qué Ritual/PSYKER quiero reservar para después?</b></div>`;
 }
 
-const RENDERERS={builder:renderBuilder,mfm:renderMfm,codex:renderCodex,quick:renderQuick,battle:renderBattle,detachment:renderDetachment,
+function renderArmyEditor(){renderBuilder()}
+const RENDERERS={armyEditor:renderArmyEditor,mfm:renderMfm,codex:renderCodex,quick:renderQuick,battle:renderBattle,detachment:renderDetachment,
  rituals:renderRituals,combos:renderCombos,catalog:renderCatalog,coach:renderCoach,tactics:renderTactics,rules:renderRules};
-let dirty={},activeTab="builder";
+let dirty={},activeTab="armyEditor";
 function renderTab(t){if(RENDERERS[t]){RENDERERS[t]();dirty[t]=false}}
 function renderAll(){
  army.forEach(clampSel);
@@ -5608,7 +5646,7 @@ function activateTab(t){
  if(dirty[activeTab]!==false)renderTab(activeTab);
  document.querySelectorAll("[data-mnav]").forEach(z=>z.classList.toggle("active",z.dataset.mnav===t));
  document.querySelectorAll("#mobileMore button[data-mtab]").forEach(z=>z.classList.toggle("active",z.dataset.mtab===t));
- if(window.innerWidth<=700 && t!=="builder" && t!=="codex" && t!=="battle" && t!=="detachment"){
+ if(window.innerWidth<=700 && t!=="armyEditor" && t!=="codex" && t!=="battle" && t!=="detachment"){
    $("mobileMore").style.display="block";
  } else if(window.innerWidth<=700){
    $("mobileMore").style.display="none";
@@ -5617,7 +5655,7 @@ function activateTab(t){
 }
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>activateTab(b.dataset.t));
 document.querySelectorAll("[data-mnav]").forEach(b=>b.onclick=()=>activateTab(b.dataset.mnav));
-const mobileMoreItems=[...document.querySelectorAll(".tab")].filter(b=>!["builder","codex","battle","detachment"].includes(b.dataset.t));
+const mobileMoreItems=[...document.querySelectorAll(".tab")].filter(b=>!["armyEditor","codex","battle","detachment"].includes(b.dataset.t));
 $("mobileMore").innerHTML=mobileMoreItems.map(b=>`<button data-mtab="${b.dataset.t}">${b.textContent}</button>`).join("");
 $("mobileMore").style.display="none";
 $("moreNavBtn").onclick=()=>{
