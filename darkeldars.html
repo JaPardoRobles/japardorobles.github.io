@@ -1,0 +1,619 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Drukhari · Army Builder 11ª</title><style>
+:root{
+--bg:#080b12;--panel:#0e1420;--panel2:#131b2a;--line:#27344a;
+--gold:#c9a24a;--gold2:#e8cf8b;--blue:#1d3557;--blue2:#122238;--ink:#e9e6dc;
+--muted:#93a0b5;--red:#e2726e;--green:#7fd6a2;--cyan:#6fc7d8;--warn:#e6b455;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+header{padding:16px 0;border-bottom:2px solid var(--gold);background:linear-gradient(180deg,#101a2b,#080b12);position:sticky;top:0;z-index:30}
+.wrap{max-width:1500px;margin:auto;padding:16px}
+h1{margin:0;color:var(--gold2);font-size:22px;letter-spacing:.5px}
+h2{margin:0 0 12px;color:var(--gold2);font-size:19px}
+h3{margin:0 0 8px;font-size:15px}
+.muted,.small{color:var(--muted);font-size:12px}
+.layout{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+aside.panel{position:sticky;top:88px;max-height:calc(100vh - 104px);overflow:auto}
+label{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin:10px 0 4px}
+select,input,textarea{width:100%;background:#080d16;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:8px;font:inherit}
+select:disabled,option:disabled{color:#5d6779}
+button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 11px;cursor:pointer;font:inherit}
+button:hover{border-color:var(--gold)}
+button.primary{background:#22344f;border-color:var(--gold)}
+button.danger{border-color:#6d3234;color:#f0a6a4}
+.row{display:flex;gap:7px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab{border-radius:999px;font-size:13px}
+.tab.active{background:var(--gold);color:#14100a;border-color:var(--gold);font-weight:600}
+.hidden{display:none}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:8px;padding:8px 10px}
+.kpi span{display:block;font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
+.kpi b{display:block;font-size:18px;color:var(--gold2);line-height:1.3}
+.kpi.bad{border-left-color:var(--red)}.kpi.bad b{color:var(--red)}
+.note{border:1px solid var(--line);border-left:3px solid var(--cyan);background:#0d1622;padding:9px 11px;border-radius:0 7px 7px 0;margin:8px 0}
+.note.bad{border-left-color:var(--red);background:#1c1013}
+.note.ok{border-left-color:var(--green);background:#0d1a15}
+.note.warn{border-left-color:var(--warn);background:#1c1710}
+
+/* ---------- CODEX DATASHEET ---------- */
+.ds{background:var(--panel);border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:18px}
+.ds-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(90deg,var(--blue),var(--blue2));border-bottom:2px solid var(--gold)}
+.ds-head h3{margin:0;color:var(--gold2);font-size:17px;text-transform:uppercase;letter-spacing:1px}
+.ds-head .pts{color:var(--gold2);font-weight:700;white-space:nowrap}
+.ds-body{padding:12px 14px}
+.statline{display:flex;gap:7px;flex-wrap:wrap;margin:2px 0 10px}
+.statbox{min-width:52px;text-align:center;border:1px solid var(--gold);border-radius:6px;background:#0a1220;overflow:hidden}
+.statbox i{display:block;font-style:normal;font-size:10px;letter-spacing:1px;background:var(--gold);color:#14100a;font-weight:700;padding:1px 0}
+.statbox b{display:block;font-size:16px;padding:3px 6px}
+.profname{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:8px 0 3px}
+.secbar{margin:14px 0 6px;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:#14100a;background:var(--gold);padding:3px 9px;border-radius:3px;font-weight:700;display:inline-block}
+table.wep{width:100%;border-collapse:collapse;font-size:13px}
+table.wep th{background:var(--blue2);color:var(--gold2);font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:5px 6px;text-align:center;border-bottom:1px solid var(--gold)}
+table.wep th:first-child{text-align:left}
+table.wep td{padding:5px 6px;text-align:center;border-bottom:1px solid #1c2635;vertical-align:top}
+table.wep td:first-child{text-align:left}
+table.wep tr:hover td{background:#101a29}
+.wkw{display:block;color:var(--cyan);font-size:11px;margin-top:1px}
+.wcount{display:inline-block;background:var(--gold);color:#14100a;border-radius:4px;font-size:11px;font-weight:700;padding:0 5px;margin-right:6px}
+.ab{margin:6px 0;padding-left:10px;border-left:2px solid var(--blue)}
+.ab b{color:var(--gold2)}
+.kwbar{margin-top:12px;padding:7px 9px;background:var(--blue2);border-radius:5px;font-size:11px;letter-spacing:.6px}
+.kwbar b{color:var(--gold2)}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:11px;color:#cfd7e4;margin:2px 3px 2px 0}
+.chip.on{border-color:var(--gold);color:var(--gold2)}
+
+/* ---------- WARGEAR COUNTERS ---------- */
+.wg{border:1px solid var(--line);border-radius:7px;padding:8px 10px;margin:7px 0;background:#0b1220}
+.wg-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wg-name{font-weight:600}
+.stepper{display:flex;align-items:center;gap:4px;flex:none}
+.stepper button{width:28px;padding:3px 0;text-align:center;line-height:1}
+.stepper input{width:46px;text-align:center;padding:4px}
+label.check{display:flex;gap:8px;align-items:flex-start;text-transform:none;letter-spacing:0;color:var(--ink);font-size:13px;margin:6px 0}
+label.check input{width:auto;margin-top:3px;flex:none}
+label.check .small{color:var(--muted)}
+.wg .small{margin-top:3px}
+.maxed{color:var(--warn)}
+
+/* ---------- STRATAGEM CARD ---------- */
+.strat{border:1px solid var(--line);border-radius:8px;margin:9px 0;overflow:hidden}
+.strat-h{display:flex;justify-content:space-between;gap:10px;padding:7px 11px;background:var(--blue2);border-bottom:1px solid var(--gold)}
+.strat-h b{color:var(--gold2);text-transform:uppercase;letter-spacing:.8px;font-size:13px}
+.strat-b{padding:9px 11px}
+.strat-b p{margin:4px 0}
+.strat-b .lbl{color:var(--gold);font-size:11px;letter-spacing:.8px;text-transform:uppercase}
+.cp{background:var(--gold);color:#14100a;border-radius:4px;padding:1px 7px;font-weight:700;font-size:12px;white-space:nowrap}
+
+details{border:1px solid var(--line);border-radius:8px;padding:0;margin:9px 0;overflow:hidden}
+summary{cursor:pointer;color:var(--gold2);font-weight:600;padding:9px 12px;background:#101827;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary:before{content:"▸ ";color:var(--gold)}
+details[open]>summary:before{content:"▾ "}
+details>*:not(summary){padding:0 12px}
+details>*:last-child{padding-bottom:10px}
+
+/* Ficha plegable: el <summary> ES la cabecera dorada de la unidad */
+details.ds{border:1px solid var(--line);overflow:hidden}
+details.ds>summary.ds-head{background:linear-gradient(90deg,var(--blue),var(--blue2));padding:10px 14px;border-bottom:2px solid var(--gold)}
+details.ds:not([open])>summary.ds-head{border-bottom:0}
+details.ds>summary.ds-head:before{content:"▸";color:var(--gold);margin-right:8px;flex:none}
+details.ds[open]>summary.ds-head:before{content:"▾"}
+details.ds>.ds-body{padding:12px 14px}
+details.ds>summary.ds-head:hover{filter:brightness(1.25)}
+.ds-sub{font-size:11px;color:#b9c6da;font-weight:400;display:block;margin-top:2px;text-transform:none;letter-spacing:0}
+.foldbar{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+
+.listrow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:8px 0}
+.listrow.over{background:#1c1013}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+
+/* ---------- QUICK ARMY GUIDE ---------- */
+.quick-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:10px 0}
+.quick-card{border:1px solid var(--line);border-radius:8px;background:#0b1220;padding:9px 11px}
+.quick-card b{color:var(--gold2)}
+.quick-phase{border-left:3px solid var(--gold);background:#0d1622;padding:9px 11px;margin:8px 0;border-radius:0 7px 7px 0}
+.quick-phase h3{color:var(--gold2);margin:0 0 6px}
+.quick-item{padding:6px 0;border-bottom:1px solid var(--line)}
+.quick-item:last-child{border-bottom:0}
+.quick-tag{display:inline-block;border:1px solid var(--gold);border-radius:999px;padding:1px 7px;font-size:10px;color:var(--gold2);margin-right:5px}
+.acronym{display:inline-block;min-width:42px;color:var(--gold2);font-weight:700}
+
+/* ---------- GLOSSARY TOOLTIP ---------- */
+.gterm{border-bottom:1px dotted var(--gold);cursor:help}
+#tip{position:fixed;z-index:999;max-width:340px;background:#0a1220;border:1px solid var(--gold);border-radius:7px;padding:9px 11px;font-size:12.5px;line-height:1.45;box-shadow:0 8px 26px #000c;pointer-events:none;display:none}
+#tip b{color:var(--gold2);display:block;margin-bottom:3px}
+#tip i{display:block;font-style:normal;color:var(--muted);font-size:11px;margin-bottom:4px}
+
+/* ---------- TABLA DE HERIR (ramp ordinal de un solo tono, validado) ---------- */
+/* L OKLab 0.919 → 0.441, monótona, ΔL ≥ 0.081, extremo oscuro 2.35:1 sobre la
+   superficie. Cada celda lleva además su valor escrito: el color nunca es el
+   único portador del dato. */
+.wt-wrap{overflow:auto;max-height:70vh;border:1px solid var(--line);border-radius:8px}
+table.wt{border-collapse:separate;border-spacing:2px;font-size:12px;font-variant-numeric:tabular-nums}
+table.wt th{background:var(--blue2);color:var(--gold2);font-size:11px;padding:4px 6px;text-align:center;position:sticky;top:0;z-index:2}
+table.wt th.cnr{left:0;z-index:3}
+table.wt th.rh{position:sticky;left:0;top:auto;z-index:1;background:var(--blue2);text-align:right;min-width:52px}
+table.wt td{text-align:center;padding:4px 6px;border-radius:4px;font-weight:700;min-width:34px}
+.w2{background:#f7e3ab;color:#14100a}
+.w3{background:#e0bb66;color:#14100a}
+.w4{background:#c2953c;color:#14100a}
+.w5{background:#8a6026;color:#f0eada}
+.w6{background:#6b4c20;color:#f0eada}
+.wx{background:#1b2130;color:#8794a8;font-weight:400}
+table.wt td.hl{outline:2px solid var(--gold)}
+.wt-legend{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.wt-legend span{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+.wt-legend i{width:16px;height:16px;border-radius:4px;display:inline-block}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.bigans{font-size:30px;color:var(--gold2);font-weight:800;line-height:1.2}
+
+
+/* ---------- MFM COST EDITOR ---------- */
+.mfm-note{margin-bottom:12px}
+.mfm-unit{border:1px solid var(--line);border-radius:9px;background:#0b1220;padding:11px 12px;margin:10px 0}
+.mfm-unit-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.mfm-unit-head b{color:var(--gold2);font-size:14px}
+.mfm-costgrid{display:grid;grid-template-columns:repeat(4,minmax(90px,1fr));gap:8px}
+.mfm-field label{margin:0 0 3px}
+.mfm-field input{padding:7px}
+.mfm-weapons{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.mfm-weapon-row{display:grid;grid-template-columns:1fr 100px;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid #1c2635}
+.mfm-weapon-row:last-child{border-bottom:0}
+.mfm-weapon-row .small{line-height:1.35}
+.mfm-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.mfm-badge{display:inline-block;border:1px solid var(--gold);color:var(--gold2);border-radius:999px;padding:1px 7px;font-size:10px;margin-left:6px}
+@media(max-width:700px){
+ .mfm-costgrid{grid-template-columns:repeat(2,1fr)}
+ .mfm-weapon-row{grid-template-columns:1fr 90px}
+}
+
+
+/* ---------- BATTLE FLOW / PLAY MODE ---------- */
+.battle-top{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:7px;margin:8px 0}
+.battle-kpi{background:#0b1220;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:7px;padding:7px 9px}
+.battle-kpi span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px}.battle-kpi b{color:var(--gold2);font-size:16px}
+.battle-phases{display:flex;gap:5px;overflow:auto;padding:4px 0 7px;position:sticky;top:0;background:var(--panel);z-index:4}
+.battle-phase-btn{flex:0 0 auto;border-radius:999px;padding:7px 10px;font-size:11px}.battle-phase-btn.active{background:var(--gold);color:#17120a;border-color:var(--gold);font-weight:700}
+.battle-check{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.battle-check input{width:auto;margin-top:4px}.battle-check.done{opacity:.58}.battle-check b{color:var(--gold2)}
+.battle-unit{border:1px solid var(--line);border-radius:8px;margin:8px 0;overflow:hidden;background:var(--panel2)}
+.battle-unit>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--blue2);color:var(--gold2);padding:9px 11px}
+.battle-unit .bu-body{padding:9px 11px}.battle-unit .bu-role{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.battle-unit .bu-used{border:1px solid var(--green);color:var(--green);border-radius:999px;padding:2px 7px;font-size:10px}
+.battle-unit .bu-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.battle-unit .bu-section{border:1px solid var(--line);border-radius:6px;padding:7px}
+.battle-unit .bu-section h4{margin:0 0 5px;color:var(--gold2);font-size:11px;text-transform:uppercase;letter-spacing:.8px}
+.battle-unit .bu-stats{display:flex;gap:4px;flex-wrap:wrap}.battle-unit .bu-stat{min-width:36px;text-align:center;border:1px solid var(--gold);border-radius:4px;overflow:hidden}.battle-unit .bu-stat i{display:block;background:var(--gold);color:#17120a;font-size:8px;font-style:normal;font-weight:700}.battle-unit .bu-stat b{display:block;padding:2px 4px}
+.battle-actions{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}.battle-actions button.used{opacity:.5;text-decoration:line-through}
+.battle-rule{border-left:3px solid var(--gold);background:#0d1622;padding:8px 10px;border-radius:0 6px 6px 0;margin:7px 0}.battle-rule.always{border-left-color:var(--cyan)}
+.battle-strats{display:grid;grid-template-columns:1fr 1fr;gap:7px}.battle-strats .strat{margin:0}
+.battle-ritual{border:1px solid var(--line);border-radius:7px;padding:8px;margin:6px 0;background:var(--panel2)}.battle-ritual.selected{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}.battle-ritual.done{opacity:.55}
+.battle-dice{font-size:12px;color:var(--muted)}.battle-dice b{color:var(--gold2)}
+@media(max-width:700px){
+ .battle-top{grid-template-columns:repeat(2,1fr);gap:5px}.battle-kpi{background:#292a2b;border-color:#45474a}.battle-kpi span{color:#b8b8b5}.battle-kpi b{color:#f0c94b}
+ .battle-phases{background:#f4f3ef;border-bottom:1px solid #c9c6bf;top:0;padding:5px 0;box-shadow:0 2px 6px #0002}
+ .battle-phase-btn{background:#e8e6e1;color:#242629;border-color:#bdbab3}.battle-phase-btn.active{background:#d5ad21;color:#17120a}
+ .battle-unit{background:#fff;color:#191a1c;border-color:#c8c5be}.battle-unit>summary{background:#354e59;color:#fff}.battle-unit .bu-body{color:#191a1c}.battle-unit .bu-role{color:#666b70}.battle-unit .bu-section{border-color:#d0cdc6}.battle-unit .bu-section h4{color:#765c00}.battle-unit .bu-stat{border-color:#a78315}.battle-unit .bu-stat i{background:#343b3f;color:#fff}.battle-unit .bu-stat b{color:#111}
+ .battle-rule{background:#eef2f3;color:#24272a;border-left-color:#b18b12}.battle-rule.always{border-left-color:#337a8a}.battle-strats{grid-template-columns:1fr}.battle-ritual{background:#f7f5f0;border-color:#cbc8c1}.battle-ritual.selected{border-color:#b18b12}.battle-dice{color:#666b70}.battle-dice b{color:#765c00}
+ /* explicit high-contrast overrides for every light mobile tab */
+ .quick-card,.quick-phase,.strat,.wg,.mfm-unit,.note,.ab,.kwbar,details,.listrow{color:#191a1c}
+ .quick-phase h3,.quick-card b,.quick-item b,.mfm-unit-head b,.ab b,.strat-h b{color:#765c00}
+ .quick-item,.mfm-weapon-row,.listrow{border-color:#d7d4ce}
+ .small,.muted,.mfm-unit .small,.quick-card .small{color:#64686d}
+ .strat-b .lbl{color:#765c00}.strat-h{background:#2f3d42}.strat-h b{color:#f5d66b}.cp{background:#d5ad21;color:#17120a}
+ .kwbar{background:#e8e5df}.kwbar b{color:#725a00}.wkw{color:#47727c}.chip{color:#303236}
+ .mobile-more{color:#191a1c}
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:1050px){
+ .layout{grid-template-columns:1fr}
+ aside.panel{position:static;max-height:none}
+ .kpis{grid-template-columns:repeat(2,1fr)}
+ .two{grid-template-columns:1fr}
+ header{position:static}
+}
+@media(max-width:700px){
+ /* Nada debe desbordar a lo ancho: solo se hace scroll vertical */
+ html,body{max-width:100%;overflow-x:hidden}
+ *{min-width:0}
+ body{overflow-wrap:anywhere}
+ .scroll{overflow-x:visible}
+ /* Las tablas de armas se reflujan a bloques: cada fila es una tarjeta con
+    su etiqueta delante del valor, así no hace falta barra horizontal */
+ table.wep{display:block}
+ table.wep thead{display:none}
+ table.wep tbody,table.wep tr{display:block}
+ table.wep tr{padding:8px 0;border-bottom:1px solid var(--line)}
+ table.wep tr:last-child{border-bottom:0}
+ table.wep td{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+   text-align:right;padding:3px 0;border:0}
+ table.wep td:first-child{display:block;text-align:left;font-weight:600;margin-bottom:5px}
+ table.wep td[data-l]:before{content:attr(data-l);color:var(--gold);font-size:11px;
+   letter-spacing:.8px;font-weight:400;text-align:left;flex:none}
+ table.wep tr:hover td{background:none}
+ /* Glosario y textos largos: a una sola columna, alineados a la izquierda */
+ table.gl td{display:block;text-align:left}
+ table.gl td:before{display:block;margin-bottom:2px}
+ .wrap{padding:10px}
+ h1{font-size:17px;line-height:1.3}
+ header{padding:10px 0}
+ h2{font-size:17px}
+ .panel{padding:10px;border-radius:8px}
+ .kpis{grid-template-columns:repeat(2,1fr);gap:6px}
+ .kpi b{font-size:16px}
+ /* Pestañas en una fila deslizable: no se apilan y ocupan media pantalla */
+ .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;gap:5px}
+ .tabs::-webkit-scrollbar{height:3px}
+ .tab{flex:0 0 auto;font-size:12px;padding:8px 12px}
+ .grid{grid-template-columns:1fr}
+ .ds-head{flex-wrap:wrap;gap:4px;padding:8px 10px}
+ .ds-head h3{font-size:14px;letter-spacing:.5px}
+ .ds-body{padding:10px}
+ /* 16px evita que iOS haga zoom al enfocar un campo */
+ select,input,textarea{font-size:16px;padding:10px}
+ button{padding:10px 12px;min-height:40px}
+ .stepper button{width:40px;min-height:40px;font-size:18px}
+ .stepper input{width:52px;font-size:16px}
+ .wg-top{flex-wrap:wrap}
+ .statline{gap:5px}
+ .statbox{min-width:44px}
+ .statbox b{font-size:14px;padding:2px 4px}
+ table.wep{font-size:12px}
+ table.wep th,table.wep td{padding:4px}
+ .listrow{grid-template-columns:1fr auto;row-gap:4px}
+ .listrow>button{grid-column:2}
+ details>*:not(summary){padding:0 10px}
+ summary{padding:10px}
+ #tip{max-width:86vw;font-size:13px}
+ /* La matriz de herir se compacta y oculta T1-T2 (no los usa nadie) para
+    caber entera en el ancho del móvil sin barra horizontal */
+ .wt-wrap{max-height:60vh}
+ table.wt{border-spacing:1px}
+ table.wt th,table.wt td{font-size:11px;padding:3px 1px;min-width:23px}
+ table.wt th.rh{min-width:36px;padding-right:4px}
+ table.wt thead tr>*:nth-child(2),table.wt tbody tr>*:nth-child(2),
+ table.wt thead tr>*:nth-child(3),table.wt tbody tr>*:nth-child(3){display:none}
+ .hide-mob{display:none}
+ details.ds>summary.ds-head{padding:9px 10px}
+ details.ds>.ds-body{padding:10px}
+}
+@media(max-width:430px){
+ .kpis{grid-template-columns:1fr}
+ .statbox{min-width:40px}
+ .wt-legend span{font-size:11px}
+}
+/* Dispositivos táctiles: el hover no existe, así que el término se pulsa */
+@media(hover:none){.gterm{border-bottom-style:dashed}}
+
+/* =====================================================================
+   MOBILE / APP SHELL — inspirado en la jerarquía visual de Warhammer 40,000
+   The App: cabecera compacta, tarjetas claras sobre fondo oscuro, acento dorado
+   y navegación inferior. En escritorio se conserva el layout del builder.
+   ===================================================================== */
+.mobile-nav{display:none}
+.mobile-more{display:none}
+@media(max-width:700px){
+  :root{
+    --bg:#111214;--panel:#f4f3ef;--panel2:#e9e7e2;--line:#c9c6bf;
+    --gold:#d5ad21;--gold2:#e0b72c;--blue:#354e59;--blue2:#2b353b;
+    --ink:#191a1c;--muted:#64686d;--red:#b84444;--green:#287b57;--cyan:#337a8a;--warn:#a87513;
+  }
+  body{background:var(--bg);color:var(--ink);font-size:14px;padding-bottom:70px}
+  header{background:#252627;border-bottom:0;box-shadow:0 2px 12px #0008;padding:9px 0;position:sticky;top:0;z-index:50}
+  header .wrap{padding:0 12px}
+  h1{color:#f0eee8;font-size:14px;letter-spacing:.8px;line-height:1.25;text-transform:uppercase}
+  header .muted{display:block;margin-top:2px;color:#b8b8b5;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wrap{padding:9px}
+  .layout{display:block}
+  aside.panel{position:static;max-height:none;overflow:visible;background:#252627;border:0;border-radius:0;padding:9px;margin:0 -9px 10px;color:#f0eee8}
+  aside.panel h2{font-size:11px;color:#d8d7d2;margin:0 0 6px;letter-spacing:1.1px;text-transform:uppercase}
+  aside.panel label{color:#aaa;font-size:9px}
+  aside.panel select,aside.panel input,aside.panel textarea{background:#161719;color:#f2f1ed;border-color:#45484b}
+  aside.panel .secbar{margin-top:9px}
+  aside.panel #armyList{max-height:170px;overflow:auto}
+  main>.kpis{margin:0 0 8px}
+  main>.pane{background:transparent;border:0;border-radius:0;padding:0}
+  .panel{border-radius:6px}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:5px}
+  .kpi{background:#292a2b;border:1px solid #3b3c3e;border-left:3px solid var(--gold);border-radius:4px;padding:7px 8px;color:#eee}
+  .kpi span{color:#aaa;font-size:8px}.kpi b{color:#f0c94b;font-size:15px}
+  .tabs{display:none}
+  .ds,.quick-card,.strat,.wg,.mfm-unit{background:#f4f3ef;color:#191a1c;border:1px solid #cbc8c1;border-radius:6px;box-shadow:0 1px 3px #0005}
+  .ds{margin-bottom:9px}
+  .ds-head{background:linear-gradient(90deg,#3c5964,#2d3c43);border-bottom:3px solid var(--gold);padding:9px 10px}
+  .ds-head h3{color:#fff;font-size:13px;letter-spacing:.7px}
+  .ds-head .pts{color:#f2ce57;font-size:12px}
+  .ds-sub{color:#d6dcdf;font-size:10px}
+  .ds-body{padding:9px 10px}
+  .ds-body .small,.mfm-unit .small{color:#686b70}
+  .statbox{background:#0a1220;color:#f1f0eb;border-color:#c9a24a;min-width:42px}
+  .statbox i{background:#c9a24a;color:#14100a;font-size:9px}
+  .statbox b{background:#0a1220;color:#f1f0eb;font-size:15px}
+  .secbar{background:#d4aa21;color:#18130a;font-size:9px;padding:3px 7px;margin:10px 0 5px}
+  .note{background:#e9f0f2;border-color:#c4d2d6;color:#25282a;border-left-color:#4c8390}
+  .note.ok{background:#e8f1eb;border-left-color:#37805e}.note.warn{background:#f5eddb;border-left-color:#a87513}.note.bad{background:#f4e4e4;border-left-color:#b84444}
+  .chip{border-color:#aaa;color:#303236;background:#fff}
+  .chip.on{border-color:#b18b12;color:#725a00;background:#fff7d5}
+  .ab{border-left-color:#687e88}
+  .ab b,.quick-card b,.quick-phase h3,.mfm-unit-head b{color:#7b5f00}
+  .kwbar{background:#e8e5df;color:#343638;border-radius:4px}
+  .kwbar b{color:#725a00}
+  table.wep th{background:#2f3d42;color:#f5d66b;border-bottom-color:#c9a21d}
+  table.wep td{border-bottom-color:#d7d4ce;color:#252629}
+  .wkw{color:#47727c}
+  .wcount{background:#d7af27}
+  details{border-color:#cbc8c1;background:#f4f3ef}
+  summary{background:#e3e1dc;color:#2d3134;padding:9px 10px}
+  details.ds>summary.ds-head{background:linear-gradient(90deg,#3c5964,#2d3c43)}
+  .quick-phase{background:#e9eef0;border-left-color:#b48b10;color:#24272a}
+  .quick-tag{border-color:#b18b12;color:#765c00;background:#fffaf0}
+  .mfm-unit{padding:9px}
+  .mfm-costgrid{grid-template-columns:repeat(2,1fr);gap:5px}
+  .mfm-field label{color:#6b6d70}
+  .mfm-field input{background:#fff;color:#17191b;border-color:#bdbab3}
+  .mfm-weapon-row{border-bottom-color:#ddd9d2}
+  .mfm-badge{border-color:#b18b12;color:#765c00}
+  button{background:#e8e6e1;color:#232527;border-color:#bdbab3}
+  button.primary{background:#343f43;color:#fff;border-color:#caa21f}
+  .row{gap:5px}
+  .bigans{font-size:25px}
+  .scroll{overflow-x:auto}
+  /* barra inferior tipo app */
+  .mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;height:62px;background:#292a2b;border-top:1px solid #4a4b4d;z-index:100;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 18px #0009}
+  .mobile-nav button{border:0;border-radius:0;background:transparent;color:#b9b9b6;min-height:62px;padding:4px 2px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:9px;text-transform:uppercase;letter-spacing:.2px}
+  .mobile-nav button .mi{font-size:18px;line-height:1}
+  .mobile-nav button.active{color:#f0c94b;background:#303132}
+  .mobile-more{position:fixed;left:8px;right:8px;bottom:68px;background:#f4f3ef;border:1px solid #aaa;border-radius:8px;padding:7px;z-index:99;box-shadow:0 8px 30px #000b}
+  .mobile-more button{width:100%;text-align:left;margin:2px 0;background:#e7e5e0}
+  .mobile-more button.active{border-color:#b28c13;background:#fff4c9}
+}
+
+
+/* ---------- CONTRASTE / ESTADOS INTERACTIVOS ---------- */
+/* Overrides finales: evita texto negro sobre superficies oscuras en controles,
+   elementos seleccionables y tooltips, especialmente en WebView móvil. */
+.gterm{color:inherit;background:transparent;text-decoration:none;-webkit-tap-highlight-color:rgba(213,173,33,.22)}
+#tip{color:#f0eee8;background:#17202b;border:1px solid #d5ad21;box-shadow:0 8px 28px rgba(0,0,0,.65);}
+#tip b{color:#f3d36a}
+#tip i{color:#bfc8d2}
+button,select,input,textarea,summary,.tab,.chip,.battle-phase-btn,.battle-unit>summary{
+  -webkit-tap-highlight-color:rgba(213,173,33,.18);
+}
+select option{background:#17202b;color:#f0eee8}
+select option:checked,select option[selected]{background:#d5ad21;color:#17120a}
+select:focus,input:focus,textarea:focus,button:focus,.tab:focus,summary:focus{
+  outline:2px solid #d5ad21;outline-offset:1px;
+}
+button:active,.tab:active,.battle-phase-btn:active{filter:brightness(.94)}
+@media(max-width:700px){
+  /* Controles del panel oscuro */
+  aside.panel select,aside.panel input,aside.panel textarea{
+    background:#161719!important;color:#f2f1ed!important;border-color:#565a5e!important;
+    color-scheme:dark;
+  }
+  aside.panel select option{background:#161719!important;color:#f2f1ed!important}
+  aside.panel select option:checked{background:#d5ad21!important;color:#17120a!important}
+  /* Controles dentro de tarjetas claras */
+  .ds select,.ds input,.ds textarea,.quick-card select,.quick-card input,
+  .quick-phase select,.quick-phase input,.battle-unit select,.battle-unit input,
+  .battle-ritual select,.battle-ritual input,.mfm-unit select,.mfm-unit input,
+  .listrow select,.listrow input,details select,details input{
+    background:#fff!important;color:#191a1c!important;border-color:#9da0a3!important;
+    color-scheme:light;
+  }
+  .ds select option,.quick-card select option,.quick-phase select option,
+  .battle-unit select option,.battle-ritual select option,.mfm-unit select option,
+  .listrow select option,details select option{background:#fff!important;color:#191a1c!important}
+  .ds select option:checked,.quick-card select option:checked,.quick-phase select option:checked,
+  .battle-unit select option:checked,.battle-ritual select option:checked,.mfm-unit select option:checked,
+  .listrow select option:checked,details select option:checked{background:#d5ad21!important;color:#17120a!important}
+  /* Elementos seleccionables / activos */
+  .chip.on,.battle-ritual.selected,.mobile-more button.active{
+    color:#5e4900!important;background:#fff2b8!important;border-color:#a78315!important;
+  }
+  .battle-actions button.used{color:#555!important;background:#e0ded9!important}
+  .battle-phase-btn.active{color:#17120a!important;background:#d5ad21!important}
+  /* Tooltip legible y por encima de todos los paneles */
+  #tip{
+    max-width:calc(100vw - 20px)!important;
+    background:#17202b!important;color:#f0eee8!important;
+    border:1px solid #e0b72c!important;
+    box-shadow:0 10px 32px rgba(0,0,0,.72)!important;
+    font-size:13px!important;line-height:1.48!important;
+    padding:11px 12px!important;z-index:10000!important;
+  }
+  #tip b{color:#f3d36a!important}
+  #tip i{color:#bfc8d2!important}
+  /* Términos pulsados quedan claramente marcados mientras su explicación está abierta */
+  .gterm:active,.gterm:focus{color:#765c00;background:#fff2b8;border-radius:3px}
+}
+
+
+/* ---------- CONTRASTE GLOBAL: SUPERFICIES OSCURAS ---------- */
+@media(max-width:700px){
+  .mobile-nav{background:#080b12!important;color:#d7dbe3!important}
+  .mobile-nav button{color:#d7dbe3!important}
+  .mobile-nav button.active{color:#e8cf8b!important}
+  .mobile-drawer{background:#f5f3ed!important;color:#171717!important}
+  .mobile-drawer *{color:inherit}
+  .mobile-drawer .muted{color:#687386!important}
+  .side,.side-nav,.sidebar{color:#e9e6dc!important}
+  .strat,.strat-h,.battle-unit>summary,.battle-phase,.battle-top,.battle-controls,.quick-dark,.dark-card{color:#e9e6dc!important}
+  .strat *, .strat-h *, .battle-unit>summary *, .battle-phase *, .battle-top *, .battle-controls *, .quick-dark *, .dark-card *{color:inherit}
+  .strat .muted,.battle-unit>summary .muted,.battle-top .muted,.battle-controls .muted,.quick-dark .muted,.dark-card .muted{color:#93a0b5!important}
+  .strat button,.battle-unit>summary button,.battle-top button,.battle-controls button,.quick-dark button,.dark-card button{color:#e9e6dc!important}
+  select,input,textarea{background:#080d16!important;color:#e9e6dc!important}
+  option{background:#fff!important;color:#111!important}
+}
+
+/* ---------- ARMY EDITOR SHELL ---------- */
+.layout{grid-template-columns:1fr!important}
+.army-editor-grid{display:grid;grid-template-columns:360px minmax(0,1fr);gap:16px;align-items:start}
+#armyEditor{padding:14px}
+#armyEditor aside.panel{position:sticky;top:88px;max-height:calc(100vh - 104px);overflow:auto;margin:0}
+#armyEditor #builder{min-width:0}
+@media(max-width:1050px){
+  .army-editor-grid{grid-template-columns:1fr}
+  #armyEditor aside.panel{position:static;max-height:none;overflow:visible}
+}
+/* ---------- COMPACT WEAPON PROFILES ---------- */
+.weapon-profile{border:1px solid var(--line);border-radius:7px;background:#0a1220;padding:7px 9px;margin:6px 0}
+.weapon-profile-name{font-weight:700;color:var(--gold2);margin-bottom:5px;font-size:13px}
+.weapon-profile-name .wcount{vertical-align:1px}
+.weapon-statline{display:flex;gap:4px;flex-wrap:wrap}
+.weapon-statbox{min-width:40px;text-align:center;border:1px solid var(--gold);border-radius:5px;background:#0a1220;overflow:hidden}
+.weapon-statbox i{display:block;font-style:normal;font-size:9px;letter-spacing:.7px;background:var(--gold);color:#14100a;font-weight:700;padding:1px 4px}
+.weapon-statbox b{display:block;font-size:13px;padding:2px 5px;color:#f1f0eb}
+.weapon-keywords{margin-top:4px;color:var(--cyan);font-size:10px}
+@media(max-width:700px){
+  #armyEditor{padding:10px}
+  .weapon-profile{padding:6px 7px}
+  .weapon-statbox{min-width:37px}
+  .weapon-statbox b{font-size:12px}
+}
+
+/* DRUKHARI skin: same visual language as sons.html, adapted to this builder */
+.wrap{max-width:1500px;margin:auto;padding:16px}
+.app{padding-top:8px}
+header{padding:16px 0;border-bottom:2px solid var(--gold);background:linear-gradient(180deg,#101a2b,#080b12);position:sticky;top:0;z-index:30}
+.app .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:0;overflow:hidden}
+.card>h2{padding:12px 14px;margin:0;border-bottom:1px solid var(--line);background:linear-gradient(90deg,var(--blue),var(--blue2));}
+.card>.body{padding:14px}
+.grid{display:grid;grid-template-columns:330px 1fr;gap:16px;align-items:start}
+.grid>aside.card{position:sticky;top:94px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.tab{border-radius:999px;font-size:13px}
+.tab.active{background:var(--gold);color:#14100a;border-color:var(--gold);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:8px;padding:8px 10px}
+.kpi b{display:block;font-size:18px;color:var(--gold2);line-height:1.3}
+.pane{display:none}.pane.active{display:block}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.ref-card{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:12px;box-shadow:0 2px 12px #0004}
+.ref-card:hover{border-color:#52637e;transform:translateY(-1px);transition:.15s}
+.ref-card h3{color:var(--gold2)}
+.badge,.pts{display:inline-block;background:#1b2940;border:1px solid #344a69;color:var(--gold2);border-radius:999px;padding:2px 7px;font-size:11px}
+.statline{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.statbox{min-width:50px;text-align:center;border:1px solid var(--gold);border-radius:6px;background:#0a1220;overflow:hidden}
+.statbox i{display:block;font-style:normal;font-size:9px;letter-spacing:1px;background:var(--gold);color:#14100a;font-weight:700;padding:1px 0}
+.statbox b{display:block;font-size:15px;padding:3px 6px}
+.weapon{border:1px solid var(--line);border-radius:7px;padding:7px;margin:5px 0;background:#0b111b}
+.wstats{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:5px}
+.wstat{background:#0a1220;border-radius:4px;text-align:center;padding:2px}.wstat i{display:block;font-size:9px;color:var(--muted);font-style:normal}.wstat b{font-size:12px}
+.tags{color:var(--cyan);font-size:10px;margin-top:4px;text-transform:uppercase}
+.strat{border-left:3px solid var(--gold);background:#0b111b;border-radius:0 6px 6px 0;padding:7px 9px;margin:6px 0}
+.det-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px}
+.note{border:1px solid var(--line);border-left:3px solid var(--cyan);background:#0d1622;padding:9px 11px;border-radius:0 7px 7px 0;margin:8px 0}
+.note.warn{border-left-color:var(--warn);background:#1c1710}.note.ok{border-left-color:var(--green);background:#0d1a15}.note.bad{border-left-color:var(--red);background:#1c1013}
+.field{min-width:0;flex:1}label{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin:10px 0 4px}
+select,input{width:100%;background:#080d16;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:8px;font:inherit}
+button{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 11px;cursor:pointer;font:inherit}button:hover{border-color:var(--gold)}button.primary{background:#22344f;border-color:var(--gold)}button.danger{border-color:#6d3234;color:#f0a6a4}
+.row{display:flex;gap:7px;flex-wrap:wrap}.small,.muted{color:var(--muted);font-size:12px}
+.unit-row{background:#0b111b;border:1px solid var(--line);border-radius:8px;padding:9px;margin:7px 0}.unit-row .title{font-weight:700;color:var(--gold2)}.unit-row .remove{float:right}
+.mobile-nav{display:none}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.grid>aside.card{position:static}.kpis{grid-template-columns:repeat(2,1fr)}.tabs{display:none}.mobile-nav{display:grid;grid-template-columns:repeat(6,1fr);position:sticky;bottom:0;z-index:40;background:#080b12eF;border-top:1px solid var(--line);padding:5px;gap:4px}.mobile-nav button{font-size:11px;padding:6px 2px}.mobile-nav button.active{border-color:var(--gold);color:var(--gold2)}.wstats{grid-template-columns:repeat(3,1fr)}}
+
+/* ================================================================
+   FINAL UI OVERRIDE — DRUKHARI / SONS VISUAL PARITY
+   Keeps the whole application dark on desktop and mobile. The earlier
+   mobile light-theme rules are intentionally superseded here.
+   ================================================================ */
+:root{color-scheme:dark}
+html{background:#080b12}
+body{background:var(--bg)!important;color:var(--ink)!important}
+header{background:linear-gradient(180deg,#101a2b,#080b12)!important;color:var(--ink)!important}
+.card,.panel,.pane,.ref-card,.strat,.quick-card,.quick-phase,.mfm-unit,.battle-unit,.battle-ritual,.note,.kwbar,.listrow,details,.ds{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.ref-card p,.ref-card li,.strat,.quick-card,.quick-phase,.mfm-unit,.battle-unit .bu-body,.battle-rule,.battle-ritual,.listrow,.note{color:var(--ink)!important}
+.ref-card .small,.small,.muted,.ds-sub,.battle-unit .bu-role,.battle-dice{color:var(--muted)!important}
+.ref-card h3,.ref-card h4,.quick-card b,.quick-phase h3,.mfm-unit-head b,.ab b,.battle-unit .bu-section h4{color:var(--gold2)!important}
+button,select,input,textarea,summary{background:#080d16!important;color:var(--ink)!important;border-color:var(--line)!important}
+button.primary{background:#22344f!important;color:var(--ink)!important;border-color:var(--gold)!important}
+select option{background:#080d16!important;color:var(--ink)!important}
+.tab.active,.battle-phase-btn.active{background:var(--gold)!important;color:#14100a!important;border-color:var(--gold)!important}
+.statbox,.weapon-statbox{background:#0a1220!important;color:var(--ink)!important}
+.statbox i,.weapon-statbox i,.wcount{background:var(--gold)!important;color:#14100a!important}
+table.wep th,.strat-h,.battle-unit>summary{background:var(--blue2)!important;color:var(--gold2)!important}
+table.wep td{color:var(--ink)!important;border-bottom-color:#1c2635!important}
+.mobile-nav{display:none}
+@media(max-width:700px){
+  html,body{background:#080b12!important;color:var(--ink)!important;overflow-x:hidden}
+  body{padding-bottom:72px!important}
+  header{background:linear-gradient(180deg,#101a2b,#080b12)!important;border-bottom:2px solid var(--gold)!important}
+  header h1{color:var(--gold2)!important;font-size:15px!important}
+  header .muted{color:var(--muted)!important}
+  .wrap{padding:10px!important}
+  .panel,.card,.pane{background:transparent!important;border-color:transparent!important;color:var(--ink)!important}
+  aside.panel{background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:9px!important;margin:0 0 10px!important;padding:10px!important}
+  .kpis{grid-template-columns:repeat(2,1fr)!important;gap:6px!important}
+  .kpi{background:var(--panel)!important;border-color:var(--line)!important}
+  .kpi b{color:var(--gold2)!important}
+  .tabs{display:flex!important;flex-wrap:nowrap!important;overflow-x:auto!important;padding-bottom:4px!important}
+  .tab{flex:0 0 auto!important}
+  .ds,.quick-card,.quick-phase,.strat,.wg,.mfm-unit,.battle-unit,.battle-ritual,.note,details,.listrow,.ref-card{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important;box-shadow:none!important}
+  .ds-head,.battle-unit>summary,.strat-h{background:linear-gradient(90deg,var(--blue),var(--blue2))!important;color:var(--gold2)!important}
+  .ds-head h3,.battle-unit>summary{color:var(--gold2)!important}
+  .quick-phase h3,.quick-card b,.strat h3,.strat b,.mfm-unit-head b{color:var(--gold2)!important}
+  .small,.muted,.mfm-unit .small,.quick-card .small{color:var(--muted)!important}
+  .note{background:#0d1622!important;border-left-color:var(--cyan)!important}
+  .note.ok{background:#0d1a15!important;border-left-color:var(--green)!important}
+  .note.warn{background:#1c1710!important;border-left-color:var(--warn)!important}
+  .note.bad{background:#1c1013!important;border-left-color:var(--red)!important}
+  .kwbar{background:var(--blue2)!important;color:var(--ink)!important}
+  .quick-tag,.chip{background:#0b1220!important;color:var(--gold2)!important;border-color:var(--gold)!important}
+  .mfm-field input,.mfm-unit select,.mfm-unit input,.listrow select,.listrow input,.ds select,.ds input,.battle-unit select,.battle-unit input{background:#080d16!important;color:var(--ink)!important;border-color:var(--line)!important;color-scheme:dark!important}
+  .mobile-nav{display:grid!important;grid-template-columns:repeat(6,1fr)!important;position:fixed!important;left:0!important;right:0!important;bottom:0!important;height:66px!important;background:#080b12!important;border-top:1px solid var(--line)!important;z-index:10000!important;padding-bottom:env(safe-area-inset-bottom)!important;box-shadow:0 -5px 18px #000c!important}
+  .mobile-nav button{background:transparent!important;color:var(--muted)!important;border:0!important;min-height:66px!important;padding:4px 1px!important;font-size:8px!important;line-height:1.05!important;text-transform:uppercase!important;letter-spacing:.1px!important;white-space:normal!important}
+  .mobile-nav button.active{background:#101a2b!important;color:var(--gold2)!important}
+  .mobile-more{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important}
+  .mobile-more button{background:#080d16!important;color:var(--ink)!important}
+  .mobile-more button.active{background:#22344f!important;color:var(--gold2)!important}
+  .battle-phases{background:var(--panel)!important;border-bottom-color:var(--line)!important;box-shadow:none!important}
+  .battle-phase-btn{background:#080d16!important;color:var(--ink)!important;border-color:var(--line)!important}
+  .battle-rule{background:#0d1622!important;color:var(--ink)!important}
+  .battle-ritual.selected{background:#131b2a!important}
+  .mobile-drawer{background:var(--panel)!important;color:var(--ink)!important}
+  .mobile-drawer *{color:inherit}
+  option{background:#080d16!important;color:var(--ink)!important}
+}
+</style></head><body>
+<header><div class="wrap"><h1>☠ DRUKHARI · 11ª EDICIÓN — Codex interactivo &amp; Army Builder</h1><div class="muted">Faction Pack 1.2 · legal 26/08/2026 · MFM actualizado 02/09/2026 · revisión 15/09/2026 · Legends excluidas · reglas y puntos revisados</div></div></header>
+<div class="wrap app"><div id="kpis" class="kpis"></div>
+<nav class="tabs"><button class="tab active" data-t="army">🛠 Tu ejército</button><button class="tab " data-t="mfm">⚙ Costes MFM</button><button class="tab " data-t="reference">📖 Referencia</button><button class="tab " data-t="quick">⚔ Guía rápida</button><button class="tab " data-t="battle">🎮 Partida</button><button class="tab " data-t="det">⚜ Destacamentos</button><button class="tab " data-t="catalog">📚 Catálogo completo</button><button class="tab " data-t="tactics">🧠 Tácticas</button><button class="tab " data-t="rules">📕 Glosario</button></nav>
+<section id="army" class="pane active"><div class="grid"><aside class="card"><h2>Configuración</h2><div class="body"><div class="field"><label>Destacamento</label><select id="armyDet"></select></div><div class="field"><label>Límite</label><select id="limit"><option value="1000">Incursion · 1000</option><option value="2000" selected>Strike Force · 2000</option><option value="3000">Onslaught · 3000</option></select></div><div class="field"><label>Añadir unidad</label><select id="addUnit"></select></div><button class="primary" style="margin-top:8px;width:100%" onclick="addUnit()">+ Añadir</button><div class="note" style="margin-top:12px"><b>Builder:</b> selecciona tamaño, coste de unidad, wargear y Enhancement. El cálculo es editable y se guarda localmente.</div><div id="armyEditor" style="margin-top:12px"></div></div></aside><main class="card"><h2>Tu ejército</h2><div class="body"><div id="armyList"></div></div></main></div></section>
+<section id="mfm" class="pane"><div class="card"><h2>⚙ Costes MFM / Builder</h2><div class="body"><div class="note ok"><b>Base de revisión: 15/09/2026.</b> El MFM oficial de Warhammer Community aparece actualizado el 02/09/2026. Los costes de wargear que se conocen como incrementos están indicados aparte.</div><div id="mfmGrid" class="ref-grid"></div></div></div></section>
+<section id="reference" class="pane"><div class="card"><h2>📖 Referencia Drukhari</h2><div class="body"><div class="row"><input id="refSearch" placeholder="Buscar unidad, arma, habilidad..."><select id="refRole"><option value="">Todos</option><option>Character</option><option>Epic Hero</option><option>Battleline</option><option>Infantry</option><option>Mounted</option><option>Monster</option><option>Vehicle</option><option>Transport</option><option>Unit</option></select></div><div id="refGrid" class="ref-grid" style="margin-top:12px"></div></div></div></section>
+<section id="quick" class="pane"><div class="card"><h2>⚔ Guía rápida</h2><div class="body"><div class="note"><h3>Power from Pain</h3><p>La regla de ejército actual genera marcadores a medida que tus unidades destruyen enemigos y desbloquea cuatro escalones de beneficios: <b>Painful Precision</b>, <b>Terrifying Silhouettes</b>, <b>Grievous Ecstasy</b> y <b>Adrenal Excess</b>. Las habilidades de muchas unidades siguen usando Pain para Empower.</p></div><h3>Principios de mesa</h3><div class="ref-grid"><div class="ref-card"><h3>1 · No regales unidades</h3><p>Drukhari gana valor al convertir movilidad, transporte y recursos de Pain en intercambios favorables. Una unidad barata que puntúa un turno extra puede valer más que una baja temprana.</p></div><div class="ref-card"><h3>2 · Protege las piezas de daño</h3><p>Scourges, Ravagers e Incubi quieren llegar vivos al turno donde realmente cambian la mesa. Usa Venoms/Raiders, cobertura y reservas para reducir la exposición.</p></div><div class="ref-card"><h3>3 · Transportes = geometría</h3><p>El Raider entrega un bloque grande; el Venom divide unidades y permite el bucle de Aerialists. Planifica dónde termina la unidad, no solo dónde empieza.</p></div><div class="ref-card"><h3>4 · Pain con intención</h3><p>Gasta Pain cuando convierta una activación normal en una activación decisiva: re-rolls de Scourges, movilidad de Reavers, supervivencia de Coven o una carga que cambia la puntuación.</p></div></div></div></div></section>
+<section id="battle" class="pane"><div class="card"><h2>🎮 Checklist de partida</h2><div class="body"><ol><li>Revisa misión, despliegue y Force Disposition.</li><li>Decide qué unidades empiezan ocultas, en reservas o embarcadas.</li><li>En Command, revisa marcadores de Power from Pain y qué unidades necesitan Empower.</li><li>En Movement, planifica la siguiente puntuación antes de mover la primera miniatura.</li><li>En Shooting, prioriza Dark Lances/Scourges/Ravagers y decide qué objetivo merece Pain.</li><li>En Charge, cuenta amenazas de Overwatch, Fights First y salidas de transporte.</li><li>En Fight, ordena activaciones para que los supervivientes puedan puntuar o reembarcar.</li><li>Al final de la fase, revisa qué unidades quedaron expuestas y qué recurso has ganado.</li></ol><h3>Core Stratagems</h3><div id="coreStrats" class="ref-grid"></div></div></div></section>
+<section id="det" class="pane"><div class="card"><h2>⚜ Destacamentos</h2><div class="body"><div class="note"><b>Actualización v1.2:</b> la versión oficial del Faction Pack es legal desde el 26/08/2026. La errata confirma, entre otras cosas, cambios de Venom, Scourges, Hellions, Lady Malys, Razorwing/Voidraven y el texto de varias estratagemas.</div><div id="detGrid" class="det-grid"></div></div></div></section>
+<section id="catalog" class="pane"><div class="card"><h2>📚 Catálogo completo</h2><div class="body"><p class="muted">Se han añadido los datasheets que faltaban en la versión anterior: Beastmaster, Court of the Archon, Grotesques, Tantalus y Urien Rakarth. <b>Tantalus aparece solo como referencia Legends</b>; las otras cuatro se consideran para el catálogo normal. En estas fichas el armamento es resumido cuando la composición es multi-modelo y muy dependiente de la ficha.</p><div id="catalogGrid" class="ref-grid"></div></div></div></section>
+<section id="tactics" class="pane"><div class="card"><h2>🧠 Tácticas / Tips &amp; Tricks</h2><div class="body"><div class="ref-grid"><div class="ref-card"><h3>🎯 Scourges</h3><p>Deep Strike + Dark Lances permite castigar una pieza sin exponerlas desde el primer turno. Winged Strike convierte Pain en fiabilidad; Airborne Evasion te permite salir de líneas de fuego después de disparar.</p></div><div class="ref-card"><h3>🕳 Mandrakes</h3><p>Su misión es negar espacio, puntuar y forzar al rival a gastar recursos. Fade Away recompensa no terminar el turno trabado.</p></div><div class="ref-card"><h3>🦂 Venom split</h3><p>Antes de la batalla puedes dividir Kabalites, Hand of the Archon o Wyches: una mitad puede empezar en el Venom y la otra en otro transporte o separada. Aerialists permite recuperar una unidad pequeña al final del Fight.</p></div><div class="ref-card"><h3>🗡 Raider + melee</h3><p>Wyches, Lelith, Succubus e Incubi convierten el transporte en una herramienta de alcance. No pienses solo en la carga: piensa en dónde quedará la unidad después del Fight.</p></div><div class="ref-card"><h3>🩸 Coven</h3><p>Tools of Torment y las reglas de Cronos/Talos convierten Pain en resistencia y contraataque. Talos quiere amenazas que pueda matar para alimentar el recurso; Cronos quiere estar cerca de las unidades que lo gastan.</p></div><div class="ref-card"><h3>🎭 Reaper’s Wager</h3><p>Drukhari empieza ganando la apuesta. Mientras ganas, repites 1s para impactar; mientras pierdes, repites 1s para impactar y herir. El destacamento cambia de ritmo en función de quién logra la siguiente baja.</p></div><div class="ref-card"><h3>👑 Lady Malys</h3><p>Su redeploy es una herramienta de información: despliega ancho, espera a ver el rival y después transforma la mesa. Mind Like a Steel Trap castiga el uso de Stratagems cerca de ella.</p></div><div class="ref-card"><h3>🚀 Reavers / Hellions</h3><p>Su valor está en la amenaza lateral. Reavers pueden convertir un Advance en +8" con Pain; Hellions pueden reaccionar con una Normal move cuando el rival termina cerca.</p></div></div></div></div></section>
+<section id="rules" class="pane"><div class="card"><h2>📕 Glosario rápido</h2><div class="body"><div class="ref-grid"><div class="ref-card"><h3>Anti-X</h3><p>Una herida crítica se obtiene con el valor indicado contra el objetivo.</p></div><div class="ref-card"><h3>Torrent</h3><p>Los ataques impactan automáticamente; excelente con Fire Overwatch.</p></div><div class="ref-card"><h3>Deep Strike</h3><p>Permite llegar desde reservas respetando la distancia horizontal exigida por la regla actual.</p></div><div class="ref-card"><h3>Infiltrators</h3><p>Permite desplegar adelantado según las restricciones Core.</p></div><div class="ref-card"><h3>Stealth</h3><p>Los ataques a distancia contra la unidad sufren el modificador de Hit indicado por Core.</p></div><div class="ref-card"><h3>Lance</h3><p>Mejora la tirada de herir en ataques realizados por una unidad que haya cargado.</p></div><div class="ref-card"><h3>Precision</h3><p>Permite dirigir ataques críticos a un Character elegible dentro de una Attached unit.</p></div><div class="ref-card"><h3>FRAME</h3><p>Keyword que aparece en varias erratas de vehículos. La v1.2 aclara que se añade a Raider/Ravager/Venom y se elimina de los Legends indicados.</p></div></div></div></div></section>
+</div><nav class="mobile-nav"><button class="active" data-mnav="army">🛠<br>Ejército</button><button data-mnav="reference">📖<br>Ref.</button><button data-mnav="det">⚜<br>Dest.</button><button data-mnav="catalog">📚<br>Catálogo</button><button data-mnav="battle">🎮<br>Partida</button><button data-mnav="tactics">🧠<br>Tácticas</button></nav>
+<script>const DATA={"ds":[{"name":"Archon","role":"Character","stats":["8\"","3","4+","4","6+","1"],"inv":"2+","points":{"1":80},"sizes":[[1,80]],"ranged":[{"n":"Blast pistol","r":"6\"","a":"1","bs":"2+","s":"8","ap":"-3","d":"D3","k":"PISTOL"},{"n":"Splinter pistol","r":"12\"","a":"1","bs":"2+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT, PISTOL"}],"melee":[{"n":"Agoniser","r":"Melee","a":"6","bs":"2+","s":"3","ap":"-2","d":"1","k":"ANTI-INFANTRY 3+"},{"n":"Huskblade","r":"Melee","a":"4","bs":"2+","s":"3","ap":"-2","d":"3","k":"DEVASTATING WOUNDS"},{"n":"Master-crafted power weapon","r":"Melee","a":"5","bs":"2+","s":"4","ap":"-2","d":"2","k":""}],"opts":"Splinter pistol -> blast pistol or soul trap; huskblade -> agoniser or master-crafted power weapon.","abilities":"Leader. Hatred Eternal (Pain): Empower for Hit re-rolls. Overlord: once/battle, clear Battle-shock from a nearby friendly Drukhari unit. Devious Mastermind: once/round, reduce by 1 CP a Stratagem targeting this unit. Shadowfield: while active, no save re-rolls; first non-mortal wound removes the invulnerable save. Soul Trap is an optional enhancement-like wargear effect when equipped.","keywords":"INFANTRY · KABAL · CHARACTER · AELDARI · ARCHON · DRUKHARI","leads":"Court of the Archon, Hand of the Archon, Incubi, Kabalite Warriors","tip":"Versátil: Kabalites for control, Incubi for melee. Keep the Shadowfield protected until the decisive turn."},{"name":"Drazhar","role":"Epic Hero","stats":["7\"","3","2+","5","6+","1"],"inv":"4+","points":{"1":85},"sizes":[[1,85]],"ranged":[],"melee":[{"n":"Executioner’s demiklaives – dual blades","r":"Melee","a":"8","bs":"2+","s":"5","ap":"-2","d":"2","k":"DEVASTATING WOUNDS"},{"n":"Executioner’s demiklaives – single blade","r":"Melee","a":"6","bs":"2+","s":"6","ap":"-2","d":"3","k":"DEVASTATING WOUNDS"}],"opts":"Cannot take Enhancements.","abilities":"Leader: Incubi. Master of Blades (Pain): spend 1 Pain to Empower; while Empowered, improve melee Wound rolls by 1. Onslaught: while leading, Pile-in and Consolidation can be up to 6”. Silent Executioner: re-roll Hit rolls against units below Starting Strength, and also Wound rolls when they are Below Half-strength.","keywords":"INFANTRY · CHARACTER · EPIC HERO · AELDARI · DRUKHARI","leads":"Incubi","tip":"Use him as a surgical finisher, not as a turn-one missile. The 6\" pile-in/consolidation changes threat geometry."},{"name":"Lady Malys","role":"Epic Hero","stats":["7\"","3","4+","5","6+","2"],"inv":"4+","points":{"1":100},"sizes":[[1,100]],"ranged":[],"melee":[{"n":"Lady’s Blade","r":"Melee","a":"6","bs":"2+","s":"5","ap":"-3","d":"3","k":"DEVASTATING WOUNDS, HAZARDOUS"},{"n":"Razor fan","r":"Melee","a":"6","bs":"2+","s":"3","ap":"0","d":"1","k":"EXTRA ATTACKS"}],"opts":"Cannot take Enhancements.","abilities":"Leader: Hand of the Archon, Incubi, Kabalite Warriors. Archon of the Poisoned Tongue (Pain): Empower to choose Sustained Hits 1 or Lethal Hits for the unit. Precognisant: redeploy up to three Drukhari units after deployment, including Strategic Reserves. Mind Like a Steel Trap: once/turn, when an enemy Stratagem targets a unit within 12\", increase its cost by 1 CP.","keywords":"INFANTRY · CHARACTER · EPIC HERO · KABAL · AELDARI · DRUKHARI","leads":"Hand of the Archon, Incubi, Kabalite Warriors","tip":"The redeploy is often worth more than her damage: hide scoring pieces, threaten a different flank, or reserve a unit after seeing deployment."},{"name":"Lelith Hesperax","role":"Epic Hero","stats":["8\"","3","6+","4","6+","1"],"inv":"4+","points":{"1":80},"sizes":[[1,80]],"ranged":[],"melee":[{"n":"Lelith’s blades","r":"Melee","a":"8","bs":"2+","s":"3","ap":"-2","d":"1","k":"ANTI-INFANTRY 2+, PRECISION, SUSTAINED HITS 2"}],"opts":"Cannot take Enhancements.","abilities":"Leader: Wyches. Brides of Death (Pain): Empower to improve Strength and AP of the unit’s melee attacks by 1. Thrilling Spectacle: once/battle, 3+ invulnerable save and 12 Attacks for her melee weapon for the Fight phase. Blur of Blades: while leading, the unit has Fights First.","keywords":"INFANTRY · CHARACTER · EPIC HERO · AELDARI · SUCCUBUS · DRUKHARI","leads":"Wyches","tip":"Best used as the head of a Wych brick that can exploit Fights First and a single explosive Fight phase."},{"name":"Haemonculus","role":"Character","stats":["7\"","4","5+","5","6+","1"],"inv":"6+","points":{"1":50},"sizes":[[1,50]],"ranged":[{"n":"Stinger pistol","r":"12\"","a":"1","bs":"2+","s":"2","ap":"-1","d":"D3","k":"ANTI-INFANTRY 2+, PISTOL, PRECISION"}],"melee":[{"n":"Haemonculus tools and scissorhands","r":"Melee","a":"5","bs":"2+","s":"3","ap":"-1","d":"D3","k":"ANTI-INFANTRY 2+, PRECISION"}],"opts":"","abilities":"Leader: Wracks. Fear Incarnate (Aura): nearby enemies worsen Leadership and damaged units can be forced to Battle-shock. Pain Adept: 4+ in Command phase to gain 1 Pain. Fleshcraft (Pain): Empower and return up to D3+1 destroyed Bodyguard models.","keywords":"INFANTRY · HAEMONCULUS COVENS · CHARACTER · AELDARI · HAEMONCULUS · DRUKHARI","leads":"Wracks","tip":"Anchor for Coven lists; recursion is strongest when the unit is already difficult to finish."},{"name":"Succubus","role":"Character","stats":["8\"","3","6+","4","6+","1"],"inv":"4+","points":{"1":50},"sizes":[[1,50]],"ranged":[],"melee":[{"n":"Archite glaive and agoniser","r":"Melee","a":"7","bs":"2+","s":"3","ap":"-2","d":"1","k":"ANTI-INFANTRY 3+, PRECISION"}],"opts":"","abilities":"Leader: Wyches. Lithe Agility (Pain): Empower to re-roll Advance and Charge. Storm of Blades: while leading, the unit gains Sustained Hits 1 in melee. Bloody Spectacle: re-roll Hit and Wound against Character; destroying a Character with the unit gains 1 CP.","keywords":"INFANTRY · WYCH CULT · CHARACTER · AELDARI · SUCCUBUS · DRUKHARI","leads":"Wyches","tip":"A fragile delivery system for a melee unit; use her to convert mobility into a precise charge rather than to trade early."},{"name":"Kabalite Warriors","role":"Battleline","stats":["8\"","3","4+","1","6+","2"],"inv":"6+","points":{"10":110},"sizes":[[10,110]],"ranged":[{"n":"Blast pistol","r":"6\"","a":"1","bs":"3+","s":"8","ap":"-3","d":"D3","k":"PISTOL"},{"n":"Blaster","r":"18\"","a":"1","bs":"3+","s":"8","ap":"-4","d":"D6+1","k":"ASSAULT"},{"n":"Dark lance","r":"36\"","a":"1","bs":"4+","s":"12","ap":"-3","d":"D6+2","k":"HEAVY"},{"n":"Shredder","r":"18\"","a":"D6","bs":"N/A","s":"6","ap":"0","d":"1","k":"ASSAULT, TORRENT"},{"n":"Splinter cannon","r":"36\"","a":"3","bs":"4+","s":"3","ap":"-1","d":"2","k":"ANTI-INFANTRY 3+, HEAVY, SUSTAINED HITS 1"},{"n":"Splinter pistol","r":"12\"","a":"1","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT, PISTOL"},{"n":"Splinter rifle","r":"24\"","a":"2","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT"}],"melee":[{"n":"Close combat weapon","r":"Melee","a":"2","bs":"3+","s":"3","ap":"0","d":"1","k":""},{"n":"Power weapon","r":"Melee","a":"3","bs":"3+","s":"3","ap":"-2","d":"1","k":"ANTI-INFANTRY 3+"}],"opts":"Sybarite: blast pistol and/or power weapon options. One blaster, one dark lance, one shredder and one splinter cannon per 10 models as allowed by current wargear.","abilities":"Cruel Enforcers: an objective you control can remain yours until the opponent has greater Level of Control. Sadistic Raiders (Pain): Empower for Wound re-roll 1s, or full Wound re-rolls while targeting an objective. Kabalite Icon adds 1 OC while not Battle-shocked. Phantasm Grenade Launcher grants Smoke and Grenades to the unit.","keywords":"INFANTRY · KABAL · BATTLELINE · AELDARI · DRUKHARI","leads":"","tip":"Excellent mission unit: use the Dark Lance/Blaster package for pressure and let the unit hold points after moving on."},{"name":"Wracks","role":"Battleline","stats":["7\"","4","5+","2","6+","2"],"inv":"6+","points":{"5":60,"8":100,"10":120},"sizes":[[5,60],[8,100],[10,120]],"ranged":[{"n":"Hexrifle","r":"36\"","a":"1","bs":"3+","s":"8","ap":"-2","d":"3","k":"HEAVY, PRECISION"},{"n":"Liquifier gun","r":"12\"","a":"D6","bs":"N/A","s":"4","ap":"-1","d":"1","k":"ANTI-INFANTRY 3+, TORRENT"},{"n":"Ossefactor","r":"24\"","a":"1","bs":"3+","s":"2","ap":"-2","d":"2","k":"ANTI-INFANTRY 4+, DEVASTATING WOUNDS"},{"n":"Stinger pistol","r":"12\"","a":"1","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 2+, PISTOL"}],"melee":[{"n":"Power weapon","r":"Melee","a":"3","bs":"3+","s":"5","ap":"-2","d":"1","k":"ANTI-INFANTRY 3+"},{"n":"Torturer’s tools","r":"Melee","a":"2","bs":"3+","s":"4","ap":"-1","d":"1","k":"ANTI-INFANTRY 4+"},{"n":"Twin torturer’s tools","r":"Melee","a":"2","bs":"3+","s":"4","ap":"-1","d":"1","k":"ANTI-INFANTRY 4+, TWIN-LINKED"}],"opts":"For every 5 models: one hexrifle and one liquifier gun may replace twin torturer’s tools; other Acothyst options follow current datasheet.","abilities":"Feel No Pain-style resilience and Coven utility. Use the unit’s Pain ability to improve its durability/recursion when the datasheet condition is met.","keywords":"INFANTRY · HAEMONCULUS COVENS · BATTLELINE · AELDARI · DRUKHARI","leads":"","tip":"Durable scoring block for Coven detachments; pair with a Haemonculus if you want the full recursion package."},{"name":"Wyches","role":"Battleline","stats":["8\"","3","6+","1","6+","2"],"inv":"6+","points":{"10":90},"sizes":[[10,90]],"ranged":[{"n":"Blast pistol","r":"6\"","a":"1","bs":"3+","s":"8","ap":"-4","d":"D3","k":"PISTOL"},{"n":"Splinter pistol","r":"12\"","a":"1","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT, PISTOL"}],"melee":[{"n":"Gladiatorial weapons","r":"Melee","a":"5","bs":"3+","s":"4","ap":"-2","d":"1","k":""},{"n":"Hekatarii blade","r":"Melee","a":"4","bs":"3+","s":"3","ap":"-1","d":"1","k":""},{"n":"Power weapon","r":"Melee","a":"5","bs":"3+","s":"3","ap":"-2","d":"1","k":"ANTI-INFANTRY 3+"}],"opts":"Hekatrix pistol -> blast pistol; blade -> power weapon; up to 3 Wyches -> gladiatorial weapons.","abilities":"No Escape: enemies trying to Fall Back can suffer Desperate Escape tests. Acrobatic Gladiators (Pain): Empower at the start of Charge to allow charging after Advancing or Falling Back.","keywords":"INFANTRY · WYCH CULT · BATTLELINE · AELDARI · DRUKHARI","leads":"","tip":"They are a delivery/scoring tool first. Stack them with Lelith/Succubus and transport tricks rather than leaving them exposed."},{"name":"Hand of the Archon","role":"Character","stats":["7\"","3","4+","1","7+","1"],"inv":"6+","points":{"10":115},"sizes":[[10,115]],"ranged":[{"n":"Blast pistol","r":"6\"","a":"1","bs":"3+","s":"8","ap":"-3","d":"D3","k":"PISTOL"},{"n":"Blaster","r":"18\"","a":"1","bs":"3+","s":"8","ap":"-4","d":"D6+1","k":"ASSAULT"},{"n":"Dark lance","r":"36\"","a":"1","bs":"4+","s":"12","ap":"-3","d":"D6+2","k":"HEAVY"},{"n":"Shardcarbine","r":"18\"","a":"3","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT"},{"n":"Shredder","r":"18\"","a":"D6","bs":"N/A","s":"6","ap":"0","d":"1","k":"ASSAULT, TORRENT"}],"melee":[{"n":"Close combat weapon","r":"Melee","a":"2","bs":"3+","s":"3","ap":"0","d":"1","k":""},{"n":"Power weapon","r":"Melee","a":"3","bs":"3+","s":"3","ap":"-2","d":"1","k":"ANTI-INFANTRY 3+"}],"opts":"Specialist Kabal unit; exact specialist model options are shown in the full current datasheet.","abilities":"Assassins’ Poisons (Pain): Empower; non-blast-pistol/blaster/dark-lance weapons gain Lethal Hits and Precision. Archon’s Will: selected objective grants 5+ invulnerable save and OC 3 while the unit is not Battle-shocked. Archon’s Retinue gives an attached Leader Scouts 7\". Phantasm Grenade Launcher gives Smoke/Grenades; Stimm-needler can nullify the Damage of the first failed save each turn.","keywords":"","leads":"Can be led by an Archon or Lady Malys.","tip":"Specialist Kabal unit: excellent with an Archon/Malys when you want precision, scouting and objective play."},{"name":"Incubi","role":"Infantry","stats":["7\"","3","3+","2","6+","1"],"inv":"5+","points":{"5":90,"10":180},"sizes":[[5,90],[10,180]],"ranged":[],"melee":[{"n":"Klaive","r":"Melee","a":"3","bs":"3+","s":"5","ap":"-2","d":"2","k":""},{"n":"Demiklaives – dual blades","r":"Melee","a":"6","bs":"3+","s":"4","ap":"-2","d":"1","k":""},{"n":"Demiklaives – single blade","r":"Melee","a":"4","bs":"3+","s":"5","ap":"-2","d":"2","k":""}],"opts":"Klaivex can replace klaive with demiklaives; one Incubi Shrine token per 5 models.","abilities":"Tormentors: nearby enemies test Battle-shock at the start of Fight; melee attacks into Battle-shocked targets get +1 Hit. Decapitating Strikes (Pain): Empower so melee attacks into Infantry gain Devastating Wounds. Incubi Shrine Token can convert one Hit or Wound roll per token to an unmodified 6.","keywords":"INFANTRY · KABAL · BLADES FOR HIRE · AELDARI · DRUKHARI","leads":"","tip":"Five is a compact melee package; ten is a dedicated hammer. Drazhar/Malys changes the threat profile significantly.","third":{"5":95,"10":190}},{"name":"Mandrakes","role":"Infantry","stats":["8\"","3","7+","1","6+","1"],"inv":"5+","points":{"5":80},"sizes":[[5,80],[10,160]],"ranged":[{"n":"Baleblast","r":"18\"","a":"2","bs":"3+","s":"5","ap":"-1","d":"1","k":"ASSAULT, DEVASTATING WOUNDS, IGNORES COVER"}],"melee":[{"n":"Glimmersteel blade","r":"Melee","a":"3","bs":"3+","s":"5","ap":"-1","d":"1","k":"DEVASTATING WOUNDS"}],"opts":"","abilities":"Fade Away (Pain): at the end of the opponent’s Fight phase, if not engaged, spend 1 Pain to remove the unit and place it in Strategic Reserves. Shade Weavers: ranged attacks cannot target the unit unless the attacker is within 18\". Deep Strike, Infiltrators and Stealth remain key deployment/mission tools.","keywords":"INFANTRY · BLADES FOR HIRE · AELDARI · DRUKHARI","leads":"","tip":"Prioritise scoring, screening and denying lanes. Damage is a bonus, not the plan.","third":{"5":84,"10":169}},{"name":"Scourges with Heavy Weapons","role":"Infantry","stats":["14\"","3","4+","1","7+","1"],"inv":"5+","points":{"5":110},"sizes":[[5,110]],"ranged":[{"n":"Dark lance","r":"36\"","a":"1","bs":"4+","s":"12","ap":"-3","d":"D6+2","k":"HEAVY"},{"n":"Haywire blaster","r":"24\"","a":"2","bs":"4+","s":"3","ap":"-1","d":"3","k":"ANTI-VEHICLE 4+, DEVASTATING WOUNDS, HEAVY"},{"n":"Heat lance","r":"18\"","a":"1","bs":"4+","s":"14","ap":"-4","d":"D6","k":"ASSAULT, HEAVY, MELTA 3"},{"n":"Blaster","r":"18\"","a":"1","bs":"3+","s":"8","ap":"-4","d":"D6+1","k":"ASSAULT"},{"n":"Shredder","r":"18\"","a":"D6","bs":"N/A","s":"6","ap":"0","d":"1","k":"ASSAULT, TORRENT"},{"n":"Splinter cannon","r":"36\"","a":"3","bs":"4+","s":"3","ap":"-1","d":"2","k":"ANTI-INFANTRY 3+, HEAVY, SUSTAINED HITS 1"},{"n":"Shardcarbine","r":"18\"","a":"3","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT"}],"melee":[{"n":"Close combat weapon","r":"Melee","a":"2","bs":"3+","s":"3","ap":"0","d":"1","k":""},{"n":"Power weapon","r":"Melee","a":"3","bs":"3+","s":"3","ap":"-2","d":"1","k":"ANTI-INFANTRY 3+"}],"opts":"Any number can replace splinter cannon with blaster, dark lance, haywire blaster, heat lance or shredder. Solarite can take blast pistol + power weapon.","abilities":"Airborne Evasion: after shooting, if not engaged, Normal move up to 6\" but cannot charge. Winged Strike (Pain): Empower for ranged Hit re-rolls.","keywords":"INFANTRY · JUMP PACK · BLADES FOR HIRE · AELDARI · DRUKHARI","leads":"","tip":"Dark Lances are the premium anti-tank package; current tournament lists commonly pay the wargear premium for four Dark Lances. Heat Lances are the cheaper short-range alternative."},{"name":"Scourges with Shardcarbines","role":"Infantry","stats":["14\"","3","4+","1","7+","1"],"inv":"5+","points":{"5":75},"sizes":[[5,75]],"ranged":[{"n":"Shardcarbine","r":"18\"","a":"3","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT"},{"n":"Blaster","r":"18\"","a":"1","bs":"3+","s":"8","ap":"-4","d":"D6+1","k":"ASSAULT"},{"n":"Shredder","r":"18\"","a":"D6","bs":"N/A","s":"6","ap":"0","d":"1","k":"ASSAULT, TORRENT"}],"melee":[{"n":"Close combat weapon","r":"Melee","a":"2","bs":"3+","s":"3","ap":"0","d":"1","k":""},{"n":"Power weapon","r":"Melee","a":"3","bs":"3+","s":"3","ap":"-2","d":"1","k":"ANTI-INFANTRY 3+"}],"opts":"Solarite shardcarbine -> blast pistol + power weapon or splinter pistol + power weapon; one Scourge can take blaster or shredder.","abilities":"Swooping Descent (Pain): Empowered Deep Strike can arrive more than 6\" horizontally from enemies, but if within 8\" cannot charge that turn. Deep Strike and mobile scoring are the core role.","keywords":"INFANTRY · JUMP PACK · BLADES FOR HIRE · AELDARI · DRUKHARI","leads":"","tip":"Use as a cheap scoring/pressure unit rather than a pseudo-Scourges anti-tank squad."},{"name":"Cronos","role":"Monster","stats":["7\"","7","3+","7","6+","2"],"inv":"6+","points":{"1":55,"2":100},"sizes":[[1,55],[2,100]],"ranged":[{"n":"Spirit syphon","r":"12\"","a":"D6","bs":"N/A","s":"5","ap":"-1","d":"1","k":"IGNORES COVER, TORRENT"},{"n":"Spirit vortex","r":"18\"","a":"D6","bs":"3+","s":"5","ap":"-1","d":"1","k":"BLAST, IGNORES COVER"}],"melee":[{"n":"Spirit-leech tentacles","r":"Melee","a":"6","bs":"3+","s":"5","ap":"-1","d":"1","k":"ANTI-INFANTRY 2+"}],"opts":"","abilities":"Pain Engine (Aura): when a nearby friendly unit spends Pain to Empower, roll to recover a Pain token; the bonus improves with the appropriate loadout. Pain Parasite (Pain): Empower to heal/return models after destroying enemies.","keywords":"MONSTER · HAEMONCULUS COVENS · AELDARI · DRUKHARI","leads":"","tip":"A utility piece for Pain economy. One is cheap; multiple can create a real resource engine in Coven lists."},{"name":"Talos","role":"Monster","stats":["7\"","7","3+","7","6+","2"],"inv":"6+","points":{"1":75,"2":150},"sizes":[[1,75],[2,150]],"ranged":[{"n":"Stinger pod","r":"24\"","a":"2D6","bs":"3+","s":"5","ap":"0","d":"1","k":""},{"n":"Twin haywire blaster","r":"24\"","a":"2","bs":"3+","s":"3","ap":"-1","d":"3","k":"ANTI-VEHICLE 4+, DEVASTATING WOUNDS, TWIN-LINKED"},{"n":"Twin heat lance","r":"18\"","a":"1","bs":"3+","s":"14","ap":"-4","d":"D6","k":"ASSAULT, MELTA 3, TWIN-LINKED"},{"n":"Twin liquifier gun","r":"12\"","a":"D6","bs":"N/A","s":"4","ap":"-1","d":"1","k":"ANTI-INFANTRY 3+, TORRENT, TWIN-LINKED"},{"n":"Twin splinter cannon","r":"36\"","a":"3","bs":"3+","s":"3","ap":"-1","d":"2","k":"ANTI-INFANTRY 3+, SUSTAINED HITS 1, TWIN-LINKED"}],"melee":[{"n":"Chain-flails","r":"Melee","a":"8","bs":"3+","s":"6","ap":"-1","d":"1","k":""},{"n":"Macro-scalpel","r":"Melee","a":"5","bs":"3+","s":"7","ap":"-2","d":"2","k":""},{"n":"Talos gauntlet","r":"Melee","a":"5","bs":"4+","s":"9","ap":"-2","d":"3","k":""},{"n":"Talos ichor injector","r":"Melee","a":"1","bs":"2+","s":"8","ap":"-2","d":"D6","k":"EXTRA ATTACKS"}],"opts":"Replace twin splinter cannon with stinger pod/twin haywire/twin heat lance. Replace macro-scalpel with ichor injector/twin liquifier or chain flails/talos gauntlet. Twin haywire costs +5 each.","abilities":"Torture Device: destroying an enemy unit grants an additional Pain token. Devoted to Pain: two macro-scalpels become Twin-linked. Mindless Killing Machines (Pain): destroyed models can fight on after being killed in melee on a 2+.","keywords":"MONSTER · HAEMONCULUS COVENS · AELDARI · DRUKHARI","leads":"","tip":"Durable counter-punch. Haywire/heat lance options define the ranged role; gauntlet/ichor injector push the melee role."},{"name":"Hellions","role":"Mounted","stats":["14\"","4","4+","2","7+","1"],"inv":"6+","points":{"5":90,"10":180},"sizes":[[5,90],[10,180]],"ranged":[{"n":"Splinter pistol","r":"12\"","a":"1","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT, PISTOL"},{"n":"Splinter pods","r":"18\"","a":"2","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT, TWIN-LINKED"}],"melee":[{"n":"Hellglaive","r":"Melee","a":"3","bs":"3+","s":"4","ap":"-1","d":"2","k":"LANCE, SUSTAINED HITS 1"},{"n":"Power weapon","r":"Melee","a":"4","bs":"3+","s":"3","ap":"-2","d":"1","k":"ANTI-INFANTRY 3+, LANCE, SUSTAINED HITS 1"},{"n":"Stunclaw","r":"Melee","a":"4","bs":"3+","s":"3","ap":"-1","d":"1","k":"DEVASTATING WOUNDS, LANCE, PRECISION"}],"opts":"Helliarch can take phantasm grenade launcher; hellglaive can become pistol+power weapon or pistol+stunclaw.","abilities":"Battlefield Butchery (Pain): Empower to add 1 Attack and 1 Strength to melee weapons. Skyboard Evasion: when an enemy ends a move within 8\", make a reactive Normal move up to D6\" if not engaged. Phantasm Grenade Launcher grants Smoke/Grenades.","keywords":"MOUNTED · WYCH CULT · AELDARI · DRUKHARI","leads":"","tip":"Fast pressure and board control; the reactive move is often more important than their raw damage.","third":{"5":95,"10":190}},{"name":"Reavers","role":"Mounted","stats":["16\"","4","4+","2","7+","2"],"inv":"6+","points":{"3":75,"6":150},"sizes":[[3,75],[6,150]],"ranged":[{"n":"Blaster","r":"18\"","a":"1","bs":"3+","s":"8","ap":"-4","d":"D6+1","k":"ASSAULT"},{"n":"Heat lance","r":"18\"","a":"1","bs":"3+","s":"14","ap":"-4","d":"D6","k":"ASSAULT, MELTA 3"},{"n":"Splinter pistol","r":"12\"","a":"1","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT, PISTOL"},{"n":"Splinter rifle","r":"24\"","a":"2","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT"}],"melee":[{"n":"Bladevanes","r":"Melee","a":"4","bs":"3+","s":"4","ap":"-1","d":"1","k":"LANCE"}],"opts":"For every 3 models: one splinter rifle -> blaster or heat lance; one model can take cluster caltrops or grav-talon.","abilities":"Eviscerating Fly-by: after a Normal/Advance move, damage a non-MONSTER/VEHICLE unit moved over on 4+. Matchless Swiftness (Pain): Empower to add 8\" when Advancing instead of rolling.","keywords":"MOUNTED · WYCH CULT · FLY · AELDARI · DRUKHARI","leads":"","tip":"Use for extreme reach, objective denial and fly-by pressure; don’t trade them into a brick without a scoring reason.","third":{"3":79,"6":158}},{"name":"Raider","role":"Dedicated Transport","stats":["14\"","8","4+","10","6+","2"],"inv":"6+","points":{"1":75},"sizes":[[1,75]],"ranged":[{"n":"Dark lance","r":"36\"","a":"1","bs":"3+","s":"12","ap":"-3","d":"D6+2","k":""},{"n":"Disintegrator cannon","r":"36\"","a":"3","bs":"3+","s":"6","ap":"-3","d":"2","k":""}],"melee":[{"n":"Bladevanes and chainsnares","r":"Melee","a":"D3+3","bs":"4+","s":"6","ap":"-1","d":"1","k":""}],"opts":"Dark lance -> disintegrator cannon.","abilities":"Aethersails: with Drukhari embarked, re-roll Advance/Charge. Splinter Racks (Pain): Empower to re-roll Hits for ranged weapons with Anti while embarked units are present. Vanguard of the Dark City offers a Command-phase transport mode. Masters of the Shadowed Sky keeps a Kabalite-held objective sticky while Kabalites are embarked. Speed of the Kill helps Wyches disembark within 6\". Visions of Butchery adds attacks based on embarked Wracks.","keywords":"VEHICLE · TRANSPORT · DEDICATED TRANSPORT · FLY · FRAME · AELDARI · DRUKHARI","leads":"","tip":"11-model transport. The real value is delivery + board geometry, not its own damage."},{"name":"Venom","role":"Dedicated Transport","stats":["14\"","6","4+","6","6+","1"],"inv":"6+","points":{"1":65},"sizes":[[1,65]],"ranged":[{"n":"Splinter cannon","r":"36\"","a":"3","bs":"3+","s":"3","ap":"-1","d":"2","k":"ANTI-INFANTRY 3+, SUSTAINED HITS 1"},{"n":"Twin splinter rifle","r":"24\"","a":"2","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT, RAPID FIRE 2, TWIN-LINKED"}],"melee":[{"n":"Bladevanes","r":"Melee","a":"3","bs":"4+","s":"5","ap":"-1","d":"1","k":""}],"opts":"Twin splinter rifle -> splinter cannon.","abilities":"Aerialists: at Fight end, pick up a nearby Drukhari Infantry unit of 6 or fewer models (not FLY); it may re-embark even if it disembarked from a Transport that turn. Rapid Deployment (Pain): after Advancing, embarked units may disembark but count as having made a Normal move and cannot charge.","keywords":"VEHICLE · TRANSPORT · DEDICATED TRANSPORT · FLY · FRAME · AELDARI · DRUKHARI","leads":"","tip":"The split transport: use it to turn 10-model Kabalite/Hand/Wych units into multiple scoring pieces."},{"name":"Ravager","role":"Vehicle","stats":["14\"","9","4+","11","6+","3"],"inv":"6+","points":{"1":110},"sizes":[[1,110]],"ranged":[{"n":"Dark lance","r":"36\"","a":"1","bs":"3+","s":"12","ap":"-3","d":"D6+2","k":""},{"n":"Disintegrator cannon","r":"36\"","a":"3","bs":"3+","s":"6","ap":"-3","d":"2","k":""}],"melee":[{"n":"Bladevanes","r":"Melee","a":"3","bs":"4+","s":"6","ap":"-1","d":"1","k":""}],"opts":"Any number of dark lances -> disintegrator cannons; each dark lance upgrade costs +5 pts.","abilities":"Damaged: 1-4 Wounds Remaining gives -1 Hit. Eradicate the Foe: re-roll Hit when targeting an enemy at Starting Strength. Agonising Suppression (Pain): Empower to suppress a hit enemy unit, giving it -1 Hit.","keywords":"VEHICLE · KABAL · FLY · FRAME · AELDARI · DRUKHARI","leads":"","tip":"Three Disintegrators are the baseline anti-infantry/elite package; Dark Lances are the anti-tank upgrade and cost extra."},{"name":"Razorwing Jetfighter","role":"Aircraft","stats":["-","8","4+","10","6+","-"],"inv":"6+","points":{"1":170},"sizes":[[1,170]],"ranged":[{"n":"Dark lance","r":"36\"","a":"1","bs":"3+","s":"12","ap":"-3","d":"D6+2","k":""},{"n":"Disintegrator cannon","r":"36\"","a":"3","bs":"3+","s":"6","ap":"-3","d":"2","k":""},{"n":"Razorwing missiles – monoscythe","r":"48\"","a":"D6","bs":"3+","s":"6","ap":"-1","d":"2","k":"BLAST"},{"n":"Razorwing missiles – neurotoxin","r":"48\"","a":"D6+3","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 2+, BLAST"},{"n":"Razorwing missiles – shatterfield","r":"48\"","a":"D6","bs":"3+","s":"7","ap":"-2","d":"1","k":"BLAST"},{"n":"Splinter cannon","r":"36\"","a":"3","bs":"3+","s":"3","ap":"-1","d":"2","k":"ANTI-INFANTRY 3+, SUSTAINED HITS 1"},{"n":"Twin splinter rifle","r":"24\"","a":"2","bs":"3+","s":"2","ap":"0","d":"1","k":"ANTI-INFANTRY 3+, ASSAULT, RAPID FIRE 2, TWIN-LINKED"}],"melee":[{"n":"Bladed wings","r":"Melee","a":"3","bs":"4+","s":"6","ap":"-1","d":"1","k":""}],"opts":"2 dark lances -> 2 disintegrator cannons; twin splinter rifle -> splinter cannon.","abilities":"Ground-attack Craft: +1 Hit against targets that cannot Fly. Nowhere to Run (Pain): Empower to pin a non-MONSTER/VEHICLE target, reducing Move and Charge. Stealth. Current errata removes Hover and sets M/OC to “-”.","keywords":"VEHICLE · FLY · AIRCRAFT · AELDARI · DRUKHARI","leads":"","tip":"Flexible but specialised. Treat it as a pressure piece, not a mandatory auto-include."},{"name":"Voidraven Bomber","role":"Aircraft","stats":["-","9","4+","12","6+","-"],"inv":"6+","points":{"1":245},"sizes":[[1,245]],"ranged":[{"n":"Dark scythe","r":"24\"","a":"6","bs":"3+","s":"8","ap":"-4","d":"2","k":""},{"n":"Void lance","r":"36\"","a":"2","bs":"3+","s":"14","ap":"-4","d":"D6+2","k":""},{"n":"Voidraven missiles – implosion","r":"48\"","a":"D3","bs":"3+","s":"9","ap":"-2","d":"3","k":"BLAST"},{"n":"Voidraven missiles – shatterfield","r":"48\"","a":"D6","bs":"3+","s":"7","ap":"-2","d":"1","k":"BLAST"}],"melee":[{"n":"Bladed wings","r":"Melee","a":"3","bs":"4+","s":"6","ap":"-1","d":"1","k":""}],"opts":"2 void lances -> 2 dark scythes; may take Voidraven missiles.","abilities":"Nowhere to Hide (Pain): Empower to remove Benefit of Cover from a hit target until end of phase. Void Mine: after the opponent’s Fight phase, select a visible model within 24\" and roll for nearby units; on 4+ they suffer D6 mortal wounds. Current errata removes Hover and sets M/OC to “-”.","keywords":"VEHICLE · AIRCRAFT · FLY · AELDARI · DRUKHARI","leads":"","tip":"Expensive hammer: protect it until its anti-tank profile and Mine can meaningfully swing a turn."},{"name":"Beastmaster","role":"Unit","stats":["12\"","4","6+","3","6+","1"],"inv":"","points":{"1":120},"sizes":[[1,120]],"ranged":[],"melee":[],"opts":"Multi-model beast unit; the Beastmaster leads the pack. Exact beast composition and weapon profiles are datasheet-specific.","abilities":"Fast Beast unit with mixed profiles; use its speed to threaten weak flanks and scoring pieces.","keywords":"BEASTS · WYCH CULT · AELDARI · DRUKHARI","leads":"","tip":"Mission-pressure and screening piece. Keep it moving; its value is reach and board control."},{"name":"Court of the Archon","role":"Infantry","stats":["7\"","3","5+","2","7+","1"],"inv":"","points":{"1":95},"sizes":[[1,95]],"ranged":[],"melee":[],"opts":"Retinue-style multi-model unit; exact model mix and specialist weapons follow the current datasheet.","abilities":"Kabal retinue utility; designed to operate with an Archon.","keywords":"INFANTRY · KABAL · AELDARI · DRUKHARI","leads":"Archon","tip":"Use when you want a character-protection package that is broader than a pure Kabalite gunline."},{"name":"Grotesques","role":"Infantry","stats":["7\"","5","6+","4","7+","1"],"inv":"","points":{"3":105},"sizes":[[3,105]],"ranged":[],"melee":[],"opts":"Coven multi-model unit; exact specialist wargear follows the current datasheet.","abilities":"Durable HAEMONCULUS COVENS bodyguard unit.","keywords":"INFANTRY · HAEMONCULUS COVENS · AELDARI · DRUKHARI","leads":"Haemonculus","tip":"A natural companion to Coven defensive rules when you need a tougher mid-board body than Wracks."},{"name":"Tantalus","role":"Transport","stats":["16\"","10","4+","18","7+","5"],"inv":"","points":{"1":230},"sizes":[[1,230]],"ranged":[],"melee":[],"opts":"Large transport with datasheet-specific weapon package and capacity.","abilities":"Heavy Drukhari transport/vehicle; use it as a mobile firing platform and delivery piece. Current Faction Pack v1.2 identifies Tantalus as Legends; it is shown here for reference but excluded from normal matched-play recommendations.","keywords":"VEHICLE · TRANSPORT · AELDARI · DRUKHARI","leads":"","tip":"High-investment transport: only add it when the list is built around the footprint and payload."},{"name":"Urien Rakarth","role":"Epic Hero","stats":["7\"","4","6+","5","6+","1"],"inv":"","points":{"1":105},"sizes":[[1,105]],"ranged":[],"melee":[],"opts":"Cannot take Enhancements.","abilities":"Epic Haemonculus character; exact current Fleshcraft/Urien-specific abilities are datasheet-specific. Keyworded HAEMONCULUS for current rules interactions.","keywords":"INFANTRY · HAEMONCULUS COVENS · CHARACTER · EPIC HERO · AELDARI · URIEN RAKARTH · DRUKHARI","leads":"Wracks, Grotesques","tip":"Specialist Coven character; consider when you want a named Haemonculus rather than a generic one."}],"dets":{"Realspace Raiders":{"dp":2,"disp":"Priority Assets","rule":"Alliance of Agony: start with +2 Pain for each combination present: Archon+Kabalite Warriors, Succubus+Wyches, Haemonculus+Wracks (up to +6).","enh":[["Dark Vitality",20,"DRUKHARI; bearer’s unit is always Empowered"],["Labyrinthine Cunning",25,"ARCHON; spend 1 Pain for +1CP or roll 4+ for +1CP each Command phase"],["Eye of Spite",15,"SUCCUBUS; improve melee Attacks/AP by 1, or by 2 more when spending 1 Pain"],["Crucible of Malediction",15,"HAEMONCULUS; once/battle force nearby Battle-shock tests; spend Pain for -1 and punish failed PSYKERS"]],"strats":[["Insensible to Pain",2,"COVENS unit: subtract 1 from Damage against it"],["Fighting Shadows",1,"Non-COVENS DRUKHARI unit: -1 to Hit"],["Instinctive Spite",1,"Up to two Battleline or one other unit: +1 Hit vs Below Half-strength; spend Pain for +1 Wound"],["Dark Harvest",1,"Up to two Wracks or one other unit: melee Lethal Hits"],["Eager for the Kill",1,"Advance becomes +6\" instead of rolling"],["Raid and Fade",2,"Up to two Kabalite or one other non-Scourge/non-Aircraft unit moves 6\" after shooting; cannot charge"]]},"Skysplinter Assault":{"dp":2,"disp":"Reconnaissance","rule":"Rain Of Cruelty: after disembarking from a Transport, ranged weapons gain IGNORES COVER and melee weapons gain LANCE until end of turn.","enh":[["Phantasmal Smoke",15,"DRUKHARI; within 6\" of friendly Transport: Stealth and Benefit of Cover"],["Sadistic Fulcrum",15,"DRUKHARI; when spending Pain in Shooting, nearby Transport can reroll Hits"],["Spiteful Raider",10,"DRUKHARI; killing an enemy on an objective in Fight gives +1 Pain"],["Nightmare Shroud",20,"DRUKHARI; after disembarking, enemy cannot Fire Overwatch"]],"strats":[["Vicious Blades",1,"Transport fights, then embarked models can inflict mortal wounds on the target"],["Wraithlike Retreat",1,"Infantry that fought can move/embark; this transport can be re-embarked in the same turn the unit disembarked. Wyches are exempt from the normal embark restriction in this Stratagem."],["Pounce on the Prey",1,"Infantry disembarking from a Transport that Normal moved gets Assault Disembark"],["Skyborne Annihilation",1,"Disembarked unit gets Sustained Hits 1, or 2 for Kabalites/Hand"],["Swooping Mockery",1,"Transport within 8\" of enemy can make a Normal move of up to 6\" in the opponent’s Movement phase."],["Night Shield",1,"DRUKHARI Vehicle gets 4+ invulnerable save for phase"]]},"Spectacle of Spite":{"dp":2,"disp":"Purge the Foe","rule":"Combat Drugs: at Command phase select one active drug (or randomly roll two). Adrenalight +1A melee; Hypex +2\" Move; Serpentin +1 WS; Painbringer +1T; Grave Lotus +1S melee; Splintermind +1Ld and +1BS ranged.","enh":[["Pharmacophex",15,"SUCCUBUS; roll an extra Combat Drug each Command phase for bearer’s unit"],["Chronoshard",15,"SUCCUBUS; once/battle bearer’s unit gains Fights First for Fight phase"],["Periapt of Torments",25,"SUCCUBUS; enemy cannot Fire Overwatch against bearer’s unit"],["Morghenna’s Curse",20,"SUCCUBUS; +1 AP and +1 Damage to melee weapons"]],"strats":[["Berserk Fugue",2,"Wych Cult unit: destroyed models that have not fought can fight before removal"],["Planned Strikes",1,"Wych Cult melee gains Lethal Hits"],["Sculpting the Stage",1,"Advance/Fall Back does not prevent starting an action"],["Deadly Debut",1,"Charged unit gains Lethal Hits; Wyches also +1 AP"],["Feigned Weakness",1,"After Fall Back, can shoot and charge"],["Preternatural Agility",1,"Ignore movement/Advance/Charge modifiers and move through models during Normal/Advance"],["A Challenge Met",1,"Opponent Movement phase, when an enemy unit ends a Fall Back move: a friendly unengaged WYCH CULT unit within 6\" can declare a charge, targeting only units that Fell Back this phase."],["Acrobatic Display",1,"Wych Cult unit gets 5+ invulnerable save"]]},"Covenite Coterie":{"dp":2,"disp":"Take and Hold","rule":"Stitchflesh Abominations: attacks against COVENS with Strength greater than Toughness suffer -1 to Wound.","enh":[["Master Regenesist",25,"HAEMONCULUS; Fleshcraft returns D3+3 Bodyguard"],["Master Nemesine",5,"HAEMONCULUS; weapons gain Anti-Beast 2+ and Anti-Monster 4+"],["Master Artisan",20,"HAEMONCULUS; +1W and +1T to bearer’s unit"],["Master Repugnomancer",15,"HAEMONCULUS; +3\" Fear Incarnate aura and chance for extra Pain"]],"strats":[["Postmortality",1,"Spend 1-3 Pain tokens. At end of phase, set up the destroyed Haemonculus as close as possible to where it died, unengaged; it is no longer part of its attached unit and its starting strength is 1. Its remaining Wounds equal the Pain spent."],["Symphony of Suffering",1,"After destroying an enemy, nearby enemy units Battle-shock; -1 if COVENS"],["Poisoner’s Art",1,"COVENS unit poisons a non-Vehicle enemy; later Command phase can inflict D3 mortals on 4+"],["Distillers of Fear",2,"COVENS melee against Battle-shocked targets gets Devastating Wounds"],["Connoisseurs of Pain",1,"Spend 1 Pain token. Until the attacking unit finishes, worsen enemy AP by 1 against your unit. If the surviving unit is HAEMONCULUS COVENS at the end of the phase, regain 1 Pain token."],["Enfolding Nightmare",1,"After the opponent shoots a COVENS unit, make a surge move of up to D6\"."]]},"Kabalite Cartel":{"dp":2,"disp":"Disruption","rule":"Murderous Agenda: choose Trophy Hunters (Precision vs Character), Sow Fear and Terror (Sustained Hits 1 vs Infantry/Mounted), or Show of Strength (Lethal Hits vs Monster/Vehicle); complete contract for 3 Pain.","enh":[["Leechbite Plate",5,"ARCHON; Save 3+ and spend Pain in Command to regain all lost wounds"],["Webway Awl",25,"ARCHON; bearer’s unit gains Deep Strike and can use Rapid Ingress for 0CP"],["Informant Network",30,"ARCHON; up to 3 Kabalite/Hand units gain Infiltrators"],["Towering Arrogance",20,"ARCHON leading: +1 Leadership and OC"]],"strats":[["Double-Cross",1,"Redirect attacks from a KABAL/BLADES FOR HIRE unit into a nearby non-Vehicle ally as mortal wounds"],["Taken Alive",1,"Unactivated unit gets +1 Hit; if Contract dies, enemy army Battle-shock tests"],["Tailored Toxins",1,"KABAL/BLADES FOR HIRE unit scores Critical Hits on 5+ vs Contract"],["Enemies Without Number",1,"Archon Warlord selects a new Contract after completing one"],["Making a Point",1,"Kabalites/Hand improve BS and AP by 1"],["Deadly Deceivers",1,"KABAL/BLADES FOR HIRE can only be targeted from within 18\""]]},"Reaper’s Wager":{"dp":3,"disp":"Purge the Foe","rule":"Callous Competition: at the start, Drukhari are winning. A Drukhari kill keeps Drukhari winning; a Harlequin kill makes Harlequins winning. Winning units re-roll Hit 1s; losing units re-roll Hit 1s and Wound 1s. Harlequins are allowed up to 500/1000/1500 pts in Incursion/Strike Force/Onslaught; no Harlequin can be Warlord.","enh":[["Archraider",15,"DRUKHARI/HARLEQUINS; if starting embarked, Dedicated Transport gains Scouts 9\""],["Webway Walker",15,"DRUKHARI/HARLEQUINS; bearer’s unit gains Deep Strike; losing side rerolls Charges after Deep Strike"],["Reaper’s Cowl",25,"HARLEQUINS; Stealth and Infiltrators"],["Conductor of Torment",20,"DRUKHARI; swap which side is winning by spending/gaining Pain"]],"strats":[["Scintillating Tempo",1,"Manipulate the wager/tempo to improve a unit’s attacks"],["Shorten the Odds",1,"Improve the losing side’s odds in a key phase"],["Dance Macabre",1,"Opponent Movement phase after an enemy Normal/Advance/Fall Back move: a Drukhari Infantry or Harlequins Infantry unit within 8\" makes a Normal move up to D6\"; if losing the wager, it can instead move up to 6\"."],["Malicious Frenzy",1,"Choose Lethal Hits or Sustained Hits 1"],["Fateful Role",1,"Defensive/retaliatory effect for a targeted unit"],["Murderer’s Circus",1,"Aggressive Harlequin/Drukhari interaction"]]},"Exhibition of Slaughter":{"dp":1,"disp":"Reconnaissance","rule":"Exacting Cruelty: Wych Cult melee has Lethal Hits against non-MONSTER/VEHICLE targets.","enh":[["Periapt of Torments",20,"SUCCUBUS; enemy units cannot use Snap Shooting against bearer’s unit"],["Hyperstimm Trafficker",20,"SUCCUBUS; +1 Toughness to bearer’s unit"]],"strats":[["Planned Strikes",1,"Wych Cult melee gets Lethal Hits"],["Sculpting the Stage",1,"Advance/Fall Back does not stop starting an action"],["Acrobatic Display",1,"Wych Cult gets 5+ invulnerable save"]]},"Kabalite Agonysts":{"dp":1,"disp":"Disruption","rule":"Contracted Harvest: KABAL and BLADES FOR HIRE ranged attacks have Sustained Hits 1 against non-MONSTER/VEHICLE.","enh":[["Towering Arrogance",15,"ARCHON; +1 Leadership and OC"],["Contempt for Rivals",20,"ARCHON; bearer’s unit attacks gain Precision"]],"strats":[["Prioritised Victim",1,"Reroll Hit/Wound 1 against CHARACTER"],["Shadows’ Reach",1,"After shooting, attacks do not prevent unit from being hidden"],["Killers from the Dark Spires",1,"Kabalite Warriors gain Ignores Cover"]]},"Tools of Torment":{"dp":1,"disp":"Take and Hold","rule":"Darkest Artifice: attacks against friendly Cronos/Talos with Strength greater than Toughness suffer -1 to Wound.","enh":[["Gnarlskin Experimentor",20,"HAEMONCULUS; attacks with S greater than T suffer -1 to Wound"],["Elixir of the Corpse Courts",15,"CRONOS/TALOS unit gains 5+ invulnerable save"]],"strats":[["Salting the Wound",1,"Cronos/Talos attacks against Battle-shocked targets gain Devastating Wounds"],["Dividends of Agony",1,"After a COVENS unit destroys an enemy, nearby enemy tests Battle-shock at -1"],["Urgent Metamorphosis",1,"COVENS unit can Fall Back and still charge"]]}},"core":[["Command Re-roll",1,"Re-roll a permitted roll. Save it for a charge, crucial save, or damage spike that changes VP or survival."],["Fire Overwatch",1,"Use after an enemy unit ends a move in the required range. TORRENT weapons are the natural Drukhari user because they auto-hit."],["Rapid Ingress",1,"Bring a Strategic Reserves unit in at the end of the opponent’s Movement phase to threaten scoring lanes or a counter-shot."],["Heroic Intervention",1,"Reactive charge after an enemy finishes a charge within the required range. Best when the counter-charge changes who fights first."],["Epic Challenge",1,"Give a CHARACTER Precision in the Fight phase. Use when the enemy’s Leader is the real problem."],["Counter-offensive",2,"Fight next after an enemy unit has fought. Expensive; reserve it for a decisive trade or to prevent a second enemy activation."],["Insane Bravery",1,"Auto-pass a Battle-shock test when failing would lose OC or a key action."]],"version":"Faction Pack 1.2 · legal 26/08/2026 · MFM actualizado 02/09/2026"};const DS=DATA.ds,DETS=DATA.dets,CORE=DATA.core;let army=[],activeDet='Realspace Raiders',limit=2000;
+const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+function pts(d,n){if(d.points[n]!=null)return d.points[n];const keys=Object.keys(d.points).map(Number).sort((a,b)=>a-b);let k=keys[0];for(const x of keys)if(n>=x)k=x;return d.points[k]||0}
+function weapon(w,melee){return `<div class="weapon"><strong>${esc(w.n)}</strong><div class="wstats">${[['ALC',w.r],['A',w.a],[melee?'WS':'BS',w.bs],['S',w.s],['AP',w.ap],['D',w.d]].map(x=>`<div class="wstat"><i>${x[0]}</i><b>${esc(x[1])}</b></div>`).join('')}</div>${w.k?`<div class="tags">${esc(w.k)}</div>`:''}</div>`}
+function unitCard(d){return `<div class="ref-card"><h3>${esc(d.name)} <span class="badge">${esc(d.role)}</span><span class="badge">${pts(d,Object.keys(d.points)[0])} pts</span></h3><div class="statline">${[['M',d.stats[0]],['T',d.stats[1]],['Sv',d.stats[2]],['W',d.stats[3]],['Ld',d.stats[4]],['OC',d.stats[5]],['Inv',d.inv||'—']].map(x=>`<div class="statbox"><i>${x[0]}</i><b>${esc(x[1])}</b></div>`).join('')}</div><div class="small">${esc(d.keywords||'')}</div>${d.leads?`<p class="small"><b>Puede liderar/ser liderada:</b> ${esc(d.leads)}</p>`:''}${d.ranged.length?`<h4>Armas a distancia</h4><div>${d.ranged.map(w=>weapon(w,false)).join('')}</div>`:''}${d.melee.length?`<h4>Armas de combate</h4><div>${d.melee.map(w=>weapon(w,true)).join('')}</div>`:''}${d.opts?`<p><b>Opciones:</b> ${esc(d.opts)}</p>`:''}<p><b>Habilidades:</b> ${esc(d.abilities)}</p>${d.tip?`<p class="small"><b>Tip:</b> ${esc(d.tip)}</p>`:''}</div>`}
+function renderKpis(){const total=army.reduce((a,x)=>a+x.cost,0);$('kpis').innerHTML=`<div class="kpi"><div class="muted">Puntos</div><b>${total} / ${limit}</b></div><div class="kpi"><div class="muted">Unidades</div><b>${army.length}</b></div><div class="kpi"><div class="muted">Power from Pain</div><b>⚔</b></div><div class="kpi"><div class="muted">Destacamento</div><b style="font-size:15px">${esc(activeDet)}</b></div>`}
+function rec(x){const d=DS.find(y=>y.name===x.name);const e=(DETS[activeDet]?.enh||[]).find(a=>a[0]===x.enh);x.cost=Math.max(0,Number(x.base)||0)+Math.max(0,Number(x.wgear)||0)+(e?e[1]:0)}
+function renderArmy(){$('armyList').innerHTML=army.map((x,i)=>`<div class="unit-row"><button class="danger remove" onclick="removeUnit(${i})">×</button><div class="title">${esc(x.name)} <span class="pts">${x.cost} pts</span></div><small>${x.size} modelo(s)${x.enh?` · ⚜ ${esc(x.enh)}`:''}</small></div>`).join('')||'<div class="small">Aún no has añadido unidades.</div>';renderKpis();$('armyEditor').innerHTML=army.map((x,i)=>`<div class="unit-row"><b>${esc(x.name)}</b><div class="row"><div class="field"><label>Modelos</label><input type="number" min="1" value="${x.size}" onchange="changeSize(${i},this.value)"></div><div class="field"><label>Coste unidad</label><input type="number" min="0" value="${x.base}" onchange="changeBase(${i},this.value)"></div><div class="field"><label>Mod. armas</label><input type="number" min="0" value="${x.wgear}" onchange="changeWgear(${i},this.value)"></div><div class="field"><label>Enhancement</label><select onchange="changeEnh(${i},this.value)"><option value="">—</option>${(DETS[activeDet]?.enh||[]).map(e=>`<option ${x.enh===e[0]?'selected':''} value="${esc(e[0])}">${esc(e[0])} (+${e[1]})</option>`).join('')}</select></div></div></div>`).join('')}
+function addUnit(){const d=DS.find(x=>x.name===$('addUnit').value);if(!d)return;const size=Object.keys(d.points).map(Number)[0];const x={name:d.name,size,base:pts(d,size),wgear:0,enh:'',cost:pts(d,size)};army.push(x);rec(x);save();renderArmy()}
+function removeUnit(i){army.splice(i,1);save();renderArmy()}
+function changeSize(i,v){const x=army[i],d=DS.find(y=>y.name===x.name);x.size=Math.max(1,Number(v)||1);x.base=pts(d,x.size);rec(x);save();renderArmy()}
+function changeBase(i,v){army[i].base=Math.max(0,Number(v)||0);rec(army[i]);save();renderArmy()}
+function changeWgear(i,v){army[i].wgear=Math.max(0,Number(v)||0);rec(army[i]);save();renderArmy()}
+function changeEnh(i,v){army[i].enh=v;rec(army[i]);save();renderArmy()}
+function save(){try{localStorage.setItem('drukhari11army_v2',JSON.stringify(army));localStorage.setItem('drukhari11det_v2',activeDet)}catch(e){}}
+function load(){try{army=JSON.parse(localStorage.getItem('drukhari11army_v2')||'null')||[];activeDet=localStorage.getItem('drukhari11det_v2')||'Realspace Raiders'}catch(e){army=[]}if(!DETS[activeDet])activeDet='Realspace Raiders';army.forEach(rec)}
+function renderMfm(){$('mfmGrid').innerHTML=DS.map(d=>`<div class="ref-card"><h3>${esc(d.name)}</h3><p>${Object.entries(d.points).map(([n,p])=>`${n} modelo(s): <b>${p} pts</b>`).join(' · ')}</p>${d.name.includes('Ravager')?'<p class="small">Dark Lance: +5 pts por arma frente al perfil con Disintegrator Cannon.</p>':''}${d.name.includes('Scourges with Heavy')?'<p class="small">Dark Lance: +5 pts por arma; el bloque de 4 Dark Lances aparece a 130 pts en listas actuales.</p>':''}</div>`).join('')+`<div class="ref-card"><h3>Enhancements del destacamento</h3>${Object.entries(DETS).map(([n,d])=>`<p><b>${esc(n)}</b>: ${d.enh.map(e=>`${esc(e[0])} ${e[1]}`).join(' · ')}</p>`).join('')}</div>`}
+function renderRef(){const q=($('refSearch').value||'').toLowerCase(),role=$('refRole').value;const arr=DS.filter(d=>(!q||JSON.stringify(d).toLowerCase().includes(q))&&(!role||d.role===role));$('refGrid').innerHTML=arr.map(unitCard).join('')||'<p class="small">Sin resultados.</p>'}
+function renderCatalog(){$('catalogGrid').innerHTML=DS.map(unitCard).join('')}
+function renderDets(){$('detGrid').innerHTML=Object.entries(DETS).map(([n,d])=>`<div class="ref-card"><h3>${esc(n)} <span class="badge">${d.dp} DP</span><span class="badge">${esc(d.disp)}</span></h3><p>${esc(d.rule)}</p><h4>Enhancements</h4>${d.enh.map(e=>`<div class="strat"><b>${esc(e[0])} · ${e[1]} pts</b><br>${esc(e[2])}</div>`).join('')}<h4>Stratagems</h4>${d.strats.map(s=>`<div class="strat"><b>${esc(s[0])} · ${s[1]} CP</b><br>${esc(s[2])}</div>`).join('')}</div>`).join('')}
+function renderCore(){$('coreStrats').innerHTML=CORE.map(s=>`<div class="ref-card"><h3>${esc(s[0])} · ${s[1]} CP</h3><p>${esc(s[2])}</p></div>`).join('')}
+function activate(id){document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.t===id));document.querySelectorAll('.mobile-nav button').forEach(x=>x.classList.toggle('active',x.dataset.mnav===id))}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>activate(b.dataset.t));document.querySelectorAll('.mobile-nav button').forEach(b=>b.onclick=()=>activate(b.dataset.mnav));
+function setup(){load();$('armyDet').innerHTML=Object.keys(DETS).map(x=>`<option>${esc(x)}</option>`).join('');$('addUnit').innerHTML=DS.map(x=>`<option>${esc(x.name)}</option>`).join('');$('armyDet').value=activeDet;$('armyDet').onchange=e=>{activeDet=e.target.value;army.forEach(rec);save();renderArmy();renderKpis()};$('limit').onchange=e=>{limit=Number(e.target.value);renderKpis()};$('refSearch').oninput=renderRef;$('refRole').onchange=renderRef;renderMfm();renderRef();renderCatalog();renderDets();renderCore();renderArmy()}
+setup();</script></body></html>
